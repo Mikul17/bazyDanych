@@ -10,18 +10,15 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-public class Bet {
+@Entity(name = "league")
+public class League {
     @Id
-    @Column(name = "betId")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "league_id")
     private Long id;
-    private Long matchId;
-    @Column(columnDefinition = "DECIMAL(5,2)")
-    private Double odds;
-
-    @ManyToOne
-    @JoinColumn(name = "betTypeId")
-    private BetType betType;
-
+    private String leagueName;
+    @Column(name = "origin_country")
+    private String country;
+    private Integer remainingMatches;
+    private Integer season;
 }
