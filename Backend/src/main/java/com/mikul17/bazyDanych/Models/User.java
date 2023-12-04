@@ -5,53 +5,40 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 
 @Entity(name = "user")
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long Id;
 
-    @NotBlank(message = "First name is required")
-    @Size(max = 30, message = "First name cannot be longer than 30 characters")
+    @Column(length=30)
     private String firstName;
-
-    @NotBlank(message = "Last name is required")
-    @Size(max = 30, message = "Last name cannot be longer than 30 characters")
     private String lastName;
-
-    @NotBlank(message = "Email is required")
-    @Size(max = 50, message = "Email cannot be longer than 50 characters")
-    @Email
     private String email;
-
-    @NotBlank(message = "Password is required")
-    @Size(max = 50, message = "Password cannot be longer than 50 characters")
     private String password;
-
-    @NotBlank(message = "Phone number is required")
-    @Size(min = 2, max = 15, message = "Phone number must be between 2 and 15 characters")
     private String phoneNumber;
-
     private LocalDate birthDate;
-
-    @Size(min = 26, max = 26, message = "Account number must be 26 characters long")
     private String accountNumber;
-
-    @Size(min = 11, max = 11, message = "SSN must be 11 characters long")
-    @NotBlank(message = "SSN is required")
     private String SSN;
 
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp createdAt;
@@ -67,4 +54,34 @@ public class User {
     //they are not stored in database as separate column in user table)
     @OneToMany(mappedBy = "user" , fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Transaction> transactions;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities () {
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+
+    @Override
+    public String getUsername () {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired () {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked () {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired () {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled () {
+        return true;
+    }
 }
