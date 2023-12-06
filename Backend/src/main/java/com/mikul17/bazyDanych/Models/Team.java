@@ -2,10 +2,7 @@ package com.mikul17.bazyDanych.Models;
 
 import com.mikul17.bazyDanych.Models.Players.Player;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
+@Builder
 @NoArgsConstructor
 @Entity(name = "team")
 public class Team {
