@@ -1,4 +1,4 @@
-package com.mikul17.bazyDanych.Models;
+package com.mikul17.bazyDanych.Models.Simulation;
 
 import jakarta.persistence.*;
 import lombok.*;

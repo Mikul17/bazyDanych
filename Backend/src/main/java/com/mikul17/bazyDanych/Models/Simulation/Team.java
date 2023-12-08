@@ -1,6 +1,6 @@
-package com.mikul17.bazyDanych.Models;
+package com.mikul17.bazyDanych.Models.Simulation;
 
-import com.mikul17.bazyDanych.Models.Players.Player;
+import com.mikul17.bazyDanych.Models.Simulation.Players.Player;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -1,9 +1,6 @@
-package com.mikul17.bazyDanych.Models.Players;
+package com.mikul17.bazyDanych.Models.Simulation.Players;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,10 +17,16 @@ public class PlayerStat {
     @OneToOne(targetEntity = Player.class)
     @JoinColumn(name = "player_id")
     private Long id;
+    @Column(columnDefinition = "integer default 0")
     private Integer goalsScored;
+    @Column(columnDefinition = "integer default 0")
     private Integer assists;
+    @Column(columnDefinition = "integer default 0")
     private Integer yellowCards;
+    @Column(columnDefinition = "integer default 0")
     private Integer redCards;
+    @Column(columnDefinition = "integer default 0")
     private Integer fouls;
+    @Column(columnDefinition = "integer default 0")
     private Integer gamesPlayed;
 }

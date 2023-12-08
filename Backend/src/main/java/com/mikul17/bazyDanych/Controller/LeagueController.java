@@ -1,13 +1,10 @@
 package com.mikul17.bazyDanych.Controller;
 
-import com.mikul17.bazyDanych.Models.League;
 import com.mikul17.bazyDanych.Request.LeagueRequest;
 import com.mikul17.bazyDanych.Service.LeagueService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

@@ -1,4 +1,4 @@
-package com.mikul17.bazyDanych.Models.Players;
+package com.mikul17.bazyDanych.Models.Simulation.Players;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

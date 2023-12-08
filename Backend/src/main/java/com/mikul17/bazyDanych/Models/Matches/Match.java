@@ -1,7 +1,7 @@
 package com.mikul17.bazyDanych.Models.Matches;
 
-import com.mikul17.bazyDanych.Models.League;
-import com.mikul17.bazyDanych.Models.Team;
+import com.mikul17.bazyDanych.Models.Simulation.League;
+import com.mikul17.bazyDanych.Models.Simulation.Team;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
