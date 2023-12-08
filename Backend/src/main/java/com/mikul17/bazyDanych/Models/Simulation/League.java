@@ -17,6 +17,8 @@ public class League {
     private String leagueName;
     @Column(name = "origin_country")
     private String country;
+    @Column(columnDefinition = "integer default 0")
     private Integer remainingMatches;
+    @Column(columnDefinition = "integer default 0")
     private Integer season;
 }

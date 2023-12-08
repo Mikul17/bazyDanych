@@ -19,11 +19,17 @@ public class Team {
     @Column(name = "team_id")
     private Long id;
     private String teamName;
+    @Column(columnDefinition = "integer default 0")
     private Integer wins;
+    @Column(columnDefinition = "integer default 0")
     private Integer draws;
+    @Column(columnDefinition = "integer default 0")
     private Integer loses;
+    @Column(columnDefinition = "integer default 0")
     private Integer goalsScored;
+    @Column(columnDefinition = "integer default 0")
     private Integer goalsConceded;
+    @Column(columnDefinition = "integer default 0")
     private Integer leaguePoints;
 
     @ManyToOne(targetEntity = League.class)
