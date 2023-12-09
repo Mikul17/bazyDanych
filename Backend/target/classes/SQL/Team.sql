@@ -7,7 +7,7 @@ INSERT INTO team (team_name, league_id) values ("Leeds Kids", 1);
 -- Si Liga Teams
 INSERT INTO team (team_name, league_id) values ("Barcelona Dioses", 2);
 INSERT INTO team (team_name, league_id) values ("Madrid Toros", 2);
-INSERT INTO team (team_name, league_id) values ("Valencia Naranjas", 2);
+INSERT INTO team (team_name, league_id, values ("Valencia Naranjas", 2);
 INSERT INTO team (team_name, league_id) values ("Sevilla Toreros", 2);
 INSERT INTO team (team_name, league_id) values ("Bilbao Vascos", 2);
 

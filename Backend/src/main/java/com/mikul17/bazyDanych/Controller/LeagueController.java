@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/league")
@@ -26,5 +28,9 @@ public class LeagueController {
     @PostMapping("/add")
     public ResponseEntity<?> addLeague(@RequestBody LeagueRequest request) {
         return leagueService.addLeague(request);
+    }
+    @PostMapping("/addLeagues")
+    public ResponseEntity<?> addLeagues(@RequestBody List<LeagueRequest> request) {
+        return leagueService.addLeagues(request);
     }
 }
