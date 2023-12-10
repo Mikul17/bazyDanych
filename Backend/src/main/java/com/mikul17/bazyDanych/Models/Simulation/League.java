@@ -1,15 +1,13 @@
-package com.mikul17.bazyDanych.Models;
+package com.mikul17.bazyDanych.Models.Simulation;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity(name = "league")
 public class League {
     @Id
@@ -19,6 +17,8 @@ public class League {
     private String leagueName;
     @Column(name = "origin_country")
     private String country;
+    @Column(columnDefinition = "integer default 0")
     private Integer remainingMatches;
+    @Column(columnDefinition = "integer default 0")
     private Integer season;
 }

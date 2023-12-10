@@ -1,11 +1,8 @@
-package com.mikul17.bazyDanych.Models;
+package com.mikul17.bazyDanych.Models.Simulation;
 
-import com.mikul17.bazyDanych.Models.Players.Player;
+import com.mikul17.bazyDanych.Models.Simulation.Players.Player;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
+@Builder
 @NoArgsConstructor
 @Entity(name = "team")
 public class Team {
@@ -21,11 +19,17 @@ public class Team {
     @Column(name = "team_id")
     private Long id;
     private String teamName;
+    @Column(columnDefinition = "integer default 0")
     private Integer wins;
+    @Column(columnDefinition = "integer default 0")
     private Integer draws;
+    @Column(columnDefinition = "integer default 0")
     private Integer loses;
+    @Column(columnDefinition = "integer default 0")
     private Integer goalsScored;
+    @Column(columnDefinition = "integer default 0")
     private Integer goalsConceded;
+    @Column(columnDefinition = "integer default 0")
     private Integer leaguePoints;
 
     @ManyToOne(targetEntity = League.class)

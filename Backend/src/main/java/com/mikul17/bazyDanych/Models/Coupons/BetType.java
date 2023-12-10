@@ -1,13 +1,11 @@
 package com.mikul17.bazyDanych.Models.Coupons;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Entity(name = "bet_type")

@@ -2,10 +2,7 @@ package com.mikul17.bazyDanych.Models.Coupons;
 
 import com.mikul17.bazyDanych.Models.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -15,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 public class Coupon {
     @Id
     @Column(name = "coupon_id")
@@ -24,6 +22,7 @@ public class Coupon {
     private Double totalOdds;
     private String couponStatus;
     private Double possibleWin;
+    private Double stake;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -34,5 +33,5 @@ public class Coupon {
             name = "coupon_bet",
             joinColumns = @JoinColumn(name = "coupon_id"),
             inverseJoinColumns = @JoinColumn(name = "bet_id"))
-    private List<Bet> bet;
+    private List<Bet> bets;
 }

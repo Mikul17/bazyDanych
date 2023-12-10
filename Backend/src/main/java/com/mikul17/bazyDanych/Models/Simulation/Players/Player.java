@@ -1,6 +1,6 @@
-package com.mikul17.bazyDanych.Models.Players;
+package com.mikul17.bazyDanych.Models.Simulation.Players;
 
-import com.mikul17.bazyDanych.Models.Team;
+import com.mikul17.bazyDanych.Models.Simulation.Team;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,8 +26,11 @@ public class Player {
     private String position;
     private Integer age;
     private String nationality;
+    @Column(columnDefinition = "boolean default false")
     private Boolean isBenched;
+    @Column(columnDefinition = "boolean default false")
     private Boolean isRedCarded;
+    @Column(columnDefinition = "boolean default false")
     private Boolean isInjured;
     private LocalDate injuredUntil;
 
