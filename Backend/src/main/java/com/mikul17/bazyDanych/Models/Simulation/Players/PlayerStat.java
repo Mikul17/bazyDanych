@@ -14,9 +14,13 @@ import lombok.Setter;
 public class PlayerStat {
 
     @Id
-    @OneToOne(targetEntity = Player.class)
-    @JoinColumn(name = "player_id")
     private Long id;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "player_id")
+    private Player player;
+
     @Column(columnDefinition = "integer default 0")
     private Integer goalsScored;
     @Column(columnDefinition = "integer default 0")

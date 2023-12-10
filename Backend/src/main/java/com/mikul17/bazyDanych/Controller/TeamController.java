@@ -34,19 +34,27 @@ public class TeamController {
     public ResponseEntity<?> getTeamById(@PathVariable Long id) throws Exception {
         return teamService.getTeamById(id);
     }
+    @GetMapping("/getByLeague/{id}")
+    public ResponseEntity<?> getTeamsByLeagueId(@PathVariable Long id) throws Exception {
+        return teamService.getTeamsByLeagueId(id);
+    }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteTeam(@PathVariable Long id) throws Exception {
         return teamService.deleteTeam(id);
     }
 
+    @DeleteMapping("/deleteAll")
+    public ResponseEntity<?> deleteAllTeams() {
+        return teamService.deleteAllTeams();
+    }
+
+    @DeleteMapping("/deleteByTeamName/{teamName}")
+    public ResponseEntity<?> deleteTeamByTeamName(@PathVariable String teamName) throws Exception {
+        return teamService.deleteTeamByTeamName(teamName);
+    }
     @PutMapping("/reset/{id}")
     public ResponseEntity<?> resetTeamStats(@PathVariable Long id) throws Exception {
         return teamService.resetTeamStats(id);
-    }
-
-    @PutMapping("/updateCaptain/{id}")
-    public ResponseEntity<?> updateTeamCaptain(@PathVariable Long id, @RequestBody Long playerId) throws Exception {
-        return teamService.updateTeamCaptain(id, playerId);
     }
 }

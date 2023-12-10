@@ -33,4 +33,12 @@ public class LeagueController {
     public ResponseEntity<?> addLeagues(@RequestBody List<LeagueRequest> request) {
         return leagueService.addLeagues(request);
     }
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteLeague(@PathVariable Long id) {
+        return leagueService.deleteLeague(id);
+    }
+    @DeleteMapping("/deleteAll")
+    public ResponseEntity<?> deleteAllLeagues() {
+        return leagueService.deleteAll();
+    }
 }

@@ -1,6 +1,6 @@
 package com.mikul17.bazyDanych.Service;
 
-import com.mikul17.bazyDanych.Models.Simulation.Players.PlayerRepository;
+import com.mikul17.bazyDanych.Repository.PlayerRepository;
 import com.mikul17.bazyDanych.Models.Simulation.Team;
 import com.mikul17.bazyDanych.Repository.LeagueRepository;
 import com.mikul17.bazyDanych.Repository.TeamRepository;
@@ -44,7 +44,6 @@ public class TeamService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
-
     public ResponseEntity<?> createTeamsFromList(List<TeamRequest> teams) {
         try{
             for (TeamRequest teamRequest : teams) {
@@ -68,6 +67,13 @@ public class TeamService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+    public ResponseEntity<?> getTeamsByLeagueId(Long id) throws Exception {
+        try{
+            return ResponseEntity.ok(teamRepository.findAllByLeagueId(id));
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
     public ResponseEntity<?> getTeamById(Long id) throws Exception {
         try{
             return ResponseEntity.ok(teamRepository.findById(id).orElseThrow(()
@@ -81,6 +87,8 @@ public class TeamService {
     }
     public ResponseEntity<?> deleteTeam(Long id) throws Exception {
         try{
+            teamRepository.findById(id).orElseThrow(()
+                    -> new Exception("Team not found"));
             teamRepository.deleteById(id);
             log.info("Team deleted: {}", id);
             return ResponseEntity.ok("Team deleted");
@@ -106,7 +114,30 @@ public class TeamService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
-    public ResponseEntity<?> updateTeamCaptain(Long id, Long playerId) throws Exception {
+    public ResponseEntity<?> deleteAllTeams() {
+        try{
+            teamRepository.deleteAll();
+            log.info("All teams deleted");
+            return ResponseEntity.ok("All teams deleted");
+        }catch (Exception e){
+            log.error("Error while deleting all teams: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+    public ResponseEntity<?> deleteTeamByTeamName(String teamName) throws Exception {
+        try{
+            Team team = teamRepository.findByTeamName(teamName).orElseThrow(()
+                    -> new Exception("Team not found"));
+            teamRepository.delete(team);
+            log.info("Team deleted: {}", teamName);
+            return ResponseEntity.ok("Team "+teamName+" deleted successfully");
+        }catch (Exception e){
+            log.error("Error while deleting team: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    private ResponseEntity<?> updateTeamCaptain(Long id, Long playerId) throws Exception {
         try{
             Team team = teamRepository.findById(id).orElseThrow(()
                     -> new Exception("Team not found"));

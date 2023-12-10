@@ -1,9 +1,6 @@
 package com.mikul17.bazyDanych.Models.Simulation.Players;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,9 +14,12 @@ import lombok.Setter;
 public class PlayerSkill {
 
     @Id
-    @OneToOne(targetEntity = Player.class)
-    @JoinColumn(name = "player_id")
     private Long id;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "player_id")
+    private Player player;
 
     private Integer pace;
     private Integer dribbling;

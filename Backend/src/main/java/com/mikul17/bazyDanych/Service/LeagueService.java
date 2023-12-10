@@ -15,7 +15,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class LeagueService {
-
     private static final Logger log = LoggerFactory.getLogger(LeagueService.class);
     private final LeagueRepository leagueRepository;
 
@@ -62,5 +61,44 @@ public class LeagueService {
             log.error("Error while creating teams: " + e.getMessage());
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
+    }
+    public ResponseEntity<?> deleteLeague(Long id) {
+        try{
+            leagueRepository.findById(id).
+                    orElseThrow(()->new Exception("League with id: "+id+" doesn't exist"));
+            leagueRepository.deleteById(id);
+            log.info("League with id: "+id+" deleted successfully");
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body("League with id: "+id+" deleted successfully");
+        } catch (Exception e) {
+            log.error("Error while deleting league: " + e.getMessage());
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+    public ResponseEntity<?> deleteAll(){
+        try{
+            leagueRepository.deleteAll();
+            log.info("All leagues deleted successfully");
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body("All leagues deleted successfully");
+        } catch (Exception e) {
+            log.error("Error while deleting leagues: " + e.getMessage());
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    private void updateLeague(Long id, Integer season, Integer remainingMatches) throws Exception {
+        try{
+           leagueRepository.findById(id).
+                    orElseThrow(()->new Exception("League with id: "+id+" doesn't exist"));
+        } catch (Exception e) {
+            log.error("Error while updating league: " + e.getMessage());
+            throw new Exception("Error while updating league: " + e.getMessage());
+        }
+        League league = leagueRepository.findById(id).get();
+        league.setSeason(season);
+        league.setRemainingMatches(remainingMatches);
+        leagueRepository.save(league);
+        log.info("League with id: "+id+" updated successfully");
     }
 }
