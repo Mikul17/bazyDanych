@@ -16,13 +16,13 @@ public class MatchTrigger {
 
     private final MatchService matchService;
 
-    @Scheduled(fixedRate = 60000) // Run every minute
+    @Scheduled(fixedRate = 15 * 60 * 1000)// 15 minutes
     public void checkForUpcomingMatches() {
         List<Match> upcomingMatches = matchService.getUpcomingMatches();
         Date now = new Date();
         for (Match match : upcomingMatches) {
             if (match.getMatchDate().equals(now)) {
-                // Code to launch a new thread with simulateMatch()
+                //TODO: trigger match
             }
         }
     }
