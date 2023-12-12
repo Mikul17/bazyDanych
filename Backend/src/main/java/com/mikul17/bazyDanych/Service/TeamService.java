@@ -1,5 +1,6 @@
 package com.mikul17.bazyDanych.Service;
 
+import com.mikul17.bazyDanych.Models.Simulation.Players.Player;
 import com.mikul17.bazyDanych.Repository.PlayerRepository;
 import com.mikul17.bazyDanych.Models.Simulation.Team;
 import com.mikul17.bazyDanych.Repository.LeagueRepository;

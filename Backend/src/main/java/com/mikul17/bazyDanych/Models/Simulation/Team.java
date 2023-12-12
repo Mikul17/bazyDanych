@@ -1,8 +1,12 @@
 package com.mikul17.bazyDanych.Models.Simulation;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.mikul17.bazyDanych.Models.Simulation.Players.Player;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,11 +40,11 @@ public class Team {
     @JoinColumn(name = "league_id")
     private League league;
 
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "team")
+    @JsonIgnore
     private List<Player> players = new ArrayList<>();
 
     @OneToOne(targetEntity = Player.class)
     @JoinColumn(name = "captain_id")
     private Player captain;
-
 }

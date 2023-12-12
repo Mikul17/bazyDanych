@@ -21,6 +21,7 @@ public class PlayerService {
     private final PlayerRepository playerRepository;
     private final PlayerSkillRepository playerSkillRepository;
     private final PlayerStatRepository playerStatRepository;
+    private final TeamService teamService;
 
     public List<Player> getAllPlayers() {
         try{
@@ -39,12 +40,14 @@ public class PlayerService {
     @Transactional
     public Player addPlayer(PlayerRequest request){
         try{
-            Player player = new Player();
-            player.setFirstName(request.getFirstName());
-            player.setLastName(request.getLastName());
-            player.setAge(request.getAge());
-            player.setNationality(request.getNationality());
-            player.setPosition(request.getPosition());
+            Player player = Player.builder()
+                    .team(teamService.getTeamById(request.getTeamId()))
+                    .firstName(request.getFirstName())
+                    .lastName(request.getLastName())
+                    .age(request.getAge())
+                    .nationality(request.getNationality())
+                    .position(request.getPosition())
+                    .build();
             player = playerRepository.save(player);
 
             PlayerSkill playerSkill = request.getPlayerSkill();
@@ -53,13 +56,20 @@ public class PlayerService {
                 playerSkillRepository.save(playerSkill);
             }
 
-            PlayerStat playerStat = new PlayerStat();
-            playerStat.setPlayer(player);
+            PlayerStat playerStat = PlayerStat.builder()
+                    .player(player)
+                    .goalsScored(0)
+                    .assists(0)
+                    .yellowCards(0)
+                    .redCards(0)
+                    .fouls(0)
+                    .gamesPlayed(0)
+                    .build();
             playerStatRepository.save(playerStat);
 
             return player;
         } catch (Exception e) {
-          throw new ServiceException("Error while adding new player: "+e.getMessage());
+            throw new ServiceException("Error while adding new player: "+e.getMessage());
         }
     }
     @Transactional
