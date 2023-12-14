@@ -1,6 +1,5 @@
 package com.mikul17.bazyDanych.Controller;
 
-import com.mikul17.bazyDanych.Models.Simulation.Team;
 import com.mikul17.bazyDanych.Request.TeamRequest;
 import com.mikul17.bazyDanych.Service.TeamService;
 import lombok.RequiredArgsConstructor;

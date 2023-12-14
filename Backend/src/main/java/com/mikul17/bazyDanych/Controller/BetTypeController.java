@@ -3,7 +3,6 @@ package com.mikul17.bazyDanych.Controller;
 import com.mikul17.bazyDanych.Request.BetTypeRequest;
 import com.mikul17.bazyDanych.Service.BetTypeService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
