@@ -6,7 +6,6 @@ import com.mikul17.bazyDanych.Models.Matches.Match;
 import com.mikul17.bazyDanych.Models.User;
 import com.mikul17.bazyDanych.Repository.CouponRepository;
 import com.mikul17.bazyDanych.Repository.MatchRepository;
-import com.mikul17.bazyDanych.Repository.TransactionRepository;
 import com.mikul17.bazyDanych.Request.CouponRequest;
 import com.mikul17.bazyDanych.Request.TransactionRequest;
 import com.mikul17.bazyDanych.Response.CouponResponse;
@@ -14,12 +13,10 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
