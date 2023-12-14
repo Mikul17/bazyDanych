@@ -1,7 +1,7 @@
 package com.mikul17.bazyDanych.Repository;
 
 import com.mikul17.bazyDanych.Models.Matches.MatchStats;
-import com.mikul17.bazyDanych.Models.Team;
+import com.mikul17.bazyDanych.Models.Simulation.Team;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
