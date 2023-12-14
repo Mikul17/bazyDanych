@@ -70,7 +70,7 @@ public class CouponController {
     @GetMapping("/won/{userId}")
     public ResponseEntity<?> getWonCouponsByUserId(@PathVariable Long userId) {
         try{
-            return ResponseEntity.ok(couponService.getWonCouponsByUserId(userId, "WON"));
+            return ResponseEntity.ok(couponService.getCouponByStatus(userId, "WON"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -79,7 +79,16 @@ public class CouponController {
     @GetMapping("/lost/{userId}")
     public ResponseEntity<?> getLostCouponsByUserId(@PathVariable Long userId) {
         try{
-            return ResponseEntity.ok(couponService.getWonCouponsByUserId(userId, "LOST"));
+            return ResponseEntity.ok(couponService.getCouponByStatus(userId, "LOST"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/active/{userId}")
+    public ResponseEntity<?> getActiveCouponsByUserId(@PathVariable Long userId) {
+        try{
+            return ResponseEntity.ok(couponService.getCouponByStatus(userId, "ACTIVE"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

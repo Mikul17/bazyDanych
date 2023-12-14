@@ -1,14 +1,12 @@
 package com.mikul17.bazyDanych.Models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
+@Builder
 @NoArgsConstructor
 @Entity(name = "transaction")
 public class Transaction {
@@ -19,6 +17,8 @@ public class Transaction {
     private String transactionType;
     @Column(length = 10)
     private String transactionStatus;
+    @Column(columnDefinition = "DECIMAL(10,2)")
+    private Double amount;
 
     @ManyToOne(targetEntity = User.class)
     @JoinColumn(name = "user_id")
