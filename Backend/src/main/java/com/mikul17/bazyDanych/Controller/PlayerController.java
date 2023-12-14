@@ -1,6 +1,5 @@
 package com.mikul17.bazyDanych.Controller;
 
-import com.mikul17.bazyDanych.Models.Simulation.Players.Player;
 import com.mikul17.bazyDanych.Request.PlayerRequest;
 import com.mikul17.bazyDanych.Service.PlayerService;
 import lombok.RequiredArgsConstructor;

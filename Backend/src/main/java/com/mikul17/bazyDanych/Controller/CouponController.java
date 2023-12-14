@@ -1,18 +1,11 @@
 package com.mikul17.bazyDanych.Controller;
 
-import com.mikul17.bazyDanych.Models.Coupons.Bet;
-import com.mikul17.bazyDanych.Models.Coupons.Coupon;
-import com.mikul17.bazyDanych.Models.Matches.Match;
-import com.mikul17.bazyDanych.Repository.CouponRepository;
+
 import com.mikul17.bazyDanych.Request.CouponRequest;
 import com.mikul17.bazyDanych.Service.CouponService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
