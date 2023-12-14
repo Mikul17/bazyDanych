@@ -2,17 +2,22 @@ package com.mikul17.bazyDanych.Service;
 
 import com.mikul17.bazyDanych.Models.Coupons.Bet;
 import com.mikul17.bazyDanych.Models.Coupons.Coupon;
+import com.mikul17.bazyDanych.Models.Matches.Match;
+import com.mikul17.bazyDanych.Models.User;
 import com.mikul17.bazyDanych.Repository.CouponRepository;
+import com.mikul17.bazyDanych.Repository.MatchRepository;
 import com.mikul17.bazyDanych.Request.CouponRequest;
+import com.mikul17.bazyDanych.Response.CouponResponse;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,86 +26,147 @@ public class CouponService {
     private static final Logger log = LoggerFactory.getLogger(CouponService.class);
 
     private final CouponRepository couponRepository;
+    private final UserService userService;
+    private final MatchRepository matchRepository;
+    private final BetService betService;
 
-    //C - create
-    public ResponseEntity<?> addCoupon (CouponRequest couponRequest) {
+    public List<CouponResponse> getAllCoupons() {
         try{
+            return couponRepository.findAll().stream().map(this::mapCouponToCouponResponse)
+                    .toList();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
+    public List<CouponResponse> getAllCouponsByUserId(Long userId){
+        try{
+            userService.checkIfUserExists(userId);
+            User user = userService.getUserById(userId);
+            return couponRepository.findAllByUser(user).stream().map(this::mapCouponToCouponResponse)
+                    .toList();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
+    public CouponResponse getCouponById(Long couponId) {
+        try{
+            return mapCouponToCouponResponse(couponRepository.findById(couponId)
+                    .orElseThrow(()
+                    -> new ServiceException("Coupon with id: " + couponId + " not found")));
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
+    public List<CouponResponse> getWonCouponsByUserId(Long userId, String couponStatus){
+        try{
+            userService.checkIfUserExists(userId);
+            User user = userService.getUserById(userId);
+            return couponRepository.findByUserAndCouponStatus(user, couponStatus)
+                    .stream().map(this::mapCouponToCouponResponse).toList();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
+    public CouponResponse addCoupon(CouponRequest couponRequest){
+        try{
+            List<Bet> bets = couponRequest.getBets();
+            Double stake = couponRequest.getStake();
+            Double totalOdds = calculateTotalOdds(bets);
+            Double possibleWin = stake * totalOdds;
             Coupon coupon = Coupon.builder()
                     .creationDate(new Timestamp(System.currentTimeMillis()))
-                    .couponStatus("active")
-                    .stake(couponRequest.getStake())
-                    .bets(couponRequest.getBets())
-                    .totalOdds(couponRequest.getBets().stream().mapToDouble(Bet::getOdds).sum())
+                    .totalOdds(totalOdds)
+                    .couponStatus("ACTIVE")
+                    .possibleWin(possibleWin)
+                    .stake(stake)
+                    .user(userService.getUserById(couponRequest.getUserId()))
+                    .bets(bets)
                     .build();
-            coupon.setPossibleWin(coupon.getTotalOdds() * coupon.getStake());
-            couponRepository.save(coupon);
-            return ResponseEntity.ok().body("Coupon created successfully with " + coupon.getBets().size() + "bets in it");
-        }catch (Exception e){
-            return ResponseEntity.badRequest().body("Error with creating coupon");
-        }
-    }
-    //R - read
-    public List<Coupon> getAllCoupons() {
-        return couponRepository.findAll();
-    }
-    public Coupon getCouponById(Long couponId) throws Exception {
-        return couponRepository.findById(couponId).orElseThrow(() -> new Exception("Coupon not found"));
-    }
 
-    //U - update - not needed
-    public ResponseEntity<?> cashoutCoupon (Long couponId) {
-        try{
-            Coupon coupon = couponRepository.findById(couponId).orElseThrow(() -> new Exception("Coupon not found"));
-            double amount = 0.0;
-            for(Bet bet : coupon.getBets()) {
-                if (bet.getBetStatus() == 0) {
-                    return ResponseEntity.ok().body("Coupon has not been checked yet");
-                }else if(bet.getBetStatus() == 2){
-                    return ResponseEntity.badRequest().body("Coupon is lost, cannot cash out");
-                }else {
-                    amount += bet.getOdds() * coupon.getStake();
-                }
-            }
-            coupon.setCouponStatus("cashed_out");
-            coupon.setPossibleWin(amount);
             couponRepository.save(coupon);
-            return ResponseEntity.ok().body("Coupon cashed out successfully. You've won " + amount + "PLN");
-        }catch (Exception e){
-            return ResponseEntity.badRequest().body("Error with cashing out coupon");
-        }
-    }
-    public void updateCouponStatus (Long couponId){
-        try{
-            Coupon coupon = couponRepository.findById(couponId).orElseThrow(() -> new Exception("Coupon not found"));
-            int counter = 0;
-            for(Bet bet : coupon.getBets()) {
-                if (bet.getBetStatus() == 0) {
-                    coupon.setCouponStatus("active");
-                }else if(bet.getBetStatus() == 2){
-                    coupon.setCouponStatus("lost");
-                }else{
-                    counter++;
-                }
+
+            //After adding coupon, update odds for other players to bet on
+            for(Bet bet : bets){
+                betService.updateOdds(bet);
             }
-            if(counter == coupon.getBets().size()){
-                coupon.setCouponStatus("won");
-            }
-            couponRepository.save(coupon);
-            log.info("Coupon status updated to " + coupon.getCouponStatus());
-        }catch (Exception e){
-           log.error("Error with updating coupon status");
+
+            return mapCouponToCouponResponse(coupon);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new ServiceException(e.getMessage());
         }
     }
 
-    //D - delete
-    public ResponseEntity<?> withdrawCoupon (Long couponId) {
+    public void deleteCoupon(Long couponId) {
         try{
-            Coupon coupon = couponRepository.findById(couponId).orElseThrow(() -> new Exception("Coupon not found"));
-            coupon.setCouponStatus("won");
-            couponRepository.save(coupon);
-            return ResponseEntity.ok().body("Coupon withdrawn successfully");
-        }catch (Exception e){
-            return ResponseEntity.badRequest().body("Error with withdrawing coupon: "+ e.getMessage());
+            couponRepository.findById(couponId).orElseThrow(() ->
+                            new ServiceException("Coupon with id: " + couponId + " not found"));
+            couponRepository.deleteById(couponId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new ServiceException("Error: "+e.getMessage());
         }
+    }
+
+    private Double calculateTotalOdds(List<Bet> bets) {
+        try{
+            Double totalOdds = 1.0;
+            for (Bet bet : bets) {
+                totalOdds *= bet.getOdds();
+            }
+            return totalOdds;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
+    public  void updateCouponsAfterMatch(Long matchId){
+        try{
+            Match match = matchRepository.findById(matchId)
+                    .orElseThrow(()-> new ServiceException("Match with id: " + matchId + " not found"));
+            log.info("Checking coupons after match between: "
+                    + match.getHomeTeam().getTeamName()
+                    + " and "
+                    + match.getAwayTeam().getTeamName());
+
+            List<Coupon> coupons = couponRepository.findAllByBets_Match(match);
+            for(Coupon coupon : coupons){
+                for(Bet bet : coupon.getBets()){
+                    if(bet.getBetStatus()==2){
+                        coupon.setCouponStatus("LOST");
+                        break;
+                    }
+                }
+                if(coupon.getCouponStatus().equals("ACTIVE")){
+                    coupon.setCouponStatus("WON");
+                    coupon.getUser().setBalance(coupon.getUser().getBalance() + coupon.getPossibleWin());
+                }
+            }
+        }catch (Exception e) {
+            log.error(e.getMessage());
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
+    private CouponResponse mapCouponToCouponResponse(Coupon coupon){
+        return CouponResponse.builder()
+                .id(coupon.getId())
+                .creationDate(coupon.getCreationDate().toString())
+                .totalOdds(coupon.getTotalOdds())
+                .couponStatus(coupon.getCouponStatus())
+                .possibleWin(coupon.getPossibleWin())
+                .stake(coupon.getStake())
+                .userId(coupon.getUser().getId())
+                .bets(coupon.getBets())
+                .build();
     }
 }

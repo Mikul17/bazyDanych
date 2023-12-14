@@ -13,4 +13,5 @@ import java.util.List;
 public class CouponRequest {
     private List<Bet> bets;
     private Double stake;
+    private Long userId;
 }
