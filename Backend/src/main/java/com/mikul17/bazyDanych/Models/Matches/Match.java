@@ -1,12 +1,9 @@
 package com.mikul17.bazyDanych.Models.Matches;
 
-import com.mikul17.bazyDanych.Models.League;
-import com.mikul17.bazyDanych.Models.Team;
+import com.mikul17.bazyDanych.Models.Simulation.League;
+import com.mikul17.bazyDanych.Models.Simulation.Team;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.Getter;
+import lombok.*;
 
 import java.sql.Timestamp;
 
@@ -14,6 +11,7 @@ import java.sql.Timestamp;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 //Must be named in plural form because match is a reserved word in SQL
 @Entity(name = "matches")
 public class Match {
@@ -35,4 +33,12 @@ public class Match {
     @ManyToOne(targetEntity = League.class)
     @JoinColumn(name = "league_id")
     private League league;
+
+
+    public Match(Team homeTeam, Team awayTeam, Timestamp matchDate, League league){
+        this.homeTeam=homeTeam;
+        this.awayTeam=awayTeam;
+        this.matchDate=matchDate;
+        this.league=league;
+    }
 }

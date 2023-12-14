@@ -1,6 +1,6 @@
 package com.mikul17.bazyDanych.Models.Matches;
 
-import com.mikul17.bazyDanych.Models.Players.Player;
+import com.mikul17.bazyDanych.Models.Simulation.Players.Player;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

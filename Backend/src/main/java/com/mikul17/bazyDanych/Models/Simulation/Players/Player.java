@@ -1,11 +1,8 @@
-package com.mikul17.bazyDanych.Models.Players;
+package com.mikul17.bazyDanych.Models.Simulation.Players;
 
-import com.mikul17.bazyDanych.Models.Team;
+import com.mikul17.bazyDanych.Models.Simulation.Team;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -13,6 +10,7 @@ import java.time.LocalDate;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
 public class Player {
 
@@ -26,8 +24,11 @@ public class Player {
     private String position;
     private Integer age;
     private String nationality;
+    @Column(columnDefinition = "boolean default false")
     private Boolean isBenched;
+    @Column(columnDefinition = "boolean default false")
     private Boolean isRedCarded;
+    @Column(columnDefinition = "boolean default false")
     private Boolean isInjured;
     private LocalDate injuredUntil;
 
