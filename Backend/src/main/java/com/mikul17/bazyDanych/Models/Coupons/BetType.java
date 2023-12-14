@@ -16,6 +16,7 @@ public class BetType {
     private Long id;
     private String betStat;
     private String betTypeCode;
+    @Column(columnDefinition = "BOOLEAN")
     private Boolean team;
     @Column (columnDefinition = "DECIMAL(2,1)")
     private Double targetValue;

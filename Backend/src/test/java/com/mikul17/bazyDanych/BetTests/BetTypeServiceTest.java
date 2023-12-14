@@ -1,13 +1,25 @@
 package com.mikul17.bazyDanych.BetTests;
 
+import com.mikul17.bazyDanych.Models.Coupons.Bet;
 import com.mikul17.bazyDanych.Models.Coupons.BetType;
+import com.mikul17.bazyDanych.Models.Coupons.Coupon;
+import com.mikul17.bazyDanych.Repository.BetRepository;
 import com.mikul17.bazyDanych.Repository.BetTypeRepository;
+import com.mikul17.bazyDanych.Repository.CouponRepository;
+import com.mikul17.bazyDanych.Service.BetService;
 import com.mikul17.bazyDanych.Service.BetTypeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 public class BetTypeServiceTest {
 
@@ -91,5 +103,4 @@ public class BetTypeServiceTest {
         String result = betTypeService.decodeBetFromBetType(betType);
         assertEquals("Away team will win or draw the match", result);
     }
-
 }
