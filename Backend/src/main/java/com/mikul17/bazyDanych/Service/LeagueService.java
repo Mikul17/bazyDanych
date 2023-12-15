@@ -85,4 +85,17 @@ public class LeagueService {
             throw new ServiceException("Error while deleting all leagues: "+e.getMessage());
         }
     }
+    public void incrementSeasons(League league){
+        try{
+            leagueRepository.findById(league.getId())
+                    .orElseThrow(()-> new ServiceException("League with given id not find"));
+            league.setSeason(league.getSeason()+1);
+        }catch (Exception e){
+            throw new ServiceException(e.getMessage());
+        }
+    }
+    public void calculateRemainingMatches(League league, boolean increment){
+            league.setRemainingMatches(increment?league.getRemainingMatches()+1 : league.getRemainingMatches()-1);
+            leagueRepository.save(league);
+    }
 }
