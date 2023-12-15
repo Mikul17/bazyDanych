@@ -2,15 +2,13 @@ package com.mikul17.bazyDanych.Models.Matches;
 
 import com.mikul17.bazyDanych.Models.Simulation.Players.Player;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity(name = "matches_events")
 public class MatchEvents {
     @Id
