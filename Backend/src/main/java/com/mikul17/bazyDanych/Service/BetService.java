@@ -150,9 +150,10 @@ public class BetService {
 
     private void updateBetsStatusAfterMatch(Match match){
         try{
-            MatchStats homeTeamStats = matchStatsRepository.findByIdAndTeam(match.getId(), match.getHomeTeam()).orElseThrow(()
+
+            MatchStats homeTeamStats = matchStatsRepository.findByMatchAndTeam(match, match.getHomeTeam().getId()).orElseThrow(()
                     -> new ServiceException("Couldn't find stats for home team"));
-            MatchStats awayTeamStats =matchStatsRepository.findByIdAndTeam(match.getId(), match.getAwayTeam()).orElseThrow(()
+            MatchStats awayTeamStats =matchStatsRepository.findByMatchAndTeam(match, match.getAwayTeam().getId()).orElseThrow(()
                     -> new ServiceException("Couldn't find stats for away team"));
 
             //goals

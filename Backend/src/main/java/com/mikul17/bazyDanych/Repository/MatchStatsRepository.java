@@ -1,5 +1,6 @@
 package com.mikul17.bazyDanych.Repository;
 
+import com.mikul17.bazyDanych.Models.Matches.Match;
 import com.mikul17.bazyDanych.Models.Matches.MatchStats;
 import com.mikul17.bazyDanych.Models.Simulation.Team;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,5 +11,5 @@ import java.util.Optional;
 
 @Repository
 public interface MatchStatsRepository extends JpaRepository<MatchStats, Long> {
-    Optional<MatchStats> findByIdAndTeam(Long id, Team team);
+    Optional<MatchStats> findByMatchAndTeam(Match match, Long team);
 }
