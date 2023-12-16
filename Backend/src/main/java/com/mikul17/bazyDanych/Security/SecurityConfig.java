@@ -28,7 +28,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**","/api/team/**","/api/league/**",
                                 "/api/player/**","/api/player_skill/**",
                                 "/api/player_stat/**","/api/match/**",
-                                "/api/transactions/**","/api/user").permitAll()
+                                "/api/transactions/**","/api/user/**","/api/mail/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
