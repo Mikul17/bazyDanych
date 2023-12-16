@@ -39,8 +39,6 @@ public class RegisterRequest {
     @Size(min = 7, max = 15, message = "Phone number must be between 7 and 15 characters")
     private String phoneNumber;
 
-    private LocalDate birthDate;
-
     @Size(min = 26, max = 26, message = "Account number must be 26 characters long")
     private String accountNumber;
 

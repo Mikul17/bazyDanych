@@ -90,4 +90,13 @@ public class MatchService {
             throw new ServiceException("Error: "+e.getMessage());
         }
     }
+
+    public Match getMatchById(Long matchId) {
+        try{
+            return matchRepository.findById(matchId).orElseThrow(
+                    ()->new ServiceException("Match not found"));
+        }catch (Exception e){
+            throw new ServiceException("Error: "+e.getMessage());
+        }
+    }
 }
