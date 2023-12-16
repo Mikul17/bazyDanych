@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -21,7 +23,6 @@ public class UserService {
             throw new ServiceException("User with id: " + userId + " does not exist");
         }
     }
-
     public User getUserById(Long userId) {
         try{
             return userRepository.findById(userId).orElseThrow(()
@@ -31,7 +32,6 @@ public class UserService {
             throw new ServiceException(e.getMessage());
         }
     }
-
     public UserResponse getUserInfoById(Long userId){
         try{
             User user = userRepository.findById(userId).orElseThrow(
@@ -41,7 +41,6 @@ public class UserService {
             throw new ServiceException(e.getMessage());
         }
     }
-
     public Double getUserBalanceById(Long userId){
         try{
             User user = userRepository.findById(userId).orElseThrow(
@@ -51,7 +50,6 @@ public class UserService {
             throw new ServiceException(e.getMessage());
         }
     }
-
     public UserResponse changePhoneNumber(String phoneNumber, Long userId){
         try{
             User user = userRepository.findById(userId).orElseThrow(
@@ -72,6 +70,17 @@ public class UserService {
             return mapUserToUserResponse(user);
         }catch (Exception e){
             throw new ServiceException(e.getMessage());
+        }
+    }
+    public String banUserById(Optional<String> id){
+        try{
+            Long userId = Long.parseLong(id.orElseThrow(()-> new Exception("User id is missing")));
+            User user = getUserById(userId);
+            user.setBanned(true);
+            userRepository.save(user);
+            return "User with id: "+userId+" got banned";
+        }catch (Exception e){
+            throw new ServiceException("Error while banning user: "+e.getMessage());
         }
     }
     private UserResponse mapUserToUserResponse(User user){

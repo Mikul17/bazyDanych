@@ -2,17 +2,14 @@ package com.mikul17.bazyDanych.Controller;
 
 import com.mikul17.bazyDanych.Request.AuthenticationRequest;
 import com.mikul17.bazyDanych.Request.RegisterRequest;
-import com.mikul17.bazyDanych.Response.AuthenticationResponse;
 import com.mikul17.bazyDanych.Security.Service.AuthService;
+import com.mikul17.bazyDanych.Security.UserAlreadyExistAuthenticationException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.web.bind.annotation.*;
 
-import java.security.NoSuchAlgorithmException;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -22,15 +19,37 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<AuthenticationResponse> register(
-            @Valid @RequestBody RegisterRequest request) throws NoSuchAlgorithmException {
-       return ResponseEntity.ok(authService.register(request));
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
+        try {
+            authService.register(request);
+            return ResponseEntity.ok("Registration Successful");
+        } catch (UserAlreadyExistAuthenticationException uaeEx) {
+            return ResponseEntity.badRequest().body(uaeEx.getMessage());
+        } catch (AuthenticationServiceException asEx) {
+            return ResponseEntity.internalServerError().body(asEx.getMessage());
+        } catch (RuntimeException ex) {
+            return ResponseEntity.internalServerError().body("Internal Server Error");
+        }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> register(
-            @RequestBody AuthenticationRequest request){
-        return ResponseEntity.ok(authService.authenticate(request));
+    public ResponseEntity<?> login(@RequestBody AuthenticationRequest request) {
+        try {
+            return ResponseEntity.ok(authService.authenticate(request));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
+    @GetMapping("/verify")
+    public ResponseEntity<?> verifyUser(@RequestParam("token") String verificationToken){
+        try{
+            authService.verifyUserByToken(verificationToken);
+            return ResponseEntity.ok().body("User verified successfully");
+        }catch (AuthenticationServiceException asEx){
+            return ResponseEntity.badRequest().body(asEx.getMessage());
+        }catch (RuntimeException ex){
+            return ResponseEntity.internalServerError().body(ex.getMessage());
+        }
+    }
 }

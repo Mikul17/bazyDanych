@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/user")
@@ -39,18 +41,27 @@ public class UserController {
     }
 
     @PutMapping("/update/phoneNumber={pn}_id={id}")
-    public ResponseEntity<?> updatePhoneNumber(@PathVariable String pn, @PathVariable Long id){
+    public ResponseEntity<?> updatePhoneNumber(@RequestParam("phoneNumber") String phoneNumber, @RequestParam("userId") Long userId){
         try{
-            return ResponseEntity.ok().body(userService.changePhoneNumber(pn,id));
+            return ResponseEntity.ok().body(userService.changePhoneNumber(phoneNumber,userId));
         }catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @PutMapping("upade/accNumber={ac}_id={id}")
-    public ResponseEntity<?> updateAccNumber(@PathVariable String ac, @PathVariable Long id){
+    @PutMapping("/update")
+    public ResponseEntity<?> updateAccNumber(@RequestParam("accountNumber") String accountNumber, @RequestParam("userId") Long userId){
         try {
-            return ResponseEntity.ok().body(userService.changeAccountNumber(ac,id));
+            return ResponseEntity.ok().body(userService.changeAccountNumber(accountNumber,userId));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/ban")
+    public ResponseEntity<?> banUser(@RequestParam("userId") Optional<String> userId){
+        try{
+            return ResponseEntity.ok().body(userService.banUserById(userId));
         }catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }

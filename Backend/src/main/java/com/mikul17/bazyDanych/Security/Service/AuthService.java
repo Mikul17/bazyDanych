@@ -2,15 +2,23 @@ package com.mikul17.bazyDanych.Security.Service;
 
 import com.mikul17.bazyDanych.Models.Role;
 import com.mikul17.bazyDanych.Models.Address;
+import com.mikul17.bazyDanych.Models.VerificationToken;
 import com.mikul17.bazyDanych.Repository.UserRepository;
 import com.mikul17.bazyDanych.Request.AuthenticationRequest;
 import com.mikul17.bazyDanych.Models.User;
+import com.mikul17.bazyDanych.Request.MailRequest;
 import com.mikul17.bazyDanych.Request.RegisterRequest;
 import com.mikul17.bazyDanych.Response.AuthenticationResponse;
+import com.mikul17.bazyDanych.Security.UserAlreadyExistAuthenticationException;
+import com.mikul17.bazyDanych.Security.UserUnderAgeAuthenticationException;
+import com.mikul17.bazyDanych.Service.MailService;
+import com.mikul17.bazyDanych.Service.VerificationTokenService;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +39,8 @@ public class AuthService {
     private final PasswordEncoder encoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final MailService mailService;
+    private final VerificationTokenService verificationTokenService;
 
 
     public static String hashSSN(String ssn) throws NoSuchAlgorithmException {
@@ -51,23 +61,17 @@ public class AuthService {
         return hexString.toString();
     }
 
-    public AuthenticationResponse register (RegisterRequest request) {
+    public void register (RegisterRequest request) throws AuthenticationException {
         try {
             if (userRepository.existsByEmail(request.getEmail())) {
-                return AuthenticationResponse.builder()
-                        .message("Email already exists")
-                        .build();
+                throw new UserAlreadyExistAuthenticationException("Mail already exists");
             }
             if (userRepository.existsBySSN(hashSSN(request.getSSN()))) {
-                return AuthenticationResponse.builder()
-                        .message("SSN already exists")
-                        .build();
+                throw new UserAlreadyExistAuthenticationException("SSN already exists");
             }
 
             if (decodeAgeFromSSN(request.getSSN()) < 18) {
-                return AuthenticationResponse.builder()
-                        .message("Error: You have to be at least 18 years old")
-                        .build();
+                throw new UserUnderAgeAuthenticationException("User is below 18 years old");
             }
 
             var address = Address.builder()
@@ -93,19 +97,29 @@ public class AuthService {
                     .createdAt(new Timestamp(new Date().getTime()))
                     .balance(0.0)
                     .Address(address)
+                    .enabled(false)
+                    .banned(false)
                     .build();
 
             userRepository.save(user);
-            var jwtToken = jwtService.generateToken(user);
-            return AuthenticationResponse.builder()
-                    .message("User successfully registered")
-                    .token(jwtToken)
+
+            String verificationToken = verificationTokenService.generateVerificationToken(user);
+            String verificationUrl = "http://localhost:8080/api/auth/verify?token="+verificationToken;
+            String htmlContent = String.format("<html><body><p>Please click the link below to confirm your registration:</p>" +
+                    "<a href='%s'>Confirm Registration</a></body></html>", verificationUrl);
+
+            MailRequest mail = MailRequest.builder()
                     .email(user.getEmail())
+                    .subject("Confirm registration")
+                    .text(htmlContent)
                     .build();
-        }catch (Exception e){
-            return AuthenticationResponse.builder()
-                    .message(e.getMessage())
-                    .build();
+
+            new Thread(() -> {
+               mailService.sendMail(mail);
+            }).start();
+
+        } catch (Exception e){
+            throw new AuthenticationServiceException("Registration Failure");
         }
     }
 
@@ -117,7 +131,16 @@ public class AuthService {
                 )
         );
 
-        var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+        var user = userRepository.findByEmail(request.getEmail()).orElseThrow(
+                ()-> new ServiceException("User with given email doesnt exist"));
+
+        if(user.getBanned()){
+            return AuthenticationResponse.builder()
+                    .message("User is banned")
+                    .email(user.getEmail())
+                    .token(null)
+                    .build();
+        }
 
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
@@ -167,6 +190,17 @@ public class AuthService {
             return day >= 1 && day <= yearMonth.lengthOfMonth();
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid birthdate in PESEL");
+        }
+    }
+
+    public void verifyUserByToken (String token) {
+        try{
+            VerificationToken verificationToken = verificationTokenService.findByToken(token);
+            User user = verificationToken.getUser();
+            user.setEnabled(true);
+            userRepository.save(user);
+        }catch (Exception e){
+            throw new ServiceException(e.getMessage());
         }
     }
 }
