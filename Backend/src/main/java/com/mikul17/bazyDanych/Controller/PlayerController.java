@@ -33,6 +33,15 @@ public class PlayerController {
        }
     }
 
+    @GetMapping("/all/{teamId}")
+    public ResponseEntity<?> getAllPlayersByTeam(@PathVariable Long teamId){
+        try {
+            return ResponseEntity.ok().body(playerService.getAllPlayerByTeam(teamId));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getPlayerById(@PathVariable Long id) {
         try {
