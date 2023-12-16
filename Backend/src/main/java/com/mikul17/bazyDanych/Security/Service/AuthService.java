@@ -98,6 +98,7 @@ public class AuthService {
                     .balance(0.0)
                     .Address(address)
                     .enabled(false)
+                    .banned(false)
                     .build();
 
             userRepository.save(user);
@@ -132,6 +133,14 @@ public class AuthService {
 
         var user = userRepository.findByEmail(request.getEmail()).orElseThrow(
                 ()-> new ServiceException("User with given email doesnt exist"));
+
+        if(user.getBanned()){
+            return AuthenticationResponse.builder()
+                    .message("User is banned")
+                    .email(user.getEmail())
+                    .token(null)
+                    .build();
+        }
 
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()

@@ -1,12 +1,9 @@
 package com.mikul17.bazyDanych.Controller;
 
-import com.mikul17.bazyDanych.Models.User;
 import com.mikul17.bazyDanych.Request.AuthenticationRequest;
-import com.mikul17.bazyDanych.Request.MailRequest;
 import com.mikul17.bazyDanych.Request.RegisterRequest;
 import com.mikul17.bazyDanych.Security.Service.AuthService;
 import com.mikul17.bazyDanych.Security.UserAlreadyExistAuthenticationException;
-import com.mikul17.bazyDanych.Service.MailService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

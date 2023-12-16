@@ -52,6 +52,8 @@ public class User implements UserDetails {
 
     @Column(columnDefinition = "Boolean default false")
     private Boolean enabled;
+    @Column(columnDefinition = "Boolean default false")
+    private Boolean banned;
 
     //User now holds list of transaction (no need to use sql query to get them, and
     //they are not stored in database as separate column in user table)
@@ -75,7 +77,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked () {
-        return true;
+        return banned;
     }
 
     @Override
