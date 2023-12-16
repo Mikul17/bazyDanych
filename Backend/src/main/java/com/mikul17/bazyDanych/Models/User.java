@@ -50,6 +50,9 @@ public class User implements UserDetails {
     @JoinColumn(name = "address_id")
     private Address Address;
 
+    @Column(columnDefinition = "Boolean default false")
+    private Boolean enabled;
+
     //User now holds list of transaction (no need to use sql query to get them, and
     //they are not stored in database as separate column in user table)
     @OneToMany(mappedBy = "user" , fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -79,9 +82,8 @@ public class User implements UserDetails {
     public boolean isCredentialsNonExpired () {
         return true;
     }
-
     @Override
     public boolean isEnabled () {
-        return true;
+        return enabled;
     }
 }

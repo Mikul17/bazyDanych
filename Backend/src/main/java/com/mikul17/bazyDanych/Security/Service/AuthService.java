@@ -93,7 +93,9 @@ public class AuthService {
                     .createdAt(new Timestamp(new Date().getTime()))
                     .balance(0.0)
                     .Address(address)
+                    .enabled(false)
                     .build();
+
 
             userRepository.save(user);
             var jwtToken = jwtService.generateToken(user);
@@ -117,7 +119,8 @@ public class AuthService {
                 )
         );
 
-        var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+        var user = userRepository.findByEmail(request.getEmail()).orElseThrow(
+                ()-> new ServiceException("User with given email doesnt exist"));
 
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()

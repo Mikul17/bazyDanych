@@ -28,9 +28,13 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> register(
+    public ResponseEntity<?> register(
             @RequestBody AuthenticationRequest request){
-        return ResponseEntity.ok(authService.authenticate(request));
+        try {
+            return ResponseEntity.ok(authService.authenticate(request));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 }
