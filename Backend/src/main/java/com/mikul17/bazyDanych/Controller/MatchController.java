@@ -2,7 +2,6 @@ package com.mikul17.bazyDanych.Controller;
 
 import com.mikul17.bazyDanych.Request.MatchRequest;
 import com.mikul17.bazyDanych.Service.MatchService;
-import com.mikul17.bazyDanych.Simulation.MatchScheduler;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
@@ -18,7 +17,6 @@ public class MatchController {
 
     private final Logger logger = LoggerFactory.getLogger(MatchController.class);
     private final MatchService matchService;
-    private final MatchScheduler matchScheduler;
 
     @PostMapping("/add")
     public ResponseEntity<?> addMatch(@RequestBody MatchRequest request){
@@ -95,10 +93,21 @@ public class MatchController {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
-
-    @GetMapping("/test1")
-    public ResponseEntity<?> testMethod() throws Exception {
-        matchScheduler.scheduleMatchesForSeason();
-        return ResponseEntity.ok().body(matchService.getUpcomingMatches());
+  
+    @GetMapping("/today/{leagueId}")
+    public ResponseEntity<?> todayMatchesByLeague (@PathVariable Long leagueId){
+        try{
+            return ResponseEntity.ok().body(matchService.getTodayMatchesByLeague(leagueId));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @GetMapping("/upcoming/{leagueId}")
+    public ResponseEntity<?> upcomingMatchesByLeague(@PathVariable Long leagueId){
+        try{
+            return ResponseEntity.ok().body(matchService.getUpcomingMatchesByLeague(leagueId));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }
