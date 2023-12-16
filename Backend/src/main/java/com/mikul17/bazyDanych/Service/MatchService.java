@@ -3,16 +3,17 @@ package com.mikul17.bazyDanych.Service;
 import com.mikul17.bazyDanych.Models.Matches.Match;
 import com.mikul17.bazyDanych.Models.Simulation.League;
 import com.mikul17.bazyDanych.Models.Simulation.Team;
-import com.mikul17.bazyDanych.Repository.LeagueRepository;
 import com.mikul17.bazyDanych.Repository.MatchRepository;
 import com.mikul17.bazyDanych.Repository.TeamRepository;
 import com.mikul17.bazyDanych.Request.MatchRequest;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.service.spi.ServiceException;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -21,7 +22,7 @@ public class MatchService {
 
     private final MatchRepository matchRepository;
     private final TeamRepository teamRepository;
-    private final LeagueRepository leagueRepository;
+    private final LeagueService leagueService;
 
     public Match addMatch(MatchRequest request){
         try{
@@ -31,8 +32,7 @@ public class MatchService {
             Team awayTeam = teamRepository.findById(request.getAwayTeamId())
                     .orElseThrow(() -> new ServiceException("Error: couldn't find team with given id: "+request.getAwayTeamId()));
 
-            League league = leagueRepository.findById(request.getLeagueId())
-                    .orElseThrow(() -> new ServiceException("Error: couldn't find league with given id: "+request.getLeagueId()));
+            League league = leagueService.getLeagueById(request.getLeagueId());
 
             Match match = Match.builder()
                     .matchDate(request.getDate())
@@ -65,8 +65,8 @@ public class MatchService {
             teamRepository.findById(teamId).orElseThrow(
                     ()-> new ServiceException("Couldn't find team with given id: "+teamId));
             Timestamp now = new Timestamp(System.currentTimeMillis());
-           return upcoming ? matchRepository.findAllByMatchDateAfterAndHomeTeamIdOrAwayTeamIdOrderByMatchDateDesc(now,teamId,teamId) :
-                   matchRepository.findAllByMatchDateBeforeAndHomeTeamIdOrAwayTeamIdOrderByMatchDateDesc(now,teamId,teamId);
+           return upcoming ? matchRepository.findAllByMatchDateAfterAndHomeTeamIdOrAwayTeamIdOrderByMatchDateAsc(now,teamId,teamId) :
+                   matchRepository.findAllByMatchDateBeforeAndHomeTeamIdOrAwayTeamIdOrderByMatchDateAsc(now,teamId,teamId);
         }catch (Exception e){
             throw new ServiceException("Error: "+e.getMessage());
         }
@@ -90,13 +90,32 @@ public class MatchService {
             throw new ServiceException("Error: "+e.getMessage());
         }
     }
-
     public Match getMatchById(Long matchId) {
         try{
             return matchRepository.findById(matchId).orElseThrow(
                     ()->new ServiceException("Match not found"));
         }catch (Exception e){
             throw new ServiceException("Error: "+e.getMessage());
+        }
+    }
+    public List<Match> getTodayMatchesByLeague (Long leagueId){
+        try{
+            League league = leagueService.getLeagueById(leagueId);
+            LocalDate today = LocalDate.now();
+            LocalDateTime startOfDay = today.atStartOfDay();
+            LocalDateTime endOfDay = LocalDateTime.of(today, LocalTime.MAX);
+            return matchRepository.findAllByLeagueAndMatchDateBetweenAndOrderByMatchDateAsc(league,startOfDay,endOfDay);
+        }catch (Exception e){
+            throw new ServiceException("Error while fetching matches: "+e.getMessage());
+        }
+    }
+    public List<Match> getUpcomingMatchesByLeague(Long leagueId){
+        try{
+            Timestamp now = new Timestamp(System.currentTimeMillis());
+            League league = leagueService.getLeagueById(leagueId);
+            return matchRepository.findAllByLeagueAndMatchDateAfter(league,now);
+        }catch (Exception e){
+            throw new ServiceException(e.getMessage());
         }
     }
 }
