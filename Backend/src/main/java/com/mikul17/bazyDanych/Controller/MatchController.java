@@ -93,6 +93,7 @@ public class MatchController {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
+  
     @GetMapping("/today/{leagueId}")
     public ResponseEntity<?> todayMatchesByLeague (@PathVariable Long leagueId){
         try{
