@@ -3,6 +3,7 @@ package com.mikul17.bazyDanych.Service;
 import com.mikul17.bazyDanych.Models.Simulation.Players.Player;
 import com.mikul17.bazyDanych.Models.Simulation.Players.PlayerSkill;
 import com.mikul17.bazyDanych.Models.Simulation.Players.PlayerStat;
+import com.mikul17.bazyDanych.Models.Simulation.Team;
 import com.mikul17.bazyDanych.Repository.PlayerRepository;
 import com.mikul17.bazyDanych.Repository.PlayerSkillRepository;
 import com.mikul17.bazyDanych.Repository.PlayerStatRepository;
@@ -81,6 +82,14 @@ public class PlayerService {
             playerRepository.deleteById(id);
         } catch (Exception e) {
             throw new ServiceException("Error with deleting player: " + e.getMessage());
+        }
+    }
+    public List<Player> getAllPlayerByTeam(Long teamId){
+        try{
+            Team team = teamService.getTeamById(teamId);
+            return playerRepository.findAllByTeam(team);
+        }catch (Exception e){
+            throw new ServiceException(e.getMessage());
         }
     }
 }
