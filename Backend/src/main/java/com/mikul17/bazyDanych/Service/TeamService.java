@@ -129,13 +129,19 @@ public class TeamService {
            throw new ServiceException("Error while deleting team by teamName: "+e.getMessage());
         }
     }
-
     public String getTeamNameById(Long teamId) {
         try{
             Team team = teamRepository.findById(teamId).orElseThrow(()->
                     new ServiceException("Team with given id doesn't exist"));
 
             return team.getTeamName();
+        }catch (Exception e){
+            throw new ServiceException(e.getMessage());
+        }
+    }
+    public List<Team> getTeamsByLeagueOrderByPoints (Long leagueId) {
+        try{
+            return teamRepository.findAllByLeagueIdOrderByPointsAndGoalDifference(leagueId);
         }catch (Exception e){
             throw new ServiceException(e.getMessage());
         }
