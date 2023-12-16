@@ -98,7 +98,7 @@ public class MatchController {
 
     @GetMapping("/test1")
     public ResponseEntity<?> testMethod() throws Exception {
-        matchScheduler.generateFixturesForLeagues();
+        matchScheduler.scheduleMatchesForSeason();
         return ResponseEntity.ok().body(matchService.getUpcomingMatches());
     }
 }
