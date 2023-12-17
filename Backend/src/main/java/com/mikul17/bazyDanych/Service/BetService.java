@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -113,20 +114,27 @@ public class BetService {
 
    public void updateOdds(Bet bet){
         try{
-            Bet updated =betRepository.findById(bet.getId()).orElseThrow(()
-                    -> new ServiceException("Bet not found"));
             int amountOfBets = couponRepository.findByBetsId(bet.getId()).size();
-            updated.setOdds(calculateNewOdds(bet.getOdds(), amountOfBets));
-            betRepository.save(updated);
+
+            List<Bet> relatedBets = findRelatedBets(bet.getBetType(), bet.getMatch());
+            bet.setOdds(calculateNewOdds(bet.getOdds(), amountOfBets,false));
+
+            for(Bet relatedBet : relatedBets){
+                relatedBet.setOdds(calculateNewOdds(relatedBet.getOdds(),amountOfBets, true));
+            }
+
+            betRepository.save(bet);
         }catch (Exception e){
             throw new ServiceException("Error: " + e.getMessage());
         }
    }
 
    //Tweak numbers if needed
-   private Double calculateNewOdds(Double oldOdds, int betsPlaced){
-        return oldOdds - 0.05 * betsPlaced;
+   private Double calculateNewOdds(Double oldOdds, int betsPlaced, boolean requiresAddition){
+       double adjustmentFactor = Math.log1p(betsPlaced) * 0.01;
+       return requiresAddition ? oldOdds + adjustmentFactor * oldOdds : oldOdds - adjustmentFactor * oldOdds;
    }
+
 
     private BetResponse mapBetToBetResponse(Bet bet) {
         return BetResponse.builder()
@@ -145,6 +153,43 @@ public class BetService {
             betRepository.delete(bet);
         }catch (Exception e) {
             throw new ServiceException("Error: " + e.getMessage());
+        }
+    }
+
+    public List<Bet> findRelatedBets(BetType bet, Match match){
+        try{
+            List<Bet> relatedBets = new ArrayList<>();
+            if(bet.getBetTypeCode().equals("direct") && bet.getBetStat().equals("score")){
+                switch (bet.getTeam()){
+                    case 0:
+                        relatedBets.addAll(betRepository.findByMatchAndBetType_BetStatAndBetType_Team(match,"score",1));
+                        relatedBets.addAll(betRepository.findByMatchAndBetType_BetStatAndBetType_Team(match,"score",2));
+                        break;
+                    case 1:
+                        relatedBets.addAll(betRepository.findByMatchAndBetType_BetStatAndBetType_Team(match,"score",0));
+                        relatedBets.addAll(betRepository.findByMatchAndBetType_BetStatAndBetType_Team(match,"score",2));
+                        break;
+                    case 2:
+                        relatedBets.addAll(betRepository.findByMatchAndBetType_BetStatAndBetType_Team(match,"score",0));
+                        relatedBets.addAll(betRepository.findByMatchAndBetType_BetStatAndBetType_Team(match,"score",1));
+                        break;
+                }
+                return relatedBets;
+            } else if (bet.getBetTypeCode().equals("direct") && (bet.getBetStat().equals("penalties") || bet.getBetStat().equals("redCards"))) {
+                Double negativeValue = bet.getTargetValue()==1.0?0.0:1.0;
+                relatedBets.addAll(betRepository.findByMatchAndBetType_BetStatAndBetType_TargetValue(match, bet.getBetStat(),negativeValue));
+            }
+            if (bet.getBetTypeCode().equals("over") || bet.getBetTypeCode().equals("under")){
+                relatedBets.addAll(betRepository.findByMatchAndBetType_BetStatAndBetType_TeamAndBetType_TargetValueNot(
+                        match,
+                        bet.getBetTypeCode(),
+                        bet.getTeam(),
+                        bet.getTargetValue()
+                        ));
+            }
+            return relatedBets;
+        }catch (Exception e){
+            throw new ServiceException(e.getMessage());
         }
     }
 
