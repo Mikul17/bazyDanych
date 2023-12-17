@@ -1,5 +1,6 @@
 package com.mikul17.bazyDanych.Controller;
 
+import com.mikul17.bazyDanych.Request.ChangePasswordRequest;
 import com.mikul17.bazyDanych.Service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +41,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/update/phoneNumber={pn}_id={id}")
+    @PutMapping("/update/")
     public ResponseEntity<?> updatePhoneNumber(@RequestParam("phoneNumber") String phoneNumber, @RequestParam("userId") Long userId){
         try{
             return ResponseEntity.ok().body(userService.changePhoneNumber(phoneNumber,userId));
@@ -64,6 +65,35 @@ public class UserController {
             return ResponseEntity.ok().body(userService.banUserById(userId));
         }catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/changePassword")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request){
+        try{
+            userService.changePassword(request);
+            return ResponseEntity.ok().body("Password changed");
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body("Error: "+e.getMessage());
+        }
+    }
+
+    @PutMapping("/resetRequest")
+    public ResponseEntity<?> requestResetPassword (@RequestParam("email") Optional<String> userEmail){
+        try{
+            userService.resetPasswordProcedure(userEmail);
+            return ResponseEntity.ok().body("Check your email to reset your password");
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body("Error: "+e.getMessage());
+        }
+    }
+    @GetMapping("/resetPassword")
+    public ResponseEntity<?> resetPassword(@RequestParam("token") Optional<String> passwordToken){
+        try{
+            userService.resetPasswordForUser(passwordToken);
+            return ResponseEntity.ok().body("Password has been changed, check your email");
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body("Error: "+e.getMessage());
         }
     }
 

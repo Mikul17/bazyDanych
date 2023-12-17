@@ -17,6 +17,7 @@ public class VerificationToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "token_id")
     private Long id;
 
     @Enumerated(EnumType.STRING)
