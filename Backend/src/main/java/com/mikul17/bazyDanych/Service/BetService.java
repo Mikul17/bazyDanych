@@ -320,16 +320,26 @@ public class BetService {
             List<Bet> penaltiesBets = betRepository.findByMatchAndBetType_betStat(match, "penalties");
             for(Bet bet : penaltiesBets){
                if(Objects.equals(bet.getBetType().getBetTypeCode(), "direct")){
-                   int penalties = homeTeamStats.getPenalties() + awayTeamStats.getPenalties();
-                     bet.setBetStatus(penalties>0?1:2);
+                   if(bet.getBetType().getTargetValue()==1.0){
+                       int penalties = homeTeamStats.getPenalties() + awayTeamStats.getPenalties();
+                       bet.setBetStatus(penalties>0?1:2);
+                   }else if(bet.getBetType().getTargetValue()==0.0){
+                       int penalties = homeTeamStats.getPenalties() + awayTeamStats.getPenalties();
+                       bet.setBetStatus(penalties!=0?1:2);
+                   }
                }
             }
             //redCards - if there is a red card in the match
             List<Bet> redCardsBets = betRepository.findByMatchAndBetType_betStat(match, "redCards");
             for(Bet bet : redCardsBets){
                 if(Objects.equals(bet.getBetType().getBetTypeCode(), "direct")){
-                    int redCards = homeTeamStats.getRedCards() + awayTeamStats.getRedCards();
-                    bet.setBetStatus(redCards>0?1:2);
+                   if(bet.getBetType().getTargetValue()==1.0){
+                       int redCards = homeTeamStats.getRedCards() + awayTeamStats.getRedCards();
+                       bet.setBetStatus(redCards>0?1:2);
+                   }else if(bet.getBetType().getTargetValue()==0.0){
+                       int redCards = homeTeamStats.getRedCards() + awayTeamStats.getRedCards();
+                       bet.setBetStatus(redCards!=0?1:2);
+                   }
                 }
             }
 
@@ -350,8 +360,8 @@ public class BetService {
                     bet.setBetStatus(fouls>bet.getBetType().getTargetValue()?1:2);
                 }
             }
-        } catch (ServiceException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage());
         }
     }
 
