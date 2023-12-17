@@ -148,35 +148,84 @@ public class BetService {
         }
     }
 
-    private void updateBetsStatusAfterMatch(Match match){
-        try{
 
+    /**
+     * @param match
+     * Betting on match score (team victory):
+     * betType: direct
+     * team: 0 - homeTeam , 1 - awayTeam
+     * targetValue: 1.0 - win or draw , 0.0 - win
+     * betStat: score
+     * <p>
+     * Betting on match score (draw):
+     * betType: direct
+     * team: 2
+     * targetValue: 2.0
+     * betStat: score
+     * <p>
+     * Betting on specific stat
+     * betType: over/under, direct - only for penalties and red cards
+     * team: 0- homeTeam, 1-awayTeam , 2 - either (only for penalties and red cards)
+     * targetValue: bet target value e.g. 2 or more is 1.5 (always ends with .5)
+     * betStat: goals, shots, shotsOnTarget, possession,passes, corners,penalties, redCards, yellowCards, fouls
+     * <p>
+     * EXCEPTIONS:
+     * 1. possession - betType can only be over
+     * 2. penalties - betType = direct, team=2, targetValue= 1.0 if yes 0.0 if not
+     * 3. redCards - betType = direct, team =2, targetValue= 1.0 if yes 0.0 if not
+     * 4. yellowCards - betType= over , team =2
+     * 5. fouls - betType = over , team=2
+     */
+    public void updateBetsStatusAfterMatch(Match match){
+        try{
             MatchStats homeTeamStats = matchStatsRepository.findByMatchAndTeam(match, match.getHomeTeam().getId()).orElseThrow(()
                     -> new ServiceException("Couldn't find stats for home team"));
             MatchStats awayTeamStats =matchStatsRepository.findByMatchAndTeam(match, match.getAwayTeam().getId()).orElseThrow(()
                     -> new ServiceException("Couldn't find stats for away team"));
+
+            //score
+            List<Bet> scoreBets = betRepository.findByMatchAndBetType_betStat(match,"score");
+            for(Bet bet : scoreBets){
+                if(Objects.equals(bet.getBetType().getBetTypeCode(), "direct")){
+                   if(bet.getBetType().getTargetValue()==1.0){
+                       if(bet.getBetType().getTeam()==0){
+                           bet.setBetStatus(homeTeamStats.getGoalsScored()>=awayTeamStats.getGoalsScored()?1:2);
+                       }else{
+                           bet.setBetStatus(homeTeamStats.getGoalsScored()<=awayTeamStats.getGoalsScored()?1:2);
+                       }
+                   }else if(bet.getBetType().getTargetValue()==0.0){
+                       if(bet.getBetType().getTeam()==1){
+                           bet.setBetStatus(homeTeamStats.getGoalsScored()>awayTeamStats.getGoalsScored()?1:2);
+                       }else{
+                           bet.setBetStatus(homeTeamStats.getGoalsScored()<awayTeamStats.getGoalsScored()?1:2);
+                       }
+                   }else if(bet.getBetType().getTargetValue()==2.0){
+                       bet.setBetStatus(Objects.equals(homeTeamStats.getGoalsScored(), awayTeamStats.getGoalsScored()) ?1:2);
+                   }
+                }
+            }
 
             //goals
             List<Bet> goalsBets = betRepository.findByMatchAndBetType_betStat(match, "goals");
             for(Bet bet : goalsBets){
                 if(Objects.equals(bet.getBetType().getBetTypeCode(), "over")){
                     //if home team
-                    if(!bet.getBetType().getTeam()){
+                    if(bet.getBetType().getTeam()==0){
                         bet.setBetStatus(homeTeamStats.getGoalsScored()>bet.getBetType().getTargetValue()?1:2);
-                    }else if (bet.getBetType().getTeam()){
+                    }else if (bet.getBetType().getTeam()==1){
                         bet.setBetStatus(awayTeamStats.getGoalsScored()>bet.getBetType().getTargetValue()?1:2);
-                    }else if (bet.getBetType().getTeam() == null){
+                    }else if (bet.getBetType().getTeam() == 2){
                         bet.setBetStatus((homeTeamStats.getGoalsScored() + awayTeamStats.getGoalsScored())>bet.getBetType().getTargetValue()?1:2);
                     }else{
                         throw new ServiceException("Unsupported bet type");
                     }
                 } else if (Objects.equals(bet.getBetType().getBetTypeCode(), "under")){
                     //if away team
-                    if(!bet.getBetType().getTeam()){
+                    if(bet.getBetType().getTeam()==0){
                         bet.setBetStatus(homeTeamStats.getGoalsScored()<bet.getBetType().getTargetValue()?1:2);
-                    }else if(bet.getBetType().getTeam()){
+                    }else if(bet.getBetType().getTeam()==1){
                         bet.setBetStatus(awayTeamStats.getGoalsScored()<bet.getBetType().getTargetValue()?1:2);
-                    }else if (bet.getBetType().getTeam() == null){
+                    }else if (bet.getBetType().getTeam() == 2){
                         bet.setBetStatus((homeTeamStats.getGoalsScored() + awayTeamStats.getGoalsScored())>bet.getBetType().getTargetValue()?1:2);
                     }else{
                         throw new ServiceException("Unsupported bet type");
@@ -186,7 +235,7 @@ public class BetService {
             //possession - can be only over
             List<Bet> possessionBets = betRepository.findByMatchAndBetType_betStat(match, "possession");
             for(Bet bet : possessionBets){
-                if(!bet.getBetType().getTeam()){
+                if(bet.getBetType().getTeam()==0){
                     bet.setBetStatus(homeTeamStats.getPossession()>bet.getBetType().getTargetValue()?1:2);
                 }else{
                     bet.setBetStatus(awayTeamStats.getPossession()>bet.getBetType().getTargetValue()?1:2);
@@ -197,14 +246,13 @@ public class BetService {
             for(Bet bet : shotsBets){
                 if(Objects.equals(bet.getBetType().getBetTypeCode(), "over")){
                     //if home team
-                    if(!bet.getBetType().getTeam()){
+                    if(bet.getBetType().getTeam()==0){
                         bet.setBetStatus(homeTeamStats.getShots()>bet.getBetType().getTargetValue()?1:2);
-                    }else{
+                    }else{ //if away team
                         bet.setBetStatus(awayTeamStats.getShots()>bet.getBetType().getTargetValue()?1:2);
                     }
                 } else if (Objects.equals(bet.getBetType().getBetTypeCode(), "under")){
-                    //if away team
-                    if(!bet.getBetType().getTeam()){
+                    if(bet.getBetType().getTeam()==0){
                         bet.setBetStatus(homeTeamStats.getShots()<bet.getBetType().getTargetValue()?1:2);
                     }else{
                         bet.setBetStatus(awayTeamStats.getShots()<bet.getBetType().getTargetValue()?1:2);
@@ -216,14 +264,14 @@ public class BetService {
             for(Bet bet : shotsOnTargetBets){
                 if(Objects.equals(bet.getBetType().getBetTypeCode(), "over")){
                     //if home team
-                    if(!bet.getBetType().getTeam()){
+                    if(bet.getBetType().getTeam()==0){
                         bet.setBetStatus(homeTeamStats.getShotsOnTarget()>bet.getBetType().getTargetValue()?1:2);
                     }else{
                         bet.setBetStatus(awayTeamStats.getShotsOnTarget()>bet.getBetType().getTargetValue()?1:2);
                     }
                 } else if (Objects.equals(bet.getBetType().getBetTypeCode(), "under")){
                     //if away team
-                    if(!bet.getBetType().getTeam()){
+                    if(bet.getBetType().getTeam()==0){
                         bet.setBetStatus(homeTeamStats.getShotsOnTarget()<bet.getBetType().getTargetValue()?1:2);
                     }else{
                         bet.setBetStatus(awayTeamStats.getShotsOnTarget()<bet.getBetType().getTargetValue()?1:2);
@@ -235,14 +283,14 @@ public class BetService {
             for(Bet bet : passesBets){
                 if(Objects.equals(bet.getBetType().getBetTypeCode(), "over")){
                     //if home team
-                    if(!bet.getBetType().getTeam()){
+                    if(bet.getBetType().getTeam()==0){
                         bet.setBetStatus(homeTeamStats.getPasses()>bet.getBetType().getTargetValue()?1:2);
                     }else{
                         bet.setBetStatus(awayTeamStats.getPasses()>bet.getBetType().getTargetValue()?1:2);
                     }
                 } else if (Objects.equals(bet.getBetType().getBetTypeCode(), "under")){
                     //if away team
-                    if(!bet.getBetType().getTeam()){
+                    if(bet.getBetType().getTeam()==0){
                         bet.setBetStatus(homeTeamStats.getPasses()<bet.getBetType().getTargetValue()?1:2);
                     }else{
                         bet.setBetStatus(awayTeamStats.getPasses()<bet.getBetType().getTargetValue()?1:2);
@@ -254,36 +302,44 @@ public class BetService {
             for(Bet bet : cornersBets){
                 if(Objects.equals(bet.getBetType().getBetTypeCode(), "over")){
                     //if home team
-                    if(!bet.getBetType().getTeam()){
+                    if(bet.getBetType().getTeam()==0){
                         bet.setBetStatus(homeTeamStats.getCorners()>bet.getBetType().getTargetValue()?1:2);
                     }else{
                         bet.setBetStatus(awayTeamStats.getCorners()>bet.getBetType().getTargetValue()?1:2);
                     }
                 } else if (Objects.equals(bet.getBetType().getBetTypeCode(), "under")){
                     //if away team
-                    if(!bet.getBetType().getTeam()){
+                    if(bet.getBetType().getTeam()==0){
                         bet.setBetStatus(homeTeamStats.getCorners()<bet.getBetType().getTargetValue()?1:2);
                     }else{
                         bet.setBetStatus(awayTeamStats.getCorners()<bet.getBetType().getTargetValue()?1:2);
                     }
                 }
             }
-            //throwIns - i don't think it's possible to bet on this
-            //freeKicks - i don't think it's possible to bet on this
             //penalties - if there is a penalty in the match
             List<Bet> penaltiesBets = betRepository.findByMatchAndBetType_betStat(match, "penalties");
             for(Bet bet : penaltiesBets){
                if(Objects.equals(bet.getBetType().getBetTypeCode(), "direct")){
-                   int penalties = homeTeamStats.getPenalties() + awayTeamStats.getPenalties();
-                     bet.setBetStatus(penalties>0?1:2);
+                   if(bet.getBetType().getTargetValue()==1.0){
+                       int penalties = homeTeamStats.getPenalties() + awayTeamStats.getPenalties();
+                       bet.setBetStatus(penalties>0?1:2);
+                   }else if(bet.getBetType().getTargetValue()==0.0){
+                       int penalties = homeTeamStats.getPenalties() + awayTeamStats.getPenalties();
+                       bet.setBetStatus(penalties!=0?1:2);
+                   }
                }
             }
             //redCards - if there is a red card in the match
             List<Bet> redCardsBets = betRepository.findByMatchAndBetType_betStat(match, "redCards");
             for(Bet bet : redCardsBets){
                 if(Objects.equals(bet.getBetType().getBetTypeCode(), "direct")){
-                    int redCards = homeTeamStats.getRedCards() + awayTeamStats.getRedCards();
-                    bet.setBetStatus(redCards>0?1:2);
+                   if(bet.getBetType().getTargetValue()==1.0){
+                       int redCards = homeTeamStats.getRedCards() + awayTeamStats.getRedCards();
+                       bet.setBetStatus(redCards>0?1:2);
+                   }else if(bet.getBetType().getTargetValue()==0.0){
+                       int redCards = homeTeamStats.getRedCards() + awayTeamStats.getRedCards();
+                       bet.setBetStatus(redCards!=0?1:2);
+                   }
                 }
             }
 
@@ -304,8 +360,8 @@ public class BetService {
                     bet.setBetStatus(fouls>bet.getBetType().getTargetValue()?1:2);
                 }
             }
-        } catch (ServiceException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage());
         }
     }
 

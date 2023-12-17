@@ -1,6 +1,7 @@
 package com.mikul17.bazyDanych.Simulation;
 
 import com.mikul17.bazyDanych.Models.Matches.Match;
+import com.mikul17.bazyDanych.Service.BetService;
 import com.mikul17.bazyDanych.Service.LeagueService;
 import com.mikul17.bazyDanych.Service.MatchService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ public class MatchTrigger {
 
     private final MatchService matchService;
     private final LeagueService leagueService;
+    private final BetService betService;
     private final Logger logger = LoggerFactory.getLogger(MatchTrigger.class);
 
     @Scheduled(cron = "0 0/1 * * * *") //method will run every quarter of hour
@@ -39,6 +41,7 @@ public class MatchTrigger {
                     //TODO implement simulateMatch method
                    // matchService.simulateMatch(match);
                     leagueService.calculateRemainingMatches(match.getLeague(),false);
+                    betService.updateBetsStatusAfterMatch(match);
                 }).start();
             }
         }

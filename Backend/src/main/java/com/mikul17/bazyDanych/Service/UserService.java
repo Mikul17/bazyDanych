@@ -94,7 +94,7 @@ public class UserService {
     public void changePassword(ChangePasswordRequest request){
         try{
             User user = getUserById(request.getUserId());
-            if(!Objects.equals(user.getPassword(), passwordEncoder.encode(request.getOldPassword()))){
+            if(!passwordEncoder.matches(request.getOldPassword(),user.getPassword())){
                 throw new ServiceException("Old password is incorrect");
             }
             user.setPassword(passwordEncoder.encode(request.getNewPassword()));
