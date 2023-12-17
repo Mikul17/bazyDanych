@@ -17,20 +17,35 @@ public class BetTypeService {
     private final BetTypeRepository betTypeRepository;
 
     public String decodeBetFromBetType (BetType betType) {
+
+        if(!isBetValid(betType)){
+            throw new ServiceException("Bet type is invalid");
+        }
+
         StringBuilder decoded = new StringBuilder();
         if (betType.getTeam() == 2) {
-            decoded.append("There will be ");
             if(!Objects.equals(betType.getBetTypeCode(), "direct")){
-                decoded.append(betType.getBetTypeCode());
+                decoded.append("There will be ");
+                decoded.append(betType.getBetTypeCode().equals("yellowCards")?"yellow cards":betType.getBetTypeCode());
                 decoded.append(" ");
                 decoded.append(betType.getTargetValue());
                 decoded.append(" ");
             }
-            decoded.append(Objects.equals(betType.getBetStat(),"score")?
-                    "draw":betType.getBetStat());
-            decoded.append(" in this match");
+            if(betType.getBetStat().equals("score")){
+                decoded.append("This match will end in a draw");
+            }else if (betType.getBetStat().equals("penalties") || betType.getBetStat().equals("redCards")){
+                if(betType.getTargetValue()==1.0){
+                    decoded.append("There will be ");
+                    decoded.append(betType.getBetStat().equals("penalties")? "penalty" : "red card");
+                    decoded.append(" in this match");
+                }else{
+                    decoded.append("There will not be ");
+                    decoded.append(betType.getBetStat().equals("penalties")? "penalty" : "red card");
+                    decoded.append(" in this match");
+                }
+            }
         } else {
-            if(betType.getTeam()==1){
+            if(betType.getTeam()==0){
                 decoded.append("Home team");
             }else{
                 decoded.append("Away team");
@@ -39,13 +54,13 @@ public class BetTypeService {
                 decoded.append(" will ");
                 if(betType.getTargetValue()==1.0){
                     decoded.append("win or draw");
-                }else{
+                }else if(betType.getTargetValue()==0.0){
                     decoded.append("win");
                 }
                 decoded.append(" the match");
             } else {
                 decoded.append(" will get ");
-                decoded.append(betType.getBetTypeCode());
+                decoded.append(betType.getBetTypeCode().equals("yellowCards")?"yellow cards":betType.getBetTypeCode());
                 decoded.append(" ");
                 decoded.append(betType.getTargetValue());
                 decoded.append(" ");
@@ -74,6 +89,10 @@ public class BetTypeService {
                     .team(betTypeRequest.getTeam())
                     .targetValue(betTypeRequest.getTargetValue())
                     .build();
+
+            if(!isBetValid(betType)){
+                throw new ServiceException("Invalid bet type");
+            }
 
             betTypeRepository.save(betType);
 
@@ -148,6 +167,52 @@ public class BetTypeService {
         } catch (Exception e) {
             throw new ServiceException(e.getMessage());
         }
+    }
+
+    private Boolean isBetValid(BetType bet){
+        if(bet.getTeam()<0 || bet.getTeam()>2){
+            return false;
+        }
+
+        if(!bet.getBetTypeCode().equals("direct") &&  !bet.getBetTypeCode().equals("over") && !bet.getBetTypeCode().equals("under")){
+            return false;
+        }
+
+        if(bet.getBetTypeCode().equals("direct")){
+            if(bet.getTargetValue() != 1.0 && bet.getTargetValue() != 0.0 && bet.getTargetValue() != 2.0){
+                return false;
+            }
+        }
+
+        if(bet.getBetStat().equals("possession") && !bet.getBetTypeCode().equals("over")){
+            return false;
+        }
+
+        if(bet.getBetStat().equals("penalties") && (!bet.getBetTypeCode().equals("direct") || bet.getTeam()!=2)){
+            if(bet.getTargetValue()!=1.0 && bet.getTargetValue()!=0.0){
+                return false;
+            }
+        }
+
+        if(bet.getBetStat().equals("redCards") && (!bet.getBetTypeCode().equals("direct") || bet.getTeam()!=2)){
+            if(bet.getTargetValue()!=1.0 && bet.getTargetValue()!=0.0){
+                return false;
+            }
+        }
+
+        if(bet.getBetStat().equals("yellowCards") && (!bet.getBetTypeCode().equals("over") || bet.getTeam()!=2)){
+            return false;
+        }
+
+        if(bet.getBetStat().equals("fouls") && (!bet.getBetTypeCode().equals("over") || bet.getTeam()!=2)){
+            return false;
+        }
+
+        if(bet.getBetTypeCode().equals("over") || bet.getBetTypeCode().equals("under")){
+            return String.valueOf(bet.getTargetValue()).endsWith(".5");
+        }
+
+        return true;
     }
 
 }

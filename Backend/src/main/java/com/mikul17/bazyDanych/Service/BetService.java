@@ -156,29 +156,28 @@ public class BetService {
      * team: 0 - homeTeam , 1 - awayTeam
      * targetValue: 1.0 - win or draw , 0.0 - win
      * betStat: score
-     *
+     * <p>
      * Betting on match score (draw):
      * betType: direct
      * team: 2
-     * targetValue: null
+     * targetValue: 2.0
      * betStat: score
-     *
+     * <p>
      * Betting on specific stat
      * betType: over/under, direct - only for penalties and red cards
      * team: 0- homeTeam, 1-awayTeam , 2 - either (only for penalties and red cards)
-     * targetValue: bet target value e.g. 2 or more is 1.5
+     * targetValue: bet target value e.g. 2 or more is 1.5 (always ends with .5)
      * betStat: goals, shots, shotsOnTarget, possession,passes, corners,penalties, redCards, yellowCards, fouls
-     *
+     * <p>
      * EXCEPTIONS:
      * 1. possession - betType can only be over
-     * 2. penalties - betType = direct, team=2
-     * 3. yellowCards - betType= over , team =2
-     * 4. fouls - betType = over , team=2
+     * 2. penalties - betType = direct, team=2, targetValue= 1.0 if yes 0.0 if not
+     * 3. redCards - betType = direct, team =2, targetValue= 1.0 if yes 0.0 if not
+     * 4. yellowCards - betType= over , team =2
+     * 5. fouls - betType = over , team=2
      */
-
-    private void updateBetsStatusAfterMatch(Match match){
+    public void updateBetsStatusAfterMatch(Match match){
         try{
-
             MatchStats homeTeamStats = matchStatsRepository.findByMatchAndTeam(match, match.getHomeTeam().getId()).orElseThrow(()
                     -> new ServiceException("Couldn't find stats for home team"));
             MatchStats awayTeamStats =matchStatsRepository.findByMatchAndTeam(match, match.getAwayTeam().getId()).orElseThrow(()
@@ -188,18 +187,20 @@ public class BetService {
             List<Bet> scoreBets = betRepository.findByMatchAndBetType_betStat(match,"score");
             for(Bet bet : scoreBets){
                 if(Objects.equals(bet.getBetType().getBetTypeCode(), "direct")){
-                   if(bet.getBetType().getTargetValue()==1.1){
+                   if(bet.getBetType().getTargetValue()==1.0){
                        if(bet.getBetType().getTeam()==0){
                            bet.setBetStatus(homeTeamStats.getGoalsScored()>=awayTeamStats.getGoalsScored()?1:2);
                        }else{
                            bet.setBetStatus(homeTeamStats.getGoalsScored()<=awayTeamStats.getGoalsScored()?1:2);
                        }
-                   }else{
+                   }else if(bet.getBetType().getTargetValue()==0.0){
                        if(bet.getBetType().getTeam()==1){
                            bet.setBetStatus(homeTeamStats.getGoalsScored()>awayTeamStats.getGoalsScored()?1:2);
                        }else{
                            bet.setBetStatus(homeTeamStats.getGoalsScored()<awayTeamStats.getGoalsScored()?1:2);
                        }
+                   }else if(bet.getBetType().getTargetValue()==2.0){
+                       bet.setBetStatus(Objects.equals(homeTeamStats.getGoalsScored(), awayTeamStats.getGoalsScored()) ?1:2);
                    }
                 }
             }
