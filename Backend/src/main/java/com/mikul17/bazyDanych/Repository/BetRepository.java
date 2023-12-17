@@ -16,4 +16,3 @@ public interface BetRepository extends JpaRepository<Bet, Long> {
     List<Bet> findByMatchAndBetType_BetStatAndBetType_TargetValue(Match match, String betType_betStat, Double betType_targetValue);
     List<Bet> findByMatchAndBetType_BetStatAndBetType_TeamAndBetType_TargetValueNot(Match match, String betStat, Integer team, Double targetValue);
 }
-}
