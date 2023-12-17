@@ -5,7 +5,6 @@ import com.mikul17.bazyDanych.Repository.BetTypeRepository;
 import com.mikul17.bazyDanych.Request.BetTypeRequest;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.service.spi.ServiceException;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,19 +18,30 @@ public class BetTypeService {
 
     public String decodeBetFromBetType (BetType betType) {
         StringBuilder decoded = new StringBuilder();
-        if (betType.getTeam() == null) {
+        if (betType.getTeam() == 2) {
             decoded.append("There will be ");
-            decoded.append(betType.getBetTypeCode());
-            decoded.append(" ");
-            decoded.append(betType.getTargetValue());
-            decoded.append(" ");
-            decoded.append(betType.getBetStat());
+            if(!Objects.equals(betType.getBetTypeCode(), "direct")){
+                decoded.append(betType.getBetTypeCode());
+                decoded.append(" ");
+                decoded.append(betType.getTargetValue());
+                decoded.append(" ");
+            }
+            decoded.append(Objects.equals(betType.getBetStat(),"score")?
+                    "draw":betType.getBetStat());
             decoded.append(" in this match");
         } else {
-            decoded.append(!betType.getTeam() ? "Home" : "Away").append(" team");
+            if(betType.getTeam()==1){
+                decoded.append("Home team");
+            }else{
+                decoded.append("Away team");
+            }
             if (Objects.equals(betType.getBetTypeCode(), "direct")) {
                 decoded.append(" will ");
-                decoded.append(betType.getTargetValue() == (1.1) ? "win or draw" : "win");
+                if(betType.getTargetValue()==1.0){
+                    decoded.append("win or draw");
+                }else{
+                    decoded.append("win");
+                }
                 decoded.append(" the match");
             } else {
                 decoded.append(" will get ");
@@ -45,6 +55,7 @@ public class BetTypeService {
         }
         return decoded.toString();
     }
+
     public String decodeById (Long id) {
         try {
             BetType found = betTypeRepository.findById(id).orElseThrow(()
@@ -57,10 +68,6 @@ public class BetTypeService {
 
     public String addNewBetType (BetTypeRequest betTypeRequest) {
         try {
-            if(betTypeRequest.getBetStat() == null || betTypeRequest.getBetTypeCode() == null
-                    || betTypeRequest.getTargetValue() == null)
-                throw new ServiceException("Missing required fields");
-
             BetType betType = BetType.builder()
                     .betStat(betTypeRequest.getBetStat())
                     .betTypeCode(betTypeRequest.getBetTypeCode())
@@ -110,6 +117,7 @@ public class BetTypeService {
             throw new ServiceException(e.getMessage());
         }
     }
+
     public void deleteBetType (Long betTypeId) {
         try {
             betTypeRepository.findById(betTypeId).orElseThrow(() ->
@@ -120,24 +128,26 @@ public class BetTypeService {
             throw new ServiceException(e.getMessage());
         }
     }
-    public String updateBetType (BetTypeRequest betTypeRequest, Long betTypeId){
-            try {
-                if (betTypeRequest.getBetStat() == null || betTypeRequest.getBetTypeCode() == null
-                        || betTypeRequest.getTargetValue() == null)
-                    throw new ServiceException("Missing required fields");
 
-                betTypeRepository.findById(betTypeId).orElseThrow(()
-                        -> new Exception("Couln't find bet type with id: " + betTypeId));
-                BetType betType = BetType.builder()
-                        .betStat(betTypeRequest.getBetStat())
-                        .betTypeCode(betTypeRequest.getBetTypeCode())
-                        .team(betTypeRequest.getTeam())
-                        .targetValue(betTypeRequest.getTargetValue())
-                        .build();
-                betTypeRepository.save(betType);
-                return decodeBetFromBetType(betType);
-            } catch (Exception e) {
-                throw new ServiceException(e.getMessage());
-            }
+    public String updateBetType (BetTypeRequest betTypeRequest, Long betTypeId) {
+        try {
+            if (betTypeRequest.getBetStat() == null || betTypeRequest.getBetTypeCode() == null
+                    || betTypeRequest.getTargetValue() == null)
+                throw new ServiceException("Missing required fields");
+
+            betTypeRepository.findById(betTypeId).orElseThrow(()
+                    -> new Exception("Couln't find bet type with id: " + betTypeId));
+            BetType betType = BetType.builder()
+                    .betStat(betTypeRequest.getBetStat())
+                    .betTypeCode(betTypeRequest.getBetTypeCode())
+                    .team(betTypeRequest.getTeam())
+                    .targetValue(betTypeRequest.getTargetValue())
+                    .build();
+            betTypeRepository.save(betType);
+            return decodeBetFromBetType(betType);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage());
         }
+    }
+
 }

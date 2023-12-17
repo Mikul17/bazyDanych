@@ -2,6 +2,7 @@ package com.mikul17.bazyDanych.Controller;
 
 import com.mikul17.bazyDanych.Request.BetTypeRequest;
 import com.mikul17.bazyDanych.Service.BetTypeService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +15,7 @@ public class BetTypeController {
     private final BetTypeService betTypeService;
 
     @PostMapping("/add")
-    public ResponseEntity<?> addNewBetType(@RequestBody BetTypeRequest betTypeRequest) {
+    public ResponseEntity<?> addNewBetType(@Valid @RequestBody BetTypeRequest betTypeRequest) {
         try{
             return ResponseEntity.ok().body(betTypeService.addNewBetType(betTypeRequest));
         }catch (Exception e){

@@ -11,5 +11,5 @@ import java.util.List;
 public interface BetRepository extends JpaRepository<Bet, Long> {
 
     List<Bet> findByMatch (Match match);
-    List<Bet> findByMatchAndBetType_betStat (Match match, String goals);
+    List<Bet> findByMatchAndBetType_betStat (Match match, String stat);
 }
