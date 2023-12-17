@@ -141,4 +141,12 @@ public class TeamController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+    @GetMapping("/all/league/order/{leagueId}")
+    public ResponseEntity<?> getAllByLeagueOrderByPoints(@PathVariable Long leagueId){
+        try{
+            return ResponseEntity.ok().body(teamService.getTeamsByLeagueOrderByPoints(leagueId));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

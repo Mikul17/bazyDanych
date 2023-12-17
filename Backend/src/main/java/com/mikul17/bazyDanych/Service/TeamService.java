@@ -1,18 +1,13 @@
 package com.mikul17.bazyDanych.Service;
 
 import com.mikul17.bazyDanych.Models.Simulation.League;
-import com.mikul17.bazyDanych.Models.Simulation.Players.Player;
-import com.mikul17.bazyDanych.Repository.PlayerRepository;
 import com.mikul17.bazyDanych.Models.Simulation.Team;
-import com.mikul17.bazyDanych.Repository.LeagueRepository;
 import com.mikul17.bazyDanych.Repository.TeamRepository;
 import com.mikul17.bazyDanych.Request.TeamRequest;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -142,6 +137,13 @@ public class TeamService {
                     new ServiceException("Team with given id doesn't exist"));
 
             return team.getTeamName();
+        }catch (Exception e){
+            throw new ServiceException(e.getMessage());
+        }
+    }
+    public List<Team> getTeamsByLeagueOrderByPoints (Long leagueId) {
+        try{
+            return teamRepository.findAllByLeagueIdOrderByPointsAndGoalDifference(leagueId);
         }catch (Exception e){
             throw new ServiceException(e.getMessage());
         }
