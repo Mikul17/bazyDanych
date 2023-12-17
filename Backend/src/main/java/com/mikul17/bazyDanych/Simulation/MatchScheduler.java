@@ -43,6 +43,7 @@
                         logger.info("Scheduling league matches for: "+league.getLeagueName()+" | season: "+league.getSeason()+1);
                         generateFixturesForLeague(teams, league);
                         leagueService.incrementSeasons(league);
+                        teamService.resetTeamStatsForWholeLeague(league);
                     }else {
                         logger.info(league.getLeagueName()+" has "+league.getRemainingMatches()+" matches left");
                     }

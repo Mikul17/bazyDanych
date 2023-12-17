@@ -1,5 +1,6 @@
 package com.mikul17.bazyDanych.Service;
 
+import com.mikul17.bazyDanych.Models.Simulation.League;
 import com.mikul17.bazyDanych.Models.Simulation.Players.Player;
 import com.mikul17.bazyDanych.Repository.PlayerRepository;
 import com.mikul17.bazyDanych.Models.Simulation.Team;
@@ -22,17 +23,14 @@ import java.util.List;
 public class TeamService {
 
     private static final Logger log = LoggerFactory.getLogger(TeamService.class);
-
     private final TeamRepository teamRepository;
-    private final LeagueRepository leagueRepository;
-    private final PlayerRepository playerRepository;
+    private final LeagueService leagueService;
 
     public Team createTeam(TeamRequest request) {
         try{
             Team team = Team.builder()
                     .teamName(request.getTeamName())
-                    .league(leagueRepository.findById(request.getLeagueId()).orElseThrow(()
-                            -> new Exception("League not found")))
+                    .league(leagueService.getLeagueById(request.getLeagueId()))
                     .wins(0)
                     .draws(0)
                     .loses(0)
@@ -52,8 +50,8 @@ public class TeamService {
             for (TeamRequest teamRequest : teams) {
                 Team team = Team.builder()
                         .teamName(teamRequest.getTeamName())
-                        .league(leagueRepository.findById(teamRequest.getLeagueId()).orElseThrow(()
-                                -> new Exception("League not found")))
+                        .league(leagueService.getLeagueById(teamRequest.getLeagueId()))
+                        .loses(0)
                         .wins(0)
                         .draws(0)
                         .loses(0)
@@ -70,7 +68,7 @@ public class TeamService {
             throw new ServiceException("Error while creating teams from list: "+e.getMessage());
         }
     }
-    public List<Team> getTeamsByLeagueId(Long id) throws Exception {
+    public List<Team> getTeamsByLeagueId(Long id) {
         try{
             return teamRepository.findAllByLeagueId(id);
         }catch (Exception e){
@@ -106,8 +104,7 @@ public class TeamService {
     }
     public Team resetTeamStats(Long id) {
         try{
-            Team team = teamRepository.findById(id).orElseThrow(()
-                    -> new ServiceException("Team not found"));
+            Team team = getTeamById(id);
             team.setWins(0);
             team.setDraws(0);
             team.setLoses(0);
@@ -129,7 +126,16 @@ public class TeamService {
            throw new ServiceException("Error while deleting team by teamName: "+e.getMessage());
         }
     }
-
+    public void resetTeamStatsForWholeLeague(League league){
+        try{
+            List<Team> teams = getTeamsByLeagueId(league.getId());
+            for(Team team : teams){
+                resetTeamStats(team.getId());
+            }
+        }catch (Exception e){
+            throw new ServiceException(e.getMessage());
+        }
+    }
     public String getTeamNameById(Long teamId) {
         try{
             Team team = teamRepository.findById(teamId).orElseThrow(()->
