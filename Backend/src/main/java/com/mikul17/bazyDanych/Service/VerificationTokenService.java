@@ -25,6 +25,9 @@ public class VerificationTokenService {
 
     public String  generateVerificationToken(User user){
         try {
+            if(repository.existsByUser(user)){
+                throw new ServiceException("Token for this user already exists.");
+            }
             VerificationToken token = VerificationToken.builder()
                     .token(UUID.randomUUID().toString())
                     .user(user)
@@ -38,8 +41,11 @@ public class VerificationTokenService {
         }
     }
 
-    public String generateRemindPasswordToken(User user){
+    public String generateResetPasswordToken (User user){
         try {
+            if(repository.existsByUser(user)){
+                throw new ServiceException("Token for this user already exists.");
+            }
             VerificationToken token = VerificationToken.builder()
                     .token(UUID.randomUUID().toString())
                     .user(user)
@@ -49,7 +55,7 @@ public class VerificationTokenService {
             repository.save(token);
             return token.getToken();
         }catch (Exception e){
-            throw new ServiceException("Error while generating token: "+e.getMessage());
+            throw new ServiceException(e.getMessage());
         }
     }
 
@@ -60,13 +66,21 @@ public class VerificationTokenService {
         return new Date(cal.getTime().getTime());
     }
 
-    public VerificationToken findByToken (String token) {
+    public VerificationToken findByToken (String token, TokenType type) {
         try{
             VerificationToken t = repository.findVerificationTokenByToken(token);
-            if (t.getTokenType()!=TokenType.EMAIL_VERIFICATION){
+            if (t.getTokenType()!=type){
                 throw new ServiceException("Wrong token type");
             }
             return t;
+        }catch (Exception e){
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
+    public void removeTokenById(Long tokenId){
+        try{
+            repository.deleteById(tokenId);
         }catch (Exception e){
             throw new ServiceException(e.getMessage());
         }

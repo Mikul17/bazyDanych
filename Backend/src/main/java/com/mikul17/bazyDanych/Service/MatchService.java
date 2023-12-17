@@ -102,9 +102,9 @@ public class MatchService {
         try{
             League league = leagueService.getLeagueById(leagueId);
             LocalDate today = LocalDate.now();
-            LocalDateTime startOfDay = today.atStartOfDay();
-            LocalDateTime endOfDay = LocalDateTime.of(today, LocalTime.MAX);
-            return matchRepository.findAllByLeagueAndMatchDateBetweenAndOrderByMatchDateAsc(league,startOfDay,endOfDay);
+            Timestamp startOfDay = Timestamp.valueOf(today.atStartOfDay());
+            Timestamp endOfDay = Timestamp.valueOf(LocalDateTime.of(today, LocalTime.MAX));
+            return matchRepository.findAllByLeagueAndMatchDateBetweenOrderByMatchDateAsc(league,startOfDay,endOfDay);
         }catch (Exception e){
             throw new ServiceException("Error while fetching matches: "+e.getMessage());
         }

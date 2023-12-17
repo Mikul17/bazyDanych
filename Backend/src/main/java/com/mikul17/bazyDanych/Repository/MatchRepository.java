@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -21,5 +22,5 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
     List<Match> findAllByMatchDateAfterAndHomeTeamIdOrAwayTeamIdOrderByMatchDateAsc(Timestamp now, Long teamId, Long teamId1);
 
     List<Match> findAllByLeagueAndMatchDateAfter(League league, Timestamp matchDate);
-    List<Match> findAllByLeagueAndMatchDateBetweenAndOrderByMatchDateAsc(League league, LocalDateTime start, LocalDateTime end);
+    List<Match> findAllByLeagueAndMatchDateBetweenOrderByMatchDateAsc(League league, Timestamp start, Timestamp end);
 }

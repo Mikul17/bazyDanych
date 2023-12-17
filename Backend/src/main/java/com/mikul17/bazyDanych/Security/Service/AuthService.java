@@ -1,11 +1,8 @@
 package com.mikul17.bazyDanych.Security.Service;
 
-import com.mikul17.bazyDanych.Models.Role;
-import com.mikul17.bazyDanych.Models.Address;
-import com.mikul17.bazyDanych.Models.VerificationToken;
+import com.mikul17.bazyDanych.Models.*;
 import com.mikul17.bazyDanych.Repository.UserRepository;
 import com.mikul17.bazyDanych.Request.AuthenticationRequest;
-import com.mikul17.bazyDanych.Models.User;
 import com.mikul17.bazyDanych.Request.MailRequest;
 import com.mikul17.bazyDanych.Request.RegisterRequest;
 import com.mikul17.bazyDanych.Response.AuthenticationResponse;
@@ -134,13 +131,13 @@ public class AuthService {
         var user = userRepository.findByEmail(request.getEmail()).orElseThrow(
                 ()-> new ServiceException("User with given email doesnt exist"));
 
-        if(user.getBanned()){
-            return AuthenticationResponse.builder()
-                    .message("User is banned")
-                    .email(user.getEmail())
-                    .token(null)
-                    .build();
-        }
+//        if(user.getBanned()){
+//            return AuthenticationResponse.builder()
+//                    .message("User is banned")
+//                    .email(user.getEmail())
+//                    .token(null)
+//                    .build();
+//        }
 
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
@@ -195,10 +192,11 @@ public class AuthService {
 
     public void verifyUserByToken (String token) {
         try{
-            VerificationToken verificationToken = verificationTokenService.findByToken(token);
+            VerificationToken verificationToken = verificationTokenService.findByToken(token, TokenType.EMAIL_VERIFICATION);
             User user = verificationToken.getUser();
             user.setEnabled(true);
             userRepository.save(user);
+            verificationTokenService.removeTokenById(verificationToken.getId());
         }catch (Exception e){
             throw new ServiceException(e.getMessage());
         }
