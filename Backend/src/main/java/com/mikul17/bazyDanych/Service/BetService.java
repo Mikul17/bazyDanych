@@ -12,11 +12,8 @@ import com.mikul17.bazyDanych.Request.BetRequest;
 import com.mikul17.bazyDanych.Response.BetResponse;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.service.spi.ServiceException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -321,7 +318,6 @@ public class BetService {
         //TO:DO - possibly add some logic here
         return null;
     }
-
     public List<Match> getAllMatchesWithoutBets (){
         List<Match> all = matchService.getAllMatches();
         return all.stream()
