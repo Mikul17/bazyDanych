@@ -26,9 +26,9 @@ public class CouponService {
 
     private final CouponRepository couponRepository;
     private final UserService userService;
-    private final MatchRepository matchRepository;
     private final BetService betService;
     private final TransactionService transactionService;
+    private final MatchService matchService;
 
     public List<CouponResponse> getAllCoupons () {
         try {
@@ -81,6 +81,16 @@ public class CouponService {
             Double stake = couponRequest.getStake();
             Double totalOdds = calculateTotalOdds(bets);
             Double possibleWin = stake * totalOdds;
+
+            Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+
+            for (Bet bet : bets) {
+                Timestamp matchDate = bet.getMatch().getMatchDate();
+                if (matchDate != null && matchDate.before(currentTime)) {
+                    throw new ServiceException("Cannot add coupon for matches that have already started.");
+                }
+            }
+
             Coupon coupon = Coupon.builder()
                     .creationDate(new Timestamp(System.currentTimeMillis()))
                     .totalOdds(totalOdds)
@@ -101,6 +111,14 @@ public class CouponService {
             return mapCouponToCouponResponse(coupon);
         } catch (Exception e) {
             log.error(e.getMessage());
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
+    public List<Coupon> getCouponByBetId(Long betId){
+        try{
+            return couponRepository.findByBetsId(betId);
+        }catch (Exception e){
             throw new ServiceException(e.getMessage());
         }
     }
@@ -131,8 +149,7 @@ public class CouponService {
 
     public void updateCouponsAfterMatch (Long matchId) {
         try {
-            Match match = matchRepository.findById(matchId)
-                    .orElseThrow(() -> new ServiceException("Match with id: " + matchId + " not found"));
+            Match match = matchService.getMatchById(matchId);
             log.info("Checking coupons after match between: "
                     + match.getHomeTeam().getTeamName()
                     + " and "

@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -118,4 +119,8 @@ public class MatchService {
             throw new ServiceException(e.getMessage());
         }
     }
-}
+    public List<Match> getAllMatches(){
+        return matchRepository.findAll();
+    }
+
+ }

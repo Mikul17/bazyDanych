@@ -5,6 +5,7 @@ import com.mikul17.bazyDanych.Request.RegisterRequest;
 import com.mikul17.bazyDanych.Security.Service.AuthService;
 import com.mikul17.bazyDanych.Security.UserAlreadyExistAuthenticationException;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationServiceException;

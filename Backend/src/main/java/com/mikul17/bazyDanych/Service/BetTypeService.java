@@ -1,5 +1,6 @@
 package com.mikul17.bazyDanych.Service;
 
+import com.mikul17.bazyDanych.Models.Coupons.Bet;
 import com.mikul17.bazyDanych.Models.Coupons.BetType;
 import com.mikul17.bazyDanych.Repository.BetTypeRepository;
 import com.mikul17.bazyDanych.Request.BetTypeRequest;
@@ -135,6 +136,31 @@ public class BetTypeService {
         } catch (Exception e) {
             throw new ServiceException(e.getMessage());
         }
+    }
+
+    public List<BetType> getBetTypeByCodeAndStatSorted(String betTypeCode, String stat, Boolean asc){
+        try{
+            if(asc){
+                return betTypeRepository.findByBetTypeCodeAndBetStatOrderByTargetValueAsc(betTypeCode,stat);
+            }else{
+                return betTypeRepository.findByBetTypeCodeAndBetStatOrderByTargetValueDesc(betTypeCode,stat);
+            }
+
+        }catch (Exception e){
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
+    public List<BetType> getBetTypeByCodeAndStat(String betTypeCode, String stat){
+        try{
+            return betTypeRepository.findByBetTypeCodeAndBetStat(betTypeCode,stat);
+        }catch (Exception e){
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
+    public BetType getBetTypeByTypeAndTeamAndValue(String type, Integer team, Double value){
+          return betTypeRepository.findByBetTypeCodeAndTeamAndTargetValue(type,team,value);
     }
 
     public void deleteBetType (Long betTypeId) {

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -147,5 +148,20 @@ public class TeamService {
         }catch (Exception e){
             throw new ServiceException(e.getMessage());
         }
+    }
+    public Integer getDifferenceInRelativePositionBetweenTeams(Team first , Team second){
+        if(!Objects.equals(first.getLeague().getId(), second.getLeague().getId())){
+            throw new ServiceException("Teams are not from the same league");
+        }
+        List<Team> ordered = getTeamsByLeagueOrderByPoints(first.getLeague().getId());
+        int firstTeamIndex = ordered.indexOf(first);
+        int secondTeamIndex = ordered.indexOf(second);
+
+        return Math.abs(firstTeamIndex-secondTeamIndex);
+    }
+
+    public Integer getRelativePositionInLeagueTable(Team team){
+        List<Team> ordered = getTeamsByLeagueOrderByPoints(team.getLeague().getId());
+        return ordered.indexOf(team);
     }
 }

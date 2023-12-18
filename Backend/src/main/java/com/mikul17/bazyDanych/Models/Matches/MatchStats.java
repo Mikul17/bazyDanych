@@ -1,15 +1,13 @@
 package com.mikul17.bazyDanych.Models.Matches;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 //Must be named in plural form because match is a reserved word in SQL
 @Entity(name = "matches_stats")
 public class MatchStats {

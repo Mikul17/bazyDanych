@@ -4,6 +4,7 @@ import com.mikul17.bazyDanych.Models.Matches.Match;
 import com.mikul17.bazyDanych.Models.Matches.MatchStats;
 import com.mikul17.bazyDanych.Repository.MatchStatsRepository;
 import com.mikul17.bazyDanych.Response.MatchStatResponse;
+import com.mikul17.bazyDanych.Response.ScoreResponse;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
