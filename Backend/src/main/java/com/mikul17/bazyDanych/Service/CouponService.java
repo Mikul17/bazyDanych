@@ -77,7 +77,7 @@ public class CouponService {
 
     public CouponResponse addCoupon (CouponRequest couponRequest) {
         try {
-            List<Bet> bets = couponRequest.getBets();
+            List<Bet> bets = betService.getByListId(couponRequest.getBets());
             Double stake = couponRequest.getStake();
             Double totalOdds = calculateTotalOdds(bets);
             Double possibleWin = stake * totalOdds;

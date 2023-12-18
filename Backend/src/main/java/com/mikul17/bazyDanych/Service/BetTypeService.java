@@ -3,6 +3,7 @@ package com.mikul17.bazyDanych.Service;
 import com.mikul17.bazyDanych.Models.Coupons.Bet;
 import com.mikul17.bazyDanych.Models.Coupons.BetType;
 import com.mikul17.bazyDanych.Repository.BetTypeRepository;
+import com.mikul17.bazyDanych.Repository.CouponRepository;
 import com.mikul17.bazyDanych.Request.BetTypeRequest;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.service.spi.ServiceException;
@@ -10,12 +11,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class BetTypeService {
 
     private final BetTypeRepository betTypeRepository;
+    private final CouponRepository couponRepository;
 
     public String decodeBetFromBetType (BetType betType) {
 
@@ -27,7 +30,9 @@ public class BetTypeService {
         if (betType.getTeam() == 2) {
             if(!Objects.equals(betType.getBetTypeCode(), "direct")){
                 decoded.append("There will be ");
-                decoded.append(betType.getBetTypeCode().equals("yellowCards")?"yellow cards":betType.getBetTypeCode());
+                decoded.append(betType.getBetTypeCode());
+                decoded.append(" ");
+                decoded.append(betType.getBetStat().equals("yellowCards")?"yellow cards":betType.getBetStat());
                 decoded.append(" ");
                 decoded.append(betType.getTargetValue());
                 decoded.append(" ");
@@ -165,8 +170,14 @@ public class BetTypeService {
 
     public void deleteBetType (Long betTypeId) {
         try {
-            betTypeRepository.findById(betTypeId).orElseThrow(() ->
-                    new ServiceException("Couldn't find bet type with id: " + betTypeId));
+            Set<Bet> bets = betTypeRepository.findById(betTypeId).orElseThrow(() ->
+                    new ServiceException("Couldn't find bet type with id: " + betTypeId)).getBets();
+
+            for (Bet bet : bets) {
+                if (!couponRepository.findByBetsId(bet.getId()).isEmpty()) {
+                    throw new ServiceException("Cannot delete BetType as it has bets included in coupons.");
+                }
+            }
 
             betTypeRepository.deleteById(betTypeId);
         } catch (Exception e) {
@@ -180,14 +191,18 @@ public class BetTypeService {
                     || betTypeRequest.getTargetValue() == null)
                 throw new ServiceException("Missing required fields");
 
+
             betTypeRepository.findById(betTypeId).orElseThrow(()
-                    -> new Exception("Couln't find bet type with id: " + betTypeId));
+                    -> new Exception("Couldn't find bet type with id: " + betTypeId));
             BetType betType = BetType.builder()
                     .betStat(betTypeRequest.getBetStat())
                     .betTypeCode(betTypeRequest.getBetTypeCode())
                     .team(betTypeRequest.getTeam())
                     .targetValue(betTypeRequest.getTargetValue())
                     .build();
+            if(!isBetValid(betType)){
+                throw new ServiceException("Provided betType is invalid");
+            }
             betTypeRepository.save(betType);
             return decodeBetFromBetType(betType);
         } catch (Exception e) {

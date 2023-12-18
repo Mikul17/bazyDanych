@@ -11,7 +11,8 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class CouponRequest {
-    private List<Bet> bets;
+    //private List<Bet> bets;
+    private List<Long> bets;
     private Double stake;
     private Long userId;
 }

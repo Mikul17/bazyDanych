@@ -14,17 +14,6 @@ public class MatchEventController {
 
     private final MatchEventService matchEventService;
 
-    @PostMapping("/add")
-    public ResponseEntity<?> addEvent(@RequestBody MatchEventRequest request){
-        try{
-            return ResponseEntity.ok().body(matchEventService.addEvent(request));
-        }catch (ServiceException e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }catch (Exception e){
-            return ResponseEntity.internalServerError().body(e.getMessage());
-        }
-    }
-
     @GetMapping("/all/{matchId}")
     public ResponseEntity<?> getAll(@PathVariable Long matchId){
         try{

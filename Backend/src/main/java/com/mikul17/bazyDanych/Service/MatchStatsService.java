@@ -25,9 +25,9 @@ public class MatchStatsService {
 
             MatchStats stats = isHomeTeam ? repository.findByMatchAndTeam(match,match.getHomeTeam().getId())
                     .orElseThrow(()-> new ServiceException
-                            ("Match with home team with id: "+match.getHomeTeam().getId()+" doesn't exist")):
-                    repository.findByMatchAndTeam(match,match.getHomeTeam().getId()).orElseThrow(()-> new ServiceException
-                            ("Match with home team with id: "+match.getAwayTeam().getId()+" doesn't exist"));
+                            ("Match stats for match with id: "+matchId+" doesn't exist")):
+                    repository.findByMatchAndTeam(match,match.getAwayTeam().getId()).orElseThrow(()-> new ServiceException
+                            ("Match stats for match with id: "+matchId+" doesn't exist"));
             return mapMatchStatToResponse(stats);
         }catch (Exception e){
             throw new ServiceException(e.getMessage());
@@ -40,6 +40,20 @@ public class MatchStatsService {
         }catch (Exception e){
             throw new ServiceException(e.getMessage());
         }
+    }
+    public ScoreResponse getScoreUpdate(Long matchId){
+        Match match = matchService.getMatchById(matchId);
+        MatchStats homeTeamStats = repository.findByMatchAndTeam(match,match.getHomeTeam().getId())
+                .orElseThrow(()-> new ServiceException
+                        ("Match stats for match with id: "+matchId+" doesn't exist"));
+        MatchStats awayTeamStats = repository.findByMatchAndTeam(match,match.getAwayTeam().getId())
+                .orElseThrow(()-> new ServiceException
+                        ("Match stats for match with id: "+matchId+" doesn't exist"));
+
+        return ScoreResponse.builder()
+                .homeTeamGoals(homeTeamStats.getGoalsScored())
+                .awayTeamGoals(awayTeamStats.getGoalsScored())
+                .build();
     }
     private MatchStatResponse mapMatchStatToResponse(MatchStats stats){
         return MatchStatResponse.builder()

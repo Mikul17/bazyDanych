@@ -32,4 +32,13 @@ public class MatchStatsController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping("/score/{matchId}")
+    public ResponseEntity<?> getScoreUpdate(@PathVariable Long matchId){
+        try{
+            return ResponseEntity.ok().body(matchStatsService.getScoreUpdate(matchId));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

@@ -86,49 +86,6 @@ public class TeamController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteTeam(@PathVariable Long id) throws Exception {
-        try{
-            teamService.deleteTeam(id);
-            log.info("Team deleted: {}", id);
-            return ResponseEntity.ok("Deleted team with id: "+id);
-        }catch (ServiceException e){
-            log.error(e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }catch (Exception e){
-            log.error("Error "+HttpStatus.INTERNAL_SERVER_ERROR+" while deleting team: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-    }
-
-    @DeleteMapping("/deleteAll")
-    public ResponseEntity<?> deleteAllTeams() {
-       try{
-           teamService.deleteAllTeams();
-           log.info("All teams deleted");
-           return ResponseEntity.ok("All teams deleted");
-       }catch (ServiceException e){
-           log.error(e.getMessage());
-           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-       }catch (Exception e){
-           log.error("Error "+HttpStatus.INTERNAL_SERVER_ERROR+" while deleting all teams: {}", e.getMessage());
-           return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-       }
-    }
-    @DeleteMapping("/deleteByTeamName/{teamName}")
-    public ResponseEntity<?> deleteTeamByTeamName(@PathVariable String teamName) {
-        try{
-            teamService.deleteTeamByTeamName(teamName);
-            log.info("Team deleted: {}", teamName);
-            return ResponseEntity.ok("Team "+teamName+" deleted successfully");
-        }catch (ServiceException e){
-            log.error(e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }catch (Exception e){
-            log.error("Error "+HttpStatus.INTERNAL_SERVER_ERROR+" while deleting team "+teamName+": {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-    }
     @PutMapping("/reset/{id}")
     public ResponseEntity<?> resetTeamStats(@PathVariable Long id) {
         try{

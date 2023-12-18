@@ -42,6 +42,7 @@ public class LeagueService {
                     .leagueName(leagueRequest.getLeagueName())
                     .country(leagueRequest.getCountry())
                     .season(0)
+                    .remainingMatches(0)
                     .build();
             leagueRepository.save(league);
             log.info("League: "+league.getLeagueName()+" created successfully");
@@ -67,24 +68,7 @@ public class LeagueService {
             throw new ServiceException("Error while adding leagues: "+e.getMessage());
         }
     }
-    public void deleteLeague(Long id) {
-        try{
-            leagueRepository.findById(id).
-                    orElseThrow(()->new ServiceException("League with id: "+id+" doesn't exist"));
-            leagueRepository.deleteById(id);
-            log.info("League with id: "+id+" deleted successfully");
-        } catch (Exception e) {
-            throw new ServiceException("Error while deleting league: "+e.getMessage());
-        }
-    }
-    public void deleteAll(){
-        try{
-            leagueRepository.deleteAll();
-            log.info("All leagues deleted successfully");
-        } catch (Exception e) {
-            throw new ServiceException("Error while deleting all leagues: "+e.getMessage());
-        }
-    }
+
     public void incrementSeasons(League league){
         try{
             leagueRepository.findById(league.getId())

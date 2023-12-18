@@ -112,8 +112,9 @@ public class BetService {
             List<Bet> relatedBets = findRelatedBets(bet.getBetType(), bet.getMatch());
             bet.setOdds(calculateNewOdds(bet.getOdds(), amountOfBets,false));
 
-            for(Bet relatedBet : relatedBets){
-                relatedBet.setOdds(calculateNewOdds(relatedBet.getOdds(),amountOfBets, true));
+            for (Bet relatedBet : relatedBets) {
+                boolean increaseOdds = isIncreaseOdds(bet, relatedBet);
+                relatedBet.setOdds(calculateNewOdds(relatedBet.getOdds(), amountOfBets, increaseOdds));
             }
 
             betRepository.save(bet);
@@ -122,7 +123,21 @@ public class BetService {
         }
    }
 
-   //Tweak numbers if needed
+    private static boolean isIncreaseOdds (Bet bet, Bet relatedBet) {
+        boolean increaseOdds;
+        if (bet.getBetType().getBetTypeCode().equals(BetTypeCode.OVER.getCode())) {
+            // If related bet's target value is lower/equal to the placed bet's target value, decrease odds
+            increaseOdds = relatedBet.getBetType().getTargetValue() <= bet.getBetType().getTargetValue();
+        } else if (bet.getBetType().getBetTypeCode().equals(BetTypeCode.UNDER.getCode())) {
+            // If related bet's target value is higher/equal to the placed bet's target value, decrease odds
+            increaseOdds = relatedBet.getBetType().getTargetValue() >= bet.getBetType().getTargetValue();
+        } else {
+            increaseOdds = true;
+        }
+        return increaseOdds;
+    }
+
+    //Tweak numbers if needed
    private Double calculateNewOdds(Double oldOdds, int betsPlaced, boolean requiresAddition){
        double adjustmentFactor = Math.log1p(betsPlaced) * 0.01;
        return requiresAddition ? oldOdds + adjustmentFactor * oldOdds : oldOdds - adjustmentFactor * oldOdds;
@@ -148,7 +163,7 @@ public class BetService {
         }
     }
 
-    public List<Bet> findRelatedBets(BetType bet, Match match){
+    public List<Bet>  findRelatedBets(BetType bet, Match match){
         try{
             List<Bet> relatedBets = new ArrayList<>();
             if(bet.getBetTypeCode().equals(BetTypeCode.DIRECT.getCode()) && bet.getBetStat().equals("score")){
@@ -440,4 +455,12 @@ public class BetService {
                 .build();
     }
 
+    public List<Bet> getByListId (List<Long> betIds) {
+        List<Bet> bets = new ArrayList<>();
+        for(Long id : betIds){
+            bets.add(betRepository.findById(id).orElseThrow(()
+                    -> new ServiceException("Bet not found")));
+        }
+        return bets;
+    }
 }
