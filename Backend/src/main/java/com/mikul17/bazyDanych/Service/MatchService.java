@@ -72,25 +72,6 @@ public class MatchService {
             throw new ServiceException("Error: "+e.getMessage());
         }
     }
-    public Match updateMatchDate(Long matchId, Timestamp date){
-        try{
-            Match match = matchRepository.findById(matchId).orElseThrow(()->
-                    new ServiceException("Coudln't find match with given id: "+matchId));
-            match.setMatchDate(date);
-            return matchRepository.save(match);
-        }catch (Exception e){
-            throw new ServiceException("Error: "+e.getMessage());
-        }
-    }
-    public void deleteMatch(Long id){
-        try{
-            matchRepository.findById(id).orElseThrow(()->
-                    new ServiceException("Couldn't find match with given id: "+id));
-            matchRepository.deleteById(id);
-        }catch (Exception e){
-            throw new ServiceException("Error: "+e.getMessage());
-        }
-    }
     public Match getMatchById(Long matchId) {
         try{
             return matchRepository.findById(matchId).orElseThrow(

@@ -66,34 +66,6 @@ public class MatchController {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteMatchById(@PathVariable Long id){
-        try{
-            matchService.deleteMatch(id);
-            logger.info("Match with id:{} deleted",id);
-            return ResponseEntity.ok().body("Match deleted successfully");
-        }catch (ServiceException e){
-            logger.error(e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }catch (Exception e){
-            logger.error(e.getMessage());
-            return ResponseEntity.internalServerError().body(e.getMessage());
-        }
-    }
-    @PutMapping("/updateDate/{id}")
-    public ResponseEntity<?> updateMatchDate(@PathVariable Long id, @RequestBody Timestamp date){
-        try{
-
-            return ResponseEntity.ok().body(matchService.updateMatchDate(id,date));
-        }catch (ServiceException e){
-            logger.error(e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }catch (Exception e){
-            logger.error(e.getMessage());
-            return ResponseEntity.internalServerError().body(e.getMessage());
-        }
-    }
-  
     @GetMapping("/today/{leagueId}")
     public ResponseEntity<?> todayMatchesByLeague (@PathVariable Long leagueId){
         try{

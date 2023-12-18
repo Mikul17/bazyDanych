@@ -12,6 +12,7 @@ import lombok.*;
 public class Transaction {
     @Id
     @Column(name = "transaction_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(length = 30)
     private String transactionType;

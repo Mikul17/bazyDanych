@@ -82,22 +82,6 @@ public class TeamService {
             throw new ServiceException("Error while getting teams", e);
         }
     }
-    public void deleteTeam(Long id) {
-        try{
-            teamRepository.findById(id).orElseThrow(()
-                    -> new ServiceException("Team not found"));
-            teamRepository.deleteById(id);
-        }catch (Exception e){
-           throw new ServiceException("Error while deleting team: "+e.getMessage());
-        }
-    }
-    public void deleteAllTeams() {
-        try{
-            teamRepository.deleteAll();
-        }catch (Exception e){
-            throw new ServiceException("Error while deleting teams: "+e.getMessage());
-        }
-    }
     public Team resetTeamStats(Long id) {
         try{
             Team team = getTeamById(id);
@@ -111,15 +95,6 @@ public class TeamService {
             return teamRepository.save(team);
         }catch (Exception e){
            throw new ServiceException("Error while reseting team: "+e.getMessage());
-        }
-    }
-    public void deleteTeamByTeamName(String teamName) {
-        try{
-            Team team = teamRepository.findByTeamName(teamName).orElseThrow(()
-                    -> new ServiceException("Team not found"));
-            teamRepository.delete(team);
-        }catch (Exception e){
-           throw new ServiceException("Error while deleting team by teamName: "+e.getMessage());
         }
     }
     public void resetTeamStatsForWholeLeague(League league){

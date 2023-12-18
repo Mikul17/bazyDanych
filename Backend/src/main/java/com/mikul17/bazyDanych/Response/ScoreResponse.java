@@ -8,9 +8,6 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class ScoreResponse {
-    private String homeTeamName;
-    private String awayTeamName;
     private Integer homeTeamGoals;
     private Integer awayTeamGoals;
-    private Integer minute;
 }

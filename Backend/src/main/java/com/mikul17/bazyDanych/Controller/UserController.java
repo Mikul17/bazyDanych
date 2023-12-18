@@ -43,7 +43,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/update/")
+    @PutMapping("/update/pn/")
     public ResponseEntity<?> updatePhoneNumber(@RequestParam("phoneNumber") String phoneNumber, @RequestParam("userId") Long userId){
         try{
             return ResponseEntity.ok().body(userService.changePhoneNumber(phoneNumber,userId));
@@ -52,7 +52,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/update")
+    @PutMapping("/update/an/")
     public ResponseEntity<?> updateAccNumber(@RequestParam("accountNumber") String accountNumber, @RequestParam("userId") Long userId){
         try {
             return ResponseEntity.ok().body(userService.changeAccountNumber(accountNumber,userId));

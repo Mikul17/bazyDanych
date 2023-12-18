@@ -69,31 +69,5 @@ public class LeagueController {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteLeague(@PathVariable Long id) {
-        try{
-            leagueService.deleteLeague(id);
-            return ResponseEntity.ok().body("League with id: "+id+" deleted successfully");
-        }catch (ServiceException e){
-            log.error(e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }catch (Exception e){
-            log.error(e.getMessage());
-            return ResponseEntity.internalServerError().body(e.getMessage());
-        }
-    }
 
-    @DeleteMapping("/deleteAll")
-    public ResponseEntity<?> deleteAllLeagues() {
-        try{
-            leagueService.deleteAll();
-            return ResponseEntity.ok("All leagues deleted successfully");
-        }catch (ServiceException e){
-            log.error(e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }catch (Exception e){
-            log.error(e.getMessage());
-            return ResponseEntity.internalServerError().body(e.getMessage());
-        }
-    }
 }

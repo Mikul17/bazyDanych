@@ -1,7 +1,9 @@
 package com.mikul17.bazyDanych.BetServiceTests;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
+import com.mikul17.bazyDanych.Models.BetTypeCode;
 import com.mikul17.bazyDanych.Models.Coupons.Bet;
 import com.mikul17.bazyDanych.Models.Coupons.BetType;
 import com.mikul17.bazyDanych.Repository.*;
@@ -11,6 +13,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class BetServiceTest {
 
@@ -235,5 +241,4 @@ public class BetServiceTest {
         // Assert
         verify(bet).setBetStatus(1); // Match is a draw, bet wins
     }
-
 }

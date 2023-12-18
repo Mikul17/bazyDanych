@@ -16,7 +16,6 @@ public class BetTypeRequest {
     private String betStat;
     @NotBlank
     private String betTypeCode;
-    @NotBlank
     private Integer team;
     private Double targetValue;
 }

@@ -1,7 +1,10 @@
 package com.mikul17.bazyDanych.Models.Coupons;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.Set;
 
 @Getter
 @Setter
@@ -19,4 +22,7 @@ public class BetType {
     private Integer team;
     @Column (columnDefinition = "DECIMAL(2,1)")
     private Double targetValue;
+    @JsonIgnore
+    @OneToMany(mappedBy = "betType",cascade = CascadeType.ALL,orphanRemoval = true)
+    private Set<Bet> bets;
 }
