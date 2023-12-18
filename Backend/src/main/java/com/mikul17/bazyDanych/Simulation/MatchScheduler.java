@@ -3,6 +3,7 @@
     import com.mikul17.bazyDanych.Models.Simulation.League;
     import com.mikul17.bazyDanych.Models.Simulation.Team;
     import com.mikul17.bazyDanych.Models.Matches.Match;
+    import com.mikul17.bazyDanych.Service.BetService;
     import com.mikul17.bazyDanych.Service.LeagueService;
     import com.mikul17.bazyDanych.Service.MatchService;
     import com.mikul17.bazyDanych.Service.TeamService;
@@ -27,6 +28,7 @@
         private final MatchService matchService;
         private final TeamService teamService;
         private final LeagueService leagueService;
+        private final BetService betService;
         private final Logger logger = LoggerFactory.getLogger(MatchScheduler.class);
         private final Map<Long, Set<Long>> teamSchedule = new HashMap<>();
 
@@ -49,6 +51,7 @@
                     }
                 }
                 teamSchedule.clear();
+                betService.generateBetsFromBetTypesForAllMatches();
             }catch (Exception e){
                 logger.error("Error while scheduling matches: "+e.getMessage());
             }
@@ -94,6 +97,4 @@
 
             return Timestamp.valueOf(randomDateTime);
         }
-
-
     }

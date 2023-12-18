@@ -12,5 +12,8 @@ public interface BetTypeRepository extends JpaRepository<BetType, Long>{
     Optional<BetType> findById(Long id);
     List<BetType> findByBetTypeCode(String betTypeCode);
     List<BetType> findByBetStat(String betStat);
+    List<BetType> findByBetTypeCodeAndBetStatOrderByTargetValueAsc(String betTypeCode, String betStat);
+    List<BetType> findByBetTypeCodeAndBetStatOrderByTargetValueDesc(String betTypeCode, String betStat);
     List<BetType> findByBetTypeCodeAndBetStat(String betTypeCode, String betStat);
+    BetType findByBetTypeCodeAndTeamAndTargetValue(String betTypeCode, Integer team, Double targetValue);
 }

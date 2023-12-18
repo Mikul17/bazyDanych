@@ -3,6 +3,7 @@ package com.mikul17.bazyDanych.Repository;
 import com.mikul17.bazyDanych.Models.Matches.Match;
 import com.mikul17.bazyDanych.Models.Simulation.League;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 

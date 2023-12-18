@@ -4,6 +4,7 @@ import com.mikul17.bazyDanych.Models.Coupons.Bet;
 import com.mikul17.bazyDanych.Models.Coupons.BetType;
 import com.mikul17.bazyDanych.Models.Matches.Match;
 import com.mikul17.bazyDanych.Models.Matches.MatchStats;
+import com.mikul17.bazyDanych.Models.Simulation.Team;
 import com.mikul17.bazyDanych.Repository.*;
 import com.mikul17.bazyDanych.Request.BetRequest;
 import com.mikul17.bazyDanych.Response.BetResponse;
@@ -14,10 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -26,28 +24,26 @@ import java.util.stream.Collectors;
 public class BetService {
 
     private final BetRepository betRepository;
-    private final BetTypeRepository betTypeRepository;
-    private final CouponRepository couponRepository;
-    private final MatchRepository matchRepository;
+    private final MatchService matchService;
     private final MatchStatsRepository matchStatsRepository;
+    private final BetTypeService betTypeService;
+    private final CouponRepository couponRepository;
+    private final TeamService teamService;
 
     public BetResponse createBet(BetRequest betRequest) {
         try {
-            Match match = matchRepository.findById(betRequest.getMatchId())
-                    .orElseThrow(() -> new ServiceException("Match not found"));
-            BetType betType = betTypeRepository.findById(betRequest.getBetTypeId())
-                    .orElseThrow(() -> new ServiceException("Bet type not found"));
+            Match match = matchService.getMatchById(betRequest.getMatchId());
+            BetType betType = betTypeService.getBetTypeById(betRequest.getBetTypeId());
             Bet bet = Bet.builder()
-                    .match(match)
-                    .odds(betRequest.getOdds())
-                    .betType(betType)
-                    .betStatus(0)
-                    .build();
+                        .match(match)
+                        .odds(betRequest.getOdds())
+                        .betType(betType)
+                        .betStatus(0)
+                        .build();
             betRepository.save(bet);
-
             return mapBetToBetResponse(bet);
         }catch (Exception e) {
-            throw new ServiceException("Error: " + e.getMessage());
+            throw new ServiceException(e.getMessage());
         }
     }
 
@@ -73,8 +69,7 @@ public class BetService {
 
     public List<Bet> getBetsByMatchId(Long matchId) {
         try{
-            Match match = matchRepository.findById(matchId).orElseThrow(()
-                    -> new ServiceException("Match not found"));
+            Match match = matchService.getMatchById(matchId);
             return betRepository.findByMatch(match);
         }catch (Exception e) {
             throw new ServiceException("Error: " + e.getMessage());
@@ -85,10 +80,8 @@ public class BetService {
         try {
             Bet bet = betRepository.findById(id).orElseThrow(()
                     -> new ServiceException("Bet not found"));
-            Match match = matchRepository.findById(betRequest.getMatchId())
-                    .orElseThrow(() -> new ServiceException("Match not found"));
-            BetType betType = betTypeRepository.findById(betRequest.getBetTypeId())
-                    .orElseThrow(() -> new ServiceException("Bet type not found"));
+            Match match = matchService.getMatchById(betRequest.getMatchId());
+            BetType betType = betTypeService.getBetTypeById(betRequest.getBetTypeId());
             bet.setMatch(match);
             bet.setOdds(betRequest.getOdds());
             bet.setBetType(betType);
@@ -135,7 +128,6 @@ public class BetService {
        double adjustmentFactor = Math.log1p(betsPlaced) * 0.01;
        return requiresAddition ? oldOdds + adjustmentFactor * oldOdds : oldOdds - adjustmentFactor * oldOdds;
    }
-
 
     private BetResponse mapBetToBetResponse(Bet bet) {
         return BetResponse.builder()
@@ -197,7 +189,6 @@ public class BetService {
             throw new ServiceException(e.getMessage());
         }
     }
-
 
     /**
      * @param match
@@ -328,4 +319,120 @@ public class BetService {
         //TO:DO - possibly add some logic here
         return null;
     }
+
+    public List<Match> getAllMatchesWithoutBets (){
+        List<Match> all = matchService.getAllMatches();
+        return all.stream()
+                .filter(this::matchHasNoBets)
+                .collect(Collectors.toList());
+    }
+
+    private boolean matchHasNoBets(Match match) {
+        return getBetsByMatchId(match.getId()).isEmpty();
+    }
+
+    public void generateBetsFromBetTypesForAllMatches(){
+        List<Match> matches = getAllMatchesWithoutBets();
+        List<String> possibleStats = new ArrayList<>(Arrays.asList(
+                "goals","shots","shotsOnTarget","passes","corners","yellowCards","fouls","possession"
+        ));
+
+        for(Match match : matches){
+            generateOverBets(match,possibleStats);
+            generateUnderBets(match,possibleStats);
+            generateDirectBets(match);
+            generateScoreBets(match);
+            }
+    }
+
+    private void generateOverBets (Match match, List<String> possibleStats) {
+        for(String stat : possibleStats) {
+            List<BetType> overBets = betTypeService.getBetTypeByCodeAndStatSorted("over",stat,true);
+            Double prevOdds = 1.35;
+            for(BetType type : overBets){
+                BetRequest request = BetRequest.builder()
+                        .betTypeId(type.getId())
+                        .matchId(match.getId())
+                        .odds(prevOdds)
+                        .build();
+                prevOdds=calculateOverUnderOdds(prevOdds);
+                createBet(request);
+            }
+        }
+    }
+
+    private void generateUnderBets(Match match, List<String> possibleStats){
+        for (String stat : possibleStats){
+            List<BetType> underBets = betTypeService.getBetTypeByCodeAndStatSorted("under",stat,false);
+            Double prevOdds= 1.35;
+            for(BetType type : underBets) {
+                BetRequest request = BetRequest.builder()
+                        .betTypeId(type.getId())
+                        .matchId(match.getId())
+                        .odds(prevOdds)
+                        .build();
+                prevOdds = calculateOverUnderOdds(prevOdds);
+                createBet(request);
+            }
+        }
+    }
+
+    private void generateDirectBets(Match match){
+        List<BetType> directBets = new ArrayList<>();
+        directBets.addAll(betTypeService.getBetTypeByCodeAndStat("direct","penalties"));
+        directBets.addAll(betTypeService.getBetTypeByCodeAndStat("direct","redCards"));
+        for(BetType betType : directBets){
+            BetRequest request = BetRequest.builder()
+                    .betTypeId(betType.getId())
+                    .matchId(match.getId())
+                    .odds(1.85)
+                    .build();
+            createBet(request);
+        }
+    }
+
+    private void generateScoreBets(Match match){
+        try {
+            Team home = match.getHomeTeam();
+            Team away = match.getAwayTeam();
+            BetType hWin = betTypeService.getBetTypeByTypeAndTeamAndValue("direct", 0, 0.0);
+            BetType hWinOrDraw = betTypeService.getBetTypeByTypeAndTeamAndValue("direct", 0, 1.0);
+            BetType aWin = betTypeService.getBetTypeByTypeAndTeamAndValue("direct", 1, 0.0);
+            BetType aWinOrDraw = betTypeService.getBetTypeByTypeAndTeamAndValue("direct", 1, 1.0);
+            BetType draw = betTypeService.getBetTypeByTypeAndTeamAndValue("direct", 2, 2.0);
+
+            int diff = teamService.getDifferenceInRelativePositionBetweenTeams(home, away);
+            double oddsFactor = Math.pow(0.9, diff - 1);
+
+            double hTeamOdds = 2 * oddsFactor;
+            double aTeamOdds = 2 * (1 / oddsFactor);
+
+            if (teamService.getRelativePositionInLeagueTable(home) > teamService.getRelativePositionInLeagueTable(away)) {
+                double temp = hTeamOdds;
+                hTeamOdds = aTeamOdds;
+                aTeamOdds = temp;
+            }
+
+            createBet(createBetRequest(hWin.getId(), match.getId(), hTeamOdds));
+            createBet(createBetRequest(hWinOrDraw.getId(), match.getId(), (hTeamOdds - (0.25 * hTeamOdds))));
+            createBet(createBetRequest(aWin.getId(), match.getId(), aTeamOdds));
+            createBet(createBetRequest(aWinOrDraw.getId(), match.getId(), (aTeamOdds - (0.25 * aTeamOdds))));
+            createBet(createBetRequest(draw.getId(), match.getId(), 2.25));
+        }catch (Exception e){
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
+    private Double calculateOverUnderOdds(Double prev){
+        return prev+(prev*0.25);
+    }
+
+    private BetRequest createBetRequest(Long betTypeId, Long matchId, Double odds){
+        return BetRequest.builder()
+                .betTypeId(betTypeId)
+                .matchId(matchId)
+                .odds(odds)
+                .build();
+    }
+
 }

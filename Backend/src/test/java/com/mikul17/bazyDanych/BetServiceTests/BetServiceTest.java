@@ -1,16 +1,24 @@
 package com.mikul17.bazyDanych.BetServiceTests;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 import com.mikul17.bazyDanych.Models.Coupons.Bet;
 import com.mikul17.bazyDanych.Models.Coupons.BetType;
+import com.mikul17.bazyDanych.Models.Matches.Match;
+import com.mikul17.bazyDanych.Models.Simulation.League;
+import com.mikul17.bazyDanych.Models.Simulation.Team;
 import com.mikul17.bazyDanych.Repository.*;
-import com.mikul17.bazyDanych.Service.BetService;
+import com.mikul17.bazyDanych.Service.*;
 import com.mikul17.bazyDanych.Models.Matches.MatchStats;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BetServiceTest {
 
@@ -21,16 +29,19 @@ public class BetServiceTest {
     @Mock
     private MatchStatsRepository matchStatsRepository;
     @Mock
-    private BetTypeRepository betTypeRepository;
+    private BetTypeService betTypeService;
     @Mock
     private CouponRepository couponRepository;
     @Mock
-    private MatchRepository matchRepository;
+    private MatchService matchService;
+
+    @Mock
+    private TeamService teamService;
 
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        betService = new BetService(betRepository,betTypeRepository,couponRepository,matchRepository,matchStatsRepository);
+        betService = new BetService(betRepository, matchService, matchStatsRepository, betTypeService, couponRepository,teamService);
     }
 
     @Test
