@@ -1,5 +1,6 @@
 package com.mikul17.bazyDanych.Service;
 
+import com.mikul17.bazyDanych.Models.Address;
 import com.mikul17.bazyDanych.Models.TokenType;
 import com.mikul17.bazyDanych.Models.User;
 import com.mikul17.bazyDanych.Models.VerificationToken;
@@ -25,6 +26,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final VerificationTokenService verificationTokenService;
     private final MailService mailService;
+    private final AddressService addressService;
 
     public void checkIfUserExists(Long userId) {
         if (!userRepository.existsById(userId)) {
@@ -80,13 +82,13 @@ public class UserService {
             throw new ServiceException(e.getMessage());
         }
     }
-    public String banUserById(Optional<String> id){
+    public String changeUserBannedStatus (Optional<String> id){
         try{
             Long userId = Long.parseLong(id.orElseThrow(()-> new Exception("User id is missing")));
             User user = getUserById(userId);
-            user.setBanned(true);
+            user.setBanned(!user.getBanned());
             userRepository.save(user);
-            return "User with id: "+userId+" got banned";
+            return "User with id: "+userId+" got"+(user.getBanned()?" banned" : " unbanned");
         }catch (Exception e){
             throw new ServiceException("Error while banning user: "+e.getMessage());
         }
@@ -102,6 +104,24 @@ public class UserService {
         }catch (Exception e){
             throw new ServiceException(e.getMessage());
         }
+    }
+
+    public Address changeAddress(Address request, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ServiceException("User not found"));
+
+        Address currentAddress = user.getAddress();
+        boolean isSharedAddress = userRepository.countByAddress_Id(currentAddress.getId()) > 1;
+
+        if (isSharedAddress) {
+            Address existingAddress = addressService.findOrCreateAddress(request);
+            user.setAddress(existingAddress);
+        } else {
+            addressService.updateAddressDetails(currentAddress, request);
+        }
+
+        userRepository.save(user);
+        return user.getAddress();
     }
     private UserResponse mapUserToUserResponse(User user){
         return UserResponse.builder()

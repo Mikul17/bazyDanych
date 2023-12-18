@@ -1,5 +1,7 @@
 package com.mikul17.bazyDanych.Controller;
 
+import com.mikul17.bazyDanych.Models.Address;
+import com.mikul17.bazyDanych.Request.AddressChangeRequest;
 import com.mikul17.bazyDanych.Request.ChangePasswordRequest;
 import com.mikul17.bazyDanych.Service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -62,7 +64,25 @@ public class UserController {
     @PutMapping("/ban")
     public ResponseEntity<?> banUser(@RequestParam("userId") Optional<String> userId){
         try{
-            return ResponseEntity.ok().body(userService.banUserById(userId));
+            return ResponseEntity.ok().body(userService.changeUserBannedStatus(userId));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/unban")
+    public ResponseEntity<?> unbanUser(@RequestParam("userId") Optional<String> userId){
+        try{
+            return ResponseEntity.ok().body(userService.changeUserBannedStatus(userId));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/changeAddress")
+    public ResponseEntity<?> changeAddress(@RequestBody AddressChangeRequest request){
+        try{
+            return ResponseEntity.ok().body(userService.changeAddress(request.getAddress(), request.getUserId()));
         }catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
