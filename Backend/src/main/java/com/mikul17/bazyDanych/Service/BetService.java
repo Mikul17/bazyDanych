@@ -1,5 +1,7 @@
 package com.mikul17.bazyDanych.Service;
 
+import com.mikul17.bazyDanych.Models.BetStat;
+import com.mikul17.bazyDanych.Models.BetTypeCode;
 import com.mikul17.bazyDanych.Models.Coupons.Bet;
 import com.mikul17.bazyDanych.Models.Coupons.BetType;
 import com.mikul17.bazyDanych.Models.Matches.Match;
@@ -152,7 +154,7 @@ public class BetService {
     public List<Bet> findRelatedBets(BetType bet, Match match){
         try{
             List<Bet> relatedBets = new ArrayList<>();
-            if(bet.getBetTypeCode().equals("direct") && bet.getBetStat().equals("score")){
+            if(bet.getBetTypeCode().equals(BetTypeCode.DIRECT.getCode()) && bet.getBetStat().equals("score")){
                 int firstTeam;
                 int secondTeam = switch (bet.getTeam()) {
                     case 0 -> {
@@ -172,11 +174,11 @@ public class BetService {
                 relatedBets.addAll(betRepository.findByMatchAndBetType_BetStatAndBetType_Team(match,"score",firstTeam));
                 relatedBets.addAll(betRepository.findByMatchAndBetType_BetStatAndBetType_Team(match,"score",secondTeam));
                 return relatedBets;
-            } else if (bet.getBetTypeCode().equals("direct") && (bet.getBetStat().equals("penalties") || bet.getBetStat().equals("redCards"))) {
+            } else if (bet.getBetTypeCode().equals(BetTypeCode.DIRECT.getCode()) && (bet.getBetStat().equals("penalties") || bet.getBetStat().equals("redCards"))) {
                 Double negativeValue = bet.getTargetValue()==1.0?0.0:1.0;
                 relatedBets.addAll(betRepository.findByMatchAndBetType_BetStatAndBetType_TargetValue(match, bet.getBetStat(),negativeValue));
             }
-            if (bet.getBetTypeCode().equals("over") || bet.getBetTypeCode().equals("under")){
+            if (bet.getBetTypeCode().equals(BetTypeCode.OVER.getCode()) || bet.getBetTypeCode().equals(BetTypeCode.UNDER.getCode())){
                 relatedBets.addAll(betRepository.findByMatchAndBetType_BetStatAndBetType_TeamAndBetType_TargetValueNot(
                         match,
                         bet.getBetTypeCode(),
@@ -224,17 +226,17 @@ public class BetService {
             MatchStats awayTeamStats =matchStatsRepository.findByMatchAndTeam(match, match.getAwayTeam().getId()).orElseThrow(()
                     -> new ServiceException("Couldn't find stats for away team"));
 
-            processBets("score", match, bet -> updateScoreBetStatus(bet, homeTeamStats, awayTeamStats));
-            processBets("goals", match, bet -> updateGoalsBetStatus(bet, homeTeamStats, awayTeamStats));
-            processBets("possession", match, bet -> updateOverBetStatus(bet, "possession", homeTeamStats, awayTeamStats));
-            processBets("shots", match, bet -> updateOverUnderBetStatus(bet, "shots", homeTeamStats, awayTeamStats));
-            processBets("shotsOnTarget", match, bet -> updateOverUnderBetStatus(bet, "shotsOnTarget", homeTeamStats, awayTeamStats));
-            processBets("passes", match, bet -> updateOverUnderBetStatus(bet, "passes", homeTeamStats, awayTeamStats));
-            processBets("corners", match, bet -> updateOverUnderBetStatus(bet, "corners", homeTeamStats, awayTeamStats));
-            processBets("penalties", match, bet -> updateDirectBetStatus(bet, "penalties", homeTeamStats, awayTeamStats));
-            processBets("redCards", match, bet -> updateDirectBetStatus(bet, "redCards", homeTeamStats, awayTeamStats));
-            processBets("yellowCards", match, bet -> updateOverBetStatus(bet, "yellowCards", homeTeamStats, awayTeamStats));
-            processBets("fouls", match, bet -> updateOverBetStatus(bet, "fouls", homeTeamStats, awayTeamStats));
+            processBets(BetStat.SCORE.getStat(), match, bet -> updateScoreBetStatus(bet, homeTeamStats, awayTeamStats));
+            processBets(BetStat.GOALS.getStat(), match, bet -> updateGoalsBetStatus(bet, homeTeamStats, awayTeamStats));
+            processBets(BetStat.POSSESSION.getStat(), match, bet -> updateOverBetStatus(bet, BetStat.POSSESSION.getStat(), homeTeamStats, awayTeamStats));
+            processBets(BetStat.SHOTS.getStat(), match, bet -> updateOverUnderBetStatus(bet, BetStat.SHOTS.getStat(), homeTeamStats, awayTeamStats));
+            processBets(BetStat.SHOTS_ON_TARGET.getStat(), match, bet -> updateOverUnderBetStatus(bet, BetStat.SHOTS_ON_TARGET.getStat(), homeTeamStats, awayTeamStats));
+            processBets(BetStat.PASSES.getStat(), match, bet -> updateOverUnderBetStatus(bet, BetStat.PASSES.getStat(), homeTeamStats, awayTeamStats));
+            processBets(BetStat.CORNERS.getStat(), match, bet -> updateOverUnderBetStatus(bet, BetStat.CORNERS.getStat(), homeTeamStats, awayTeamStats));
+            processBets(BetStat.PENALTIES.getStat(), match, bet -> updateDirectBetStatus(bet, BetStat.PENALTIES.getStat(), homeTeamStats, awayTeamStats));
+            processBets(BetStat.RED_CARDS.getStat(), match, bet -> updateDirectBetStatus(bet, BetStat.RED_CARDS.getStat(), homeTeamStats, awayTeamStats));
+            processBets(BetStat.YELLOW_CARDS.getStat(), match, bet -> updateOverBetStatus(bet, BetStat.YELLOW_CARDS.getStat(), homeTeamStats, awayTeamStats));
+            processBets(BetStat.FOULS.getStat(), match, bet -> updateOverBetStatus(bet, BetStat.FOULS.getStat(), homeTeamStats, awayTeamStats));
         } catch (Exception e) {
             throw new ServiceException(e.getMessage());
         }
@@ -246,7 +248,7 @@ public class BetService {
         }
     }
     public void updateScoreBetStatus (Bet bet, MatchStats homeStats, MatchStats awayStats) {
-        if (bet.getBetType().getBetTypeCode().equals("direct")) {
+        if (bet.getBetType().getBetTypeCode().equals(BetTypeCode.DIRECT.getCode())) {
             if (bet.getBetType().getTargetValue() == 1.0) {
                 if (bet.getBetType().getTeam() == 0) {  // Home team
                     bet.setBetStatus(homeStats.getGoalsScored() >= awayStats.getGoalsScored() ? 1 : 2);
@@ -265,12 +267,12 @@ public class BetService {
         }
     }
     public void updateGoalsBetStatus (Bet bet, MatchStats homeStats, MatchStats awayStats) {
-        if (bet.getBetType().getBetTypeCode().equals("over")) {
+        if (bet.getBetType().getBetTypeCode().equals(BetTypeCode.OVER.getCode())) {
             int totalGoals = bet.getBetType().getTeam() == 2 ?
                     homeStats.getGoalsScored() + awayStats.getGoalsScored() :
                     (bet.getBetType().getTeam() == 0 ? homeStats.getGoalsScored() : awayStats.getGoalsScored());
             bet.setBetStatus(totalGoals > bet.getBetType().getTargetValue() ? 1 : 2);
-        } else if (bet.getBetType().getBetTypeCode().equals("under")) {
+        } else if (bet.getBetType().getBetTypeCode().equals(BetTypeCode.UNDER.getCode())) {
             int totalGoals = bet.getBetType().getTeam() == 2 ?
                     homeStats.getGoalsScored() + awayStats.getGoalsScored() :
                     (bet.getBetType().getTeam() == 0 ? homeStats.getGoalsScored() : awayStats.getGoalsScored());
@@ -309,9 +311,9 @@ public class BetService {
             case "corners" -> bet.getBetType().getTeam() == 0 ? homeStats.getCorners() : awayStats.getCorners();
             default -> 0;
         };
-        if (Objects.equals(bet.getBetType().getBetTypeCode(), "over")) {
+        if (Objects.equals(bet.getBetType().getBetTypeCode(), BetTypeCode.OVER.getCode())) {
             bet.setBetStatus(statValue > bet.getBetType().getTargetValue() ? 1 : 2);
-        } else if (Objects.equals(bet.getBetType().getBetTypeCode(), "under")) {
+        } else if (Objects.equals(bet.getBetType().getBetTypeCode(), BetTypeCode.UNDER.getCode())) {
             bet.setBetStatus(statValue < bet.getBetType().getTargetValue() ? 1 : 2);
         }
     }
@@ -333,8 +335,15 @@ public class BetService {
 
     public void generateBetsFromBetTypesForAllMatches(){
         List<Match> matches = getAllMatchesWithoutBets();
-        List<String> possibleStats = new ArrayList<>(Arrays.asList(
-                "goals","shots","shotsOnTarget","passes","corners","yellowCards","fouls","possession"
+        List<BetStat> possibleStats = new ArrayList<>(Arrays.asList(
+                BetStat.GOALS,
+                BetStat.SHOTS,
+                BetStat.SHOTS_ON_TARGET,
+                BetStat.PASSES,
+                BetStat.CORNERS,
+                BetStat.YELLOW_CARDS,
+                BetStat.FOULS,
+                BetStat.POSSESSION
         ));
 
         for(Match match : matches){
@@ -345,9 +354,9 @@ public class BetService {
             }
     }
 
-    private void generateOverBets (Match match, List<String> possibleStats) {
-        for(String stat : possibleStats) {
-            List<BetType> overBets = betTypeService.getBetTypeByCodeAndStatSorted("over",stat,true);
+    private void generateOverBets (Match match, List<BetStat> possibleStats) {
+        for(BetStat stat : possibleStats) {
+            List<BetType> overBets = betTypeService.getBetTypeByCodeAndStatSorted(BetTypeCode.OVER.getCode(),stat.getStat(),true);
             Double prevOdds = 1.35;
             for(BetType type : overBets){
                 BetRequest request = BetRequest.builder()
@@ -361,9 +370,9 @@ public class BetService {
         }
     }
 
-    private void generateUnderBets(Match match, List<String> possibleStats){
-        for (String stat : possibleStats){
-            List<BetType> underBets = betTypeService.getBetTypeByCodeAndStatSorted("under",stat,false);
+    private void generateUnderBets(Match match, List<BetStat> possibleStats){
+        for (BetStat stat : possibleStats){
+            List<BetType> underBets = betTypeService.getBetTypeByCodeAndStatSorted(BetTypeCode.UNDER.getCode(),stat.getStat(),false);
             Double prevOdds= 1.35;
             for(BetType type : underBets) {
                 BetRequest request = BetRequest.builder()
@@ -379,8 +388,8 @@ public class BetService {
 
     private void generateDirectBets(Match match){
         List<BetType> directBets = new ArrayList<>();
-        directBets.addAll(betTypeService.getBetTypeByCodeAndStat("direct","penalties"));
-        directBets.addAll(betTypeService.getBetTypeByCodeAndStat("direct","redCards"));
+        directBets.addAll(betTypeService.getBetTypeByCodeAndStat(BetTypeCode.DIRECT.getCode(),"penalties"));
+        directBets.addAll(betTypeService.getBetTypeByCodeAndStat(BetTypeCode.DIRECT.getCode(),"redCards"));
         for(BetType betType : directBets){
             BetRequest request = BetRequest.builder()
                     .betTypeId(betType.getId())
@@ -395,11 +404,11 @@ public class BetService {
         try {
             Team home = match.getHomeTeam();
             Team away = match.getAwayTeam();
-            BetType hWin = betTypeService.getBetTypeByTypeAndTeamAndValue("direct", 0, 0.0);
-            BetType hWinOrDraw = betTypeService.getBetTypeByTypeAndTeamAndValue("direct", 0, 1.0);
-            BetType aWin = betTypeService.getBetTypeByTypeAndTeamAndValue("direct", 1, 0.0);
-            BetType aWinOrDraw = betTypeService.getBetTypeByTypeAndTeamAndValue("direct", 1, 1.0);
-            BetType draw = betTypeService.getBetTypeByTypeAndTeamAndValue("direct", 2, 2.0);
+            BetType hWin = betTypeService.getBetTypeByTypeAndTeamAndValue(BetTypeCode.DIRECT.getCode(), 0, 0.0);
+            BetType hWinOrDraw = betTypeService.getBetTypeByTypeAndTeamAndValue(BetTypeCode.DIRECT.getCode(), 0, 1.0);
+            BetType aWin = betTypeService.getBetTypeByTypeAndTeamAndValue(BetTypeCode.DIRECT.getCode(), 1, 0.0);
+            BetType aWinOrDraw = betTypeService.getBetTypeByTypeAndTeamAndValue(BetTypeCode.DIRECT.getCode(), 1, 1.0);
+            BetType draw = betTypeService.getBetTypeByTypeAndTeamAndValue(BetTypeCode.DIRECT.getCode(), 2, 2.0);
 
             int diff = teamService.getDifferenceInRelativePositionBetweenTeams(home, away);
             double oddsFactor = Math.pow(0.9, diff - 1);
