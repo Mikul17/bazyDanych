@@ -46,9 +46,9 @@ public class User implements UserDetails {
     @Column(columnDefinition = "DECIMAL(19,2)")
     private Double balance;
 
-    @ManyToOne(targetEntity = Address.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(targetEntity = Address.class)
     @JoinColumn(name = "address_id")
-    private Address Address;
+    private Address address;
 
     @Column(columnDefinition = "Boolean default false")
     private Boolean enabled;

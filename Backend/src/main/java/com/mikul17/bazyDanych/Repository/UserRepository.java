@@ -1,5 +1,6 @@
 package com.mikul17.bazyDanych.Repository;
 
+import com.mikul17.bazyDanych.Models.Address;
 import com.mikul17.bazyDanych.Models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -16,4 +17,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsBySSN (String ssn);
 
+    Integer countByAddress_Id(Long address_id);
 }

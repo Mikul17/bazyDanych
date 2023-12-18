@@ -1,6 +1,7 @@
 package com.mikul17.bazyDanych.Security.Service;
 
 import com.mikul17.bazyDanych.Models.*;
+import com.mikul17.bazyDanych.Repository.AddressRepository;
 import com.mikul17.bazyDanych.Repository.UserRepository;
 import com.mikul17.bazyDanych.Request.AuthenticationRequest;
 import com.mikul17.bazyDanych.Request.MailRequest;
@@ -38,6 +39,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final MailService mailService;
     private final VerificationTokenService verificationTokenService;
+    private final AddressRepository addressRepository;
 
 
     public static String hashSSN(String ssn) throws NoSuchAlgorithmException {
@@ -80,6 +82,8 @@ public class AuthService {
                     .zipCode(request.getZipCode())
                     .build();
 
+            addressRepository.save(address);
+
 
             var user = User.builder()
                     .firstName(request.getFirstName())
@@ -93,7 +97,7 @@ public class AuthService {
                     .role(Role.ROLE_USER)
                     .createdAt(new Timestamp(new Date().getTime()))
                     .balance(0.0)
-                    .Address(address)
+                    .address(address)
                     .enabled(false)
                     .banned(false)
                     .build();
@@ -116,7 +120,7 @@ public class AuthService {
             }).start();
 
         } catch (Exception e){
-            throw new AuthenticationServiceException("Registration Failure");
+            throw new AuthenticationServiceException("Registration Failure: "+e.getMessage());
         }
     }
 
@@ -131,13 +135,6 @@ public class AuthService {
         var user = userRepository.findByEmail(request.getEmail()).orElseThrow(
                 ()-> new ServiceException("User with given email doesnt exist"));
 
-//        if(user.getBanned()){
-//            return AuthenticationResponse.builder()
-//                    .message("User is banned")
-//                    .email(user.getEmail())
-//                    .token(null)
-//                    .build();
-//        }
 
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
