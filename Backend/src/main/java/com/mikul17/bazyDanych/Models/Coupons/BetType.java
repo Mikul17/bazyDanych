@@ -20,7 +20,7 @@ public class BetType {
     private String betStat;
     private String betTypeCode;
     private Integer team;
-    @Column (columnDefinition = "DECIMAL(2,1)")
+    @Column (columnDefinition = "DECIMAL(4,1)")
     private Double targetValue;
     @JsonIgnore
     @OneToMany(mappedBy = "betType",cascade = CascadeType.ALL,orphanRemoval = true)
