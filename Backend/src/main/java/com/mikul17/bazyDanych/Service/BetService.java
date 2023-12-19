@@ -433,11 +433,21 @@ public class BetService {
                 aTeamOdds = temp;
             }
 
-            createBet(createBetRequest(hWin.getId(), match.getId(), hTeamOdds));
-            createBet(createBetRequest(hWinOrDraw.getId(), match.getId(), (hTeamOdds - (0.25 * hTeamOdds))));
-            createBet(createBetRequest(aWin.getId(), match.getId(), aTeamOdds));
-            createBet(createBetRequest(aWinOrDraw.getId(), match.getId(), (aTeamOdds - (0.25 * aTeamOdds))));
-            createBet(createBetRequest(draw.getId(), match.getId(), 2.25));
+            if(hWin != null){
+                createBet(createBetRequest(hWin.getId(), match.getId(), hTeamOdds));
+            }
+            if(hWinOrDraw != null){
+                createBet(createBetRequest(hWinOrDraw.getId(), match.getId(), (hTeamOdds - (0.25 * hTeamOdds))));
+            }
+            if(aWin!=null){
+                createBet(createBetRequest(aWin.getId(), match.getId(), aTeamOdds));
+            }
+            if(aWinOrDraw!=null){
+                createBet(createBetRequest(aWinOrDraw.getId(), match.getId(), (aTeamOdds - (0.25 * aTeamOdds))));
+            }
+           if(draw !=null){
+               createBet(createBetRequest(draw.getId(), match.getId(), 2.25));
+           }
         }catch (Exception e){
             throw new ServiceException(e.getMessage());
         }

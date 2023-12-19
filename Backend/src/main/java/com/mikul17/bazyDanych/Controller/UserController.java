@@ -64,7 +64,7 @@ public class UserController {
     @PutMapping("/ban")
     public ResponseEntity<?> banUser(@RequestParam("userId") Optional<String> userId){
         try{
-            return ResponseEntity.ok().body(userService.changeUserBannedStatus(userId));
+            return ResponseEntity.ok().body(userService.changeUserBannedStatus(userId,true));
         }catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -73,7 +73,7 @@ public class UserController {
     @PutMapping("/unban")
     public ResponseEntity<?> unbanUser(@RequestParam("userId") Optional<String> userId){
         try{
-            return ResponseEntity.ok().body(userService.changeUserBannedStatus(userId));
+            return ResponseEntity.ok().body(userService.changeUserBannedStatus(userId,false));
         }catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }

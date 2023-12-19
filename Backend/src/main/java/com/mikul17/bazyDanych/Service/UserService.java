@@ -82,11 +82,11 @@ public class UserService {
             throw new ServiceException(e.getMessage());
         }
     }
-    public String changeUserBannedStatus (Optional<String> id){
+    public String changeUserBannedStatus (Optional<String> id, boolean ban){
         try{
             Long userId = Long.parseLong(id.orElseThrow(()-> new Exception("User id is missing")));
             User user = getUserById(userId);
-            user.setBanned(!user.getBanned());
+            user.setBanned(ban);
             userRepository.save(user);
             return "User with id: "+userId+" got"+(user.getBanned()?" banned" : " unbanned");
         }catch (Exception e){
