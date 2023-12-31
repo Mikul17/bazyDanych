@@ -1,7 +1,6 @@
 "use client";
 import { Dosis, Inter } from 'next/font/google'
 import './globals.css'
-import Navbar from '@/components/Navbar/Navbar';
 
 
 const dosisFont = Dosis({
@@ -18,7 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={dosisFont.className}>
+      <body className={dosisFont.className} style={{margin:"0", padding:"0"}}>
           {children}
        </body>
     </html>
