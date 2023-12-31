@@ -17,7 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={dosisFont.className} style={{margin:"0", padding:"0"}}>
+      <body className={dosisFont.className} style={{margin:"0", padding:"0", top:"0"}}>
           {children}
        </body>
     </html>
