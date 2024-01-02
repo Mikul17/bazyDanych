@@ -1,5 +1,14 @@
 import paletteProvider from "@/constants/color-palette";
-import { Box, Button, IconButton, Input, InputAdornment, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Grid,
+  IconButton,
+  Input,
+  InputAdornment,
+  TextField,
+  Typography,
+} from "@mui/material";
 import MatchContainer from "./MatchContainer";
 import { DeleteOutline } from "@mui/icons-material";
 
@@ -28,17 +37,15 @@ const CouponCreator = () => {
     maxHeight: "60vh",
     overflowY: "auto",
     width: "100%",
+    '&::-webkit-scrollbar': {display: "none"}
   };
 
   const placeBetButtonStyle = {
-    margin:"0.4rem",
-    width:"40%",
-    background:palette.primary.main,
+    background: palette.primary.main,
     "&:hover": {
-        backgroundColor: palette.primary.light,
-    }
-  }
-
+      backgroundColor: palette.primary.light,
+    },
+  };
 
   return (
     <Box
@@ -58,58 +65,102 @@ const CouponCreator = () => {
         alignItems={"center"}
       >
         <Typography>{calculateBets()} events</Typography>
-        <IconButton><DeleteOutline/></IconButton>
+        <IconButton>
+          <DeleteOutline />
+        </IconButton>
       </Box>
       <Box sx={matchContainerStyle}>
-        <MatchContainer homeTeam={"Slask"} awayTeam={"Legia"} matchDate={"31 Dec 2023"} matchTime={"13:45"} />
-        <MatchContainer homeTeam={"Slask"} awayTeam={"Legia"} matchDate={"31 Dec 2023"} matchTime={"13:45"} />
-        <MatchContainer homeTeam={"Slask"} awayTeam={"Legia"} matchDate={"31 Dec 2023"} matchTime={"13:45"} />
-        <MatchContainer homeTeam={"Slask"} awayTeam={"Legia"} matchDate={"31 Dec 2023"} matchTime={"13:45"} />
-        <MatchContainer homeTeam={"Slask"} awayTeam={"Legia"} matchDate={"31 Dec 2023"} matchTime={"13:45"} />
-        <MatchContainer homeTeam={"Slask"} awayTeam={"Legia"} matchDate={"31 Dec 2023"} matchTime={"13:45"} />
-        <MatchContainer homeTeam={"Slask"} awayTeam={"Legia"} matchDate={"31 Dec 2023"} matchTime={"13:45"} />
+        <MatchContainer
+          homeTeam={"Slask"}
+          awayTeam={"Legia"}
+          matchDate={"31 Dec 2023"}
+          matchTime={"13:45"}
+        />
+        <MatchContainer
+          homeTeam={"Slask"}
+          awayTeam={"Legia"}
+          matchDate={"31 Dec 2023"}
+          matchTime={"13:45"}
+        />
+        <MatchContainer
+          homeTeam={"Slask"}
+          awayTeam={"Legia"}
+          matchDate={"31 Dec 2023"}
+          matchTime={"13:45"}
+        />
+        <MatchContainer
+          homeTeam={"Slask"}
+          awayTeam={"Legia"}
+          matchDate={"31 Dec 2023"}
+          matchTime={"13:45"}
+        />
+        <MatchContainer
+          homeTeam={"Slask"}
+          awayTeam={"Legia"}
+          matchDate={"31 Dec 2023"}
+          matchTime={"13:45"}
+        />
+        <MatchContainer
+          homeTeam={"Slask"}
+          awayTeam={"Legia"}
+          matchDate={"31 Dec 2023"}
+          matchTime={"13:45"}
+        />
+        <MatchContainer
+          homeTeam={"Slask"}
+          awayTeam={"Legia"}
+          matchDate={"31 Dec 2023"}
+          matchTime={"13:45"}
+        />
       </Box>
-      <Box id="coupon-creator-footer" sx={couponFooterStyle}>
-        <Box>
-            <Box display={"flex"} justifyContent={"space-between"} alignItems={"center"} sx={{margin:"0.4rem"}}>
+      <Box sx={couponFooterStyle} display={"flex"} justifyContent={"center"} alignItems={"center"} gap={"10rem"}>
+        <Box display={"flex"} justifyContent={"space-around"} alignItems={"center"} flexDirection={"column"} gap={2}>
             <TextField
-      id="outlined-adornment"
-      label="Stake"
-      size="medium"
-      InputProps={{
-        endAdornment: <InputAdornment position="end">zł</InputAdornment>,
-      }}
-    />
+              id="outlined-adornment" 
+              label="Stake"
+              size="small"
+              fullWidth
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">zł</InputAdornment>
+                ),
+              }}
+            />
+
+<TextField
+              id="outlined-read-only-input"
+              label="Possible win"
+              defaultValue="0.00 zł"
+              fullWidth
+              size="small"
+              InputProps={{
+                readOnly: true,
+              }}
+            />
+            
+          </Box>
+          <Box display={"flex"} justifyContent={"space-around"} alignItems={"center"} flexDirection={"column"} gap={2}>
+
           <TextField
-            id="outlined-read-only-input"
-            label="Odds"
-            defaultValue="0.00"
-            size="medium"
-            InputProps={{
-              readOnly: true,
-            }}
-            InputLabelProps={{
+              id="outlined-read-only-input"
+              label="Odds"
+              defaultValue="0.00"
+              size="small"
+              fullWidth 
+              InputProps={{
+                readOnly: true,
+              }}
+              InputLabelProps={{
                 color: "primary",
-            }}
-            sx={{color:palette.primary.main}}
-          />
+              }}  
+            />
+
+            <Button variant="contained"  fullWidth sx={placeBetButtonStyle}>
+              Place bet
+            </Button>
           </Box>
-          <Box display={"flex"} justifyContent={"space-between"} alignItems={"center"} >
-          <TextField
-            id="outlined-read-only-input"
-            label="Possible win"
-            defaultValue="0.00 zł"
-            size="medium"
-            InputProps={{
-              readOnly: true,
-            }}
-            sx={{margin:"0.4rem", width:"45%"}}
-          />
-          <Button variant="contained" sx={placeBetButtonStyle}>Place bet</Button>
-          </Box>
-        </Box>
       </Box>
-      </Box>
+    </Box>
   );
 };
 

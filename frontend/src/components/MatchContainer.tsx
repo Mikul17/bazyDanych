@@ -24,7 +24,7 @@ const MatchContainer = (props: MatchContainerProps) => {
 
 
   return (
-    <Box sx={{ width: "80%", margin: "3rem 10% 3rem 10%"}}>
+    <Box  sx={{width: "80%", margin: "0rem 10% 3rem 10%" }} >
   <Card sx={{borderRadius:"1rem", backgroundColor:palette.primary.light}}>
       <CardContent>
         <Box>
@@ -42,7 +42,7 @@ const MatchContainer = (props: MatchContainerProps) => {
               <Typography variant="h6" color="error">
                 Live
               </Typography>
-            </Box>
+            </Box>  
           ) : (
             <Typography color={palette.text.light} gutterBottom>
               {props.matchDate}
@@ -50,7 +50,7 @@ const MatchContainer = (props: MatchContainerProps) => {
           )}
         </Box>
 
-        <Box display={"flex"} justifyContent={"space-between"} alignItems={"center"}> 
+        <Box sx={{display:"flex", justifyContent:"space-between"}}>
           <Box>
             <Typography variant="h5" fontWeight={"bold"} color={palette.text.secondary}>
               {props.homeTeam} - {props.matchTime} - {props.awayTeam}
@@ -58,9 +58,9 @@ const MatchContainer = (props: MatchContainerProps) => {
           </Box>
 
           <Box sx={{display:"flex", alignItems:"center"}}>
-            <BetButton betName="Home" betOdds={1.5} />
-            <BetButton betName="Draw" betOdds={2} />
-            <BetButton betName="Away" betOdds={1.5}/>
+            <BetButton betName={"Home"} betOdds={1.5}/>
+            <BetButton betName={"Draw"} betOdds={2}/>
+            <BetButton betName={"Away"} betOdds={1.5}/>
           </Box>
         </Box>
       </CardContent>
