@@ -28,6 +28,7 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.YearMonth;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +41,10 @@ public class AuthService {
     private final MailService mailService;
     private final VerificationTokenService verificationTokenService;
     private final AddressRepository addressRepository;
+
+    private static final Pattern PASSWORD_PATTERN = Pattern.compile(
+            "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%?]).{9,}$"
+    );
 
 
     public static String hashSSN(String ssn) throws NoSuchAlgorithmException {
@@ -60,6 +65,10 @@ public class AuthService {
         return hexString.toString();
     }
 
+    private static boolean isPasswordValid(String password){
+        return PASSWORD_PATTERN.matcher(password).matches();
+    }
+
     public void register (RegisterRequest request) throws AuthenticationException {
         try {
             if (userRepository.existsByEmail(request.getEmail())) {
@@ -71,6 +80,10 @@ public class AuthService {
 
             if (decodeAgeFromSSN(request.getSSN()) < 18) {
                 throw new UserUnderAgeAuthenticationException("User is below 18 years old");
+            }
+
+            if(!isPasswordValid(request.getPassword())){
+                throw new InvalidPasswordException("Password doesn't meet requirements");
             }
 
             var address = Address.builder()
