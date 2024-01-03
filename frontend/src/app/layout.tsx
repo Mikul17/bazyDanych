@@ -10,11 +10,7 @@ const dosisFont = Dosis({
   display:'swap'
 });
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({children,}: {children: React.ReactNode}) {
   return (
     <html lang="en">
       <body className={dosisFont.className} style={{margin:"0", padding:"0", top:"0"}}>
