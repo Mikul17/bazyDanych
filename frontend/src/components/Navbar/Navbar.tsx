@@ -30,7 +30,7 @@ const Navbar = (props:NavbarProps) => {
   return (
     <Box
       sx={{
-        position: "fixed",
+        position: "relative",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",

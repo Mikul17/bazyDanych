@@ -9,7 +9,7 @@ type LayoutProps = PropsWithChildren<{
 
 const Layout = ({ children, path }: LayoutProps) => {
   return (
-    <Box sx={{position:"fixed", margin:"0", padding:"0", top:"0", left:"0"}}>
+    <Box>
       <Navbar path={path}/>
       {children}
     </Box>

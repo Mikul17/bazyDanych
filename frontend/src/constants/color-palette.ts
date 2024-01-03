@@ -9,7 +9,6 @@ export default function paletteProvider() {
         },
         secondary: {
             main: "#4F98CA",
-            light: "#BC4749"
         },
         background: {
             default: "#FEFEE3",
@@ -17,6 +16,10 @@ export default function paletteProvider() {
         text: {
             primary: "#000000",
             secondary: "#FEFEE3",
+            light:"#D9D9D9"
+        },
+        error:{
+            main:"#BC4749"
         }
     }
 }
