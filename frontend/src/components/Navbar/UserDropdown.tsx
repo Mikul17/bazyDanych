@@ -10,6 +10,7 @@ import {
   usePopupState,
 } from "material-ui-popup-state/hooks";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 type UserProps = {
@@ -23,9 +24,10 @@ const UserDropdown = (props: UserProps) => {
     popupId: "userPopup",
   });
   const [isLoggedIn, setIsLoggedIn] = useState<Boolean>(false);
+  const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (token) {
       try {
         const decoded = jwtDecode(token);
@@ -53,6 +55,13 @@ const UserDropdown = (props: UserProps) => {
     },
   };
 
+  const handleLogout = () => {
+    popupState.close();
+    sessionStorage.removeItem("token");
+    setIsLoggedIn(false);
+    router.refresh();
+  };
+
   return (
     <>
       <IconButton {...bindTrigger(popupState)}>
@@ -60,7 +69,7 @@ const UserDropdown = (props: UserProps) => {
           sx={{
             fontSize: "2.5rem",
             color:
-              props.path === "User"
+            props.path === "User" || props.path === "Login"
                 ? palette.primary.dark
                 : palette.text.secondary,
           }}
@@ -91,7 +100,7 @@ const UserDropdown = (props: UserProps) => {
             {isLoggedIn ? "Settings" : "Login"}
           </MenuItem>
         </Link>
-        <MenuItem onClick={popupState.close} sx={menuItemSx}>
+        <MenuItem onClick={handleLogout} sx={menuItemSx}>
           <Typography>Logout</Typography>
         </MenuItem>
       </Menu>

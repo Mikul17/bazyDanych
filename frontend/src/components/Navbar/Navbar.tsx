@@ -77,7 +77,7 @@ const Navbar = (props:NavbarProps) => {
           alignItems: "center",
         }}
       >
-        <Link href={""}>
+        <Link href={"/"}>
           <IconButton>
             <HomeRounded sx={{ fontSize: "2.5rem", color: currPath==="Home"?palette.primary.dark:palette.text.secondary }} />
           </IconButton>
