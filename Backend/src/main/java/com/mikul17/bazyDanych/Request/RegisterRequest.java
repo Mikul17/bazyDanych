@@ -63,7 +63,6 @@ public class RegisterRequest {
     @Size(max = 5, message = "Street number cannot be longer than 5 characters")
     private String streetNumber;
 
-    @NotBlank(message = "House number is required")
     @Size(max = 5, message = "House number cannot be longer than 5 characters")
     private String houseNumber;
 

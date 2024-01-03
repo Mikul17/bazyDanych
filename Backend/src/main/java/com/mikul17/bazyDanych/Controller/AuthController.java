@@ -5,8 +5,10 @@ import com.mikul17.bazyDanych.Request.RegisterRequest;
 import com.mikul17.bazyDanych.Security.Service.AuthService;
 import com.mikul17.bazyDanych.Security.UserAlreadyExistAuthenticationException;
 import jakarta.validation.Valid;
+import jakarta.validation.ValidationException;
 import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +26,8 @@ public class AuthController {
         try {
             authService.register(request);
             return ResponseEntity.ok("Registration Successful");
+        }catch (ValidationException valE){
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Incorrect values");
         } catch (UserAlreadyExistAuthenticationException uaeEx) {
             return ResponseEntity.badRequest().body(uaeEx.getMessage());
         } catch (AuthenticationServiceException asEx) {
