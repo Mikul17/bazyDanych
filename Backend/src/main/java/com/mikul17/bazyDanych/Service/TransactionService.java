@@ -72,7 +72,7 @@ public class TransactionService {
     public List<TransactionResponse> getAllTransactionsByUserId(Long userId) {
         try {
             User user = userService.getUserById(userId);
-            return transactionRepository.findAllByUserAndTransactionStatus(user, "SUCCESS")
+            return transactionRepository.findAllByUserAndTransactionStatusOrderByDateDesc(user, "SUCCESS")
                     .stream().map(this::mapTransactionToTransactionResponse)
                     .toList();
         } catch (Exception e) {
@@ -95,7 +95,8 @@ public class TransactionService {
 
     private TransactionResponse mapTransactionToTransactionResponse(Transaction transaction){
         return new TransactionResponse(transaction.getId(), transaction.getTransactionType(),
-                transaction.getTransactionStatus(), transaction.getAmount(), transaction.getUser().getId());
+                transaction.getTransactionStatus(), transaction.getAmount(),
+                transaction.getUser().getId(),transaction.getDate());
     }
 
 }
