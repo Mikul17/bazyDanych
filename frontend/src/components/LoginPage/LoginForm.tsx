@@ -2,7 +2,6 @@
 import paletteProvider from "@/constants/color-palette";
 import {
     Alert,
-  Backdrop,
   Box,
   Button,
   Container,
@@ -12,12 +11,13 @@ import {
   Paper,
   TextField,
   Typography,
-  alpha,
+
 } from "@mui/material";
-import {Login} from "@mui/icons-material"
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { jwtDecode } from "jwt-decode";
+import { useAuth } from "@/context/AuthContext";
+import { buttonStyle, headerStyle, inputStyle } from "@/constants/Styles";
+import { EmailOutlined, Login } from "@mui/icons-material";
 
 interface alertState {
     message : string;
@@ -27,12 +27,13 @@ interface alertState {
 
 const LoginForm = () => {
   const palette = paletteProvider();
-  const [email, setEmail] = useState<string>();
-  const [password, setPassword] = useState<string>();
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
   const [alertState, setAlertState] = useState<alertState>({message:"", type:''});
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [resetEmail, setResetEmail] = useState('');
   const router = useRouter();
+  const { logIn } = useAuth();
 
   const handleOpenModal = ():void => setOpenModal(true);
   const handleCloseModal = ():void => {
@@ -69,7 +70,8 @@ const LoginForm = () => {
         });
         if (response.ok) {
             const jsonResponse = await response.json();
-            sessionStorage.setItem('token', jsonResponse.token);
+            // sessionStorage.setItem('token', jsonResponse.token);
+            logIn(jsonResponse.token);
             router.push("/");
           } else {
             setAlertState({message:"Login failed. Email or password incorrect.", type:"error"});
@@ -82,7 +84,6 @@ const LoginForm = () => {
     const handlePasswordReset = async (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
 
-      const email = resetEmail;
       const encodedEmail = encodeURIComponent(resetEmail);
       const url = `http://localhost:8080/api/user/resetRequest?email=${encodedEmail}`;
       try{
@@ -119,60 +120,7 @@ const LoginForm = () => {
     backgroundColor:palette.primary.light,
     borderRadius:"1.25rem"
   };
-  
-  const loginHeader = {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor:palette.background.default,
-    borderRadius:"1.25rem 1.25rem 0.25rem 0.25rem",
-    marginTop:"0.5rem",
-  }
 
-  const inputStyle = {
-    ".MuiInputLabel-outlined": {
-      color: palette.text.secondary,
-    },
-    input: { color: palette.text.secondary },
-    border: palette.text.secondary,
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        borderColor: "white",
-      },
-      ".MuiInputLabel-outlined.Mui-focused": {
-        color: palette.primary.main,
-      },
-      "&:hover fieldset": {
-        borderColor: "white",
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: palette.text.secondary,
-      },
-      "&.Mui-active fieldset": {
-        color: palette.text.secondary,
-      },
-      "& input[type=number]": {
-        MozAppearance: "textfield",
-      },
-      "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
-        display: "none",
-      },
-      "& MuiInputLabel.Mui-focused": {
-        color: palette.text.secondary,
-      },
-    },
-  };
-
-  const buttonStyle = {
-    margin: "1rem 0rem",
-    borderRadius: "0.5rem",
-    backgroundColor: palette.secondary.main,
-    fontWeight: "bold",
-    color: palette.text.secondary,
-    "&:hover": {
-        backgroundColor: alpha(palette.secondary.main, 0.8),
-        },
-  };
 
   const modalBoxStyle = {
     display: "flex",
@@ -189,7 +137,7 @@ const LoginForm = () => {
   return (
     <Container component="main" maxWidth="xs">
       <Paper elevation={3} sx={paperStyle}>
-        <Box width={"100%"} sx={loginHeader}>
+        <Box width={"100%"} sx={headerStyle("center")}>
         <Typography component="h1" variant="h5" fontWeight={"bold"} color={palette.primary.main}>
           Login
         </Typography>
@@ -231,10 +179,11 @@ const LoginForm = () => {
             fullWidth
             variant="contained"
             color="primary"
-            style={buttonStyle}
+            style={buttonStyle(palette.secondary.main)}
+            endIcon={<Login/>}
           >
             Login
-            <Login sx={{marginLeft:"0.25rem"}}/>
+            {/* <Login sx={{marginLeft:"0.25rem"}}/> */}
           </Button>
           <Box
             display={"flex"}
@@ -260,8 +209,8 @@ const LoginForm = () => {
     >
       <Fade in={openModal}>
         <Box sx={modalBoxStyle}>
-          <Box width="100%" sx={loginHeader}>
-          <Typography variant="h6">Reset Password</Typography>
+          <Box width="100%" sx={headerStyle("center")}>
+          <Typography variant="h6" fontWeight={"bold"}>Reset Password</Typography>
           </Box>
           <TextField
             autoFocus
@@ -278,7 +227,7 @@ const LoginForm = () => {
             },}}}
             onChange={(e) => setResetEmail(e.target.value)}
           />
-          <Button sx={buttonStyle} onClick={handlePasswordReset}>Send Reset Link</Button>
+          <Button sx={buttonStyle(palette.secondary.main)} onClick={handlePasswordReset} endIcon={<EmailOutlined/>}>Send Reset Link</Button>
           {alertState.message && 
           <Alert variant="filled" severity={alertState.type==="info"?"info":"error"} sx={{marginTop:"1rem"}}>{alertState.message}</Alert>}
           

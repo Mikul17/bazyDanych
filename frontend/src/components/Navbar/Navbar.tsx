@@ -54,7 +54,7 @@ const Navbar = (props:NavbarProps) => {
           </IconButton>
         </Link>
 
-        <BalanceDropdown balance={123.23} />
+        <BalanceDropdown/>
       </Box>  
       
       <Box sx={{display: "flex",
