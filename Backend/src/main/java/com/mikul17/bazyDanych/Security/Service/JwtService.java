@@ -1,5 +1,6 @@
 package com.mikul17.bazyDanych.Security.Service;
 
+import com.mikul17.bazyDanych.Models.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -29,8 +30,10 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken (UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+    public String generateToken (User userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", userDetails.getId());
+        return generateToken(claims, userDetails);
     }
 
     public String generateToken (
