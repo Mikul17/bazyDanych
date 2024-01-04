@@ -157,8 +157,23 @@ const NewTransactionModal = (props: NewTransactionModalProps) => {
   };
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    if (/^\d*[\.,]?\d{0,2}$/.test(value)) {
+    let value = event.target.value;
+  
+    value = value.replace(/\./g, ',');
+  
+    const commaIndex = value.indexOf(',');
+  
+    if (commaIndex === -1) {
+      if (value.length > 8) {
+        value = value.slice(0, 8) + ',' + value.slice(8);
+      }
+    } else {
+      if (commaIndex > 8) {
+        value = value.slice(0, 8) + ',' + value.slice(commaIndex + 1);
+      }
+    }
+  
+    if (/^\d{0,8}(,\d{0,2})?$/.test(value)) {
       setAmount(value);
     }
   };
