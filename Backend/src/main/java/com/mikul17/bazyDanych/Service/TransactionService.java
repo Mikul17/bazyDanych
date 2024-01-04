@@ -11,6 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,6 +33,7 @@ public class TransactionService {
                     .transactionStatus("PENDING")
                     .amount(transactionRequest.getAmount())
                     .user(user)
+                    .date(Timestamp.valueOf(LocalDateTime.now()))
                     .build();
 
             if(Objects.equals(trans.getTransactionType(), "DEPOSIT")
@@ -46,6 +50,7 @@ public class TransactionService {
                     trans.setTransactionStatus("SUCCESS");
                 }
             }
+
             transactionRepository.save(trans);
             return mapTransactionToTransactionResponse(trans);
         }catch (Exception e){
@@ -67,7 +72,7 @@ public class TransactionService {
     public List<TransactionResponse> getAllTransactionsByUserId(Long userId) {
         try {
             User user = userService.getUserById(userId);
-            return transactionRepository.findAllByUser(user)
+            return transactionRepository.findAllByUserAndTransactionStatus(user, "SUCCESS")
                     .stream().map(this::mapTransactionToTransactionResponse)
                     .toList();
         } catch (Exception e) {
@@ -76,10 +81,10 @@ public class TransactionService {
         }
     }
 
-    public List<TransactionResponse> getTransactionByUserAndType(Long userId, String type) {
+    public List<TransactionResponse> getTransactionByUserAndType(Long userId,String type) {
         try {
             User user = userService.getUserById(userId);
-            return transactionRepository.findAllByUserAndTransactionStatus(user, type)
+            return transactionRepository.findAllByUserAndTransactionStatusAndTransactionType(user, "SUCCESS", type)
                     .stream().map(this::mapTransactionToTransactionResponse)
                     .toList();
         } catch (Exception e) {
