@@ -2,7 +2,6 @@
 import paletteProvider from "@/constants/color-palette";
 import {
     Alert,
-  Backdrop,
   Box,
   Button,
   Container,
@@ -18,6 +17,7 @@ import {Login} from "@mui/icons-material"
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
+import { useAuth } from "@/context/AuthContext";
 
 interface alertState {
     message : string;
@@ -27,12 +27,13 @@ interface alertState {
 
 const LoginForm = () => {
   const palette = paletteProvider();
-  const [email, setEmail] = useState<string>();
-  const [password, setPassword] = useState<string>();
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
   const [alertState, setAlertState] = useState<alertState>({message:"", type:''});
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [resetEmail, setResetEmail] = useState('');
   const router = useRouter();
+  const { logIn } = useAuth();
 
   const handleOpenModal = ():void => setOpenModal(true);
   const handleCloseModal = ():void => {
@@ -69,7 +70,8 @@ const LoginForm = () => {
         });
         if (response.ok) {
             const jsonResponse = await response.json();
-            sessionStorage.setItem('token', jsonResponse.token);
+            // sessionStorage.setItem('token', jsonResponse.token);
+            logIn(jsonResponse.token);
             router.push("/");
           } else {
             setAlertState({message:"Login failed. Email or password incorrect.", type:"error"});
