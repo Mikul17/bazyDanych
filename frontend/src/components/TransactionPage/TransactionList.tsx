@@ -20,7 +20,7 @@ const TransactionList = () => {
   };
 
   const cardStyle = {
-    backgroundColor: palette.primary.main,
+    backgroundColor: palette.primary.light,
     minHeight: "60vh",
     maxHeight: "80vh",
     overflowY: "scroll",

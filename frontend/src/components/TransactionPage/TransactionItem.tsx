@@ -24,7 +24,7 @@ const TransactionItem = (props: TransactionItemProps) => {
     if (type === "DEPOSIT") {
       return palette.secondary.main;
     } else if (type === "PAYOUT") {
-      return palette.primary.main;
+      return palette.primary.light;
     } else {
       return palette.error.main;
     }
