@@ -2,6 +2,8 @@ package com.mikul17.bazyDanych.Response;
 
 import lombok.*;
 
+import java.sql.Timestamp;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -13,4 +15,5 @@ public class TransactionResponse {
     private String transactionStatus;
     private Double amount;
     private Long userId;
+    private Timestamp transactionDate;
 }

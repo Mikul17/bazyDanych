@@ -3,6 +3,8 @@ package com.mikul17.bazyDanych.Models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.sql.Timestamp;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -20,6 +22,9 @@ public class Transaction {
     private String transactionStatus;
     @Column(columnDefinition = "DECIMAL(10,2)")
     private Double amount;
+
+    @Column(name = "transaction_date")
+    private Timestamp date;
 
     @ManyToOne(targetEntity = User.class)
     @JoinColumn(name = "user_id")
