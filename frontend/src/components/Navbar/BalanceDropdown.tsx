@@ -1,7 +1,7 @@
 "use client";
 
 import paletteProvider from "@/constants/color-palette";
-import { Button, Menu, MenuItem, Typography, alpha } from "@mui/material";
+import { Box, Button, Menu, MenuItem, Modal, Typography, alpha } from "@mui/material";
 import {
   bindMenu,
   bindTrigger,
@@ -10,6 +10,7 @@ import {
 import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useAuth } from "@/context/AuthContext";
+import NewTransactionModal from "./NewTransactionModal";
 
 async function getBalance(): Promise<number> {
   const token = sessionStorage.getItem("token");
@@ -50,6 +51,7 @@ const BalanceDropdown = () => {
     variant: "popover",
     popupId: "balancePopup",
   });
+  const [openModal, setOpenModal] = useState(false);
 
   const menuItemSx = {
     display: "flex",
@@ -64,8 +66,16 @@ const BalanceDropdown = () => {
     },
   };
 
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
+
+
+    const handleOpenModal = () => {
+      popupState.close();
+      setOpenModal(true);
+    };
+  
+    const handleCloseModal = () => {
+      setOpenModal(false);
+    };
 
     const fetchBalance = async () => {
       try {
@@ -76,9 +86,13 @@ const BalanceDropdown = () => {
       }
     };
 
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+
     if (isLogged) {
       fetchBalance();
-      interval = setInterval(fetchBalance, 5 * 60 * 1000);
+      //Update balance every 5 minutes
+      interval = setInterval(fetchBalance,  5*60 * 1000);
     }
 
     return () => {
@@ -99,6 +113,9 @@ const BalanceDropdown = () => {
           borderRadius: "1rem",
           padding: "0.5rem 2rem",
           textTransform: "none",
+          "&:hover": {
+            background: alpha(palette.primary.main, 0.6),
+          },
         }}
         {...bindTrigger(popupState)}
       >
@@ -117,13 +134,14 @@ const BalanceDropdown = () => {
           },
         }}
       >
-        <MenuItem onClick={popupState.close} sx={menuItemSx}>
+        <MenuItem onClick={handleOpenModal} sx={menuItemSx}>
           Deposit/Withdraw
         </MenuItem>
         <MenuItem onClick={popupState.close} sx={menuItemSx}>
           Transaction list
         </MenuItem>
       </Menu>
+      <NewTransactionModal openModal={openModal} handleCloseModal={handleCloseModal} updateBalance={fetchBalance}/>
     </>
   );
 };

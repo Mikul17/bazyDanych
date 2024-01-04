@@ -19,6 +19,8 @@ import {
 import { MuiTelInput } from "mui-tel-input";
 import { ChangeEvent, FormEvent, useState } from "react";
 import CountrySelector from "./CountrySelector";
+import { buttonStyle, headerStyle, inputStyle } from "@/constants/Styles";
+import { AssignmentTurnedInOutlined } from "@mui/icons-material";
 
 interface FormState {
   firstName: string;
@@ -68,61 +70,12 @@ const RegisterForm = () => {
     backgroundColor: palette.primary.light,
     borderRadius: "1.25rem",
   };
-  const registerHeader = {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: palette.background.default,
-    borderRadius: "1.25rem 1.25rem 0.25rem 0.25rem",
-    marginTop: "0.5rem",
-  };
   const listItemStyle = {
     listStyleType: "disc",
     display: "list-item",
     margin: "0 1rem",
   };
-  const buttonStyle = {
-    margin: "1rem 0rem",
-    borderRadius: "0.5rem",
-    backgroundColor: palette.secondary.main,
-    fontWeight: "bold",
-    "&:hover": {
-        backgroundColor: alpha(palette.secondary.main, 0.8),
-        },
-  };
-  const inputStyle = {
-    ".MuiInputLabel-outlined": {
-      color: palette.text.secondary,
-    },
-    input: { color: palette.text.secondary },
-    border: palette.text.secondary,
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        borderColor: "white",
-      },
-      ".MuiInputLabel-outlined.Mui-focused": {
-        color: palette.primary.main,
-      },
-      "&:hover fieldset": {
-        borderColor: "white",
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: palette.text.secondary,
-      },
-      "&.Mui-active fieldset": {
-        color: palette.text.secondary,
-      },
-      "& input[type=number]": {
-        MozAppearance: "textfield",
-      },
-      "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
-        display: "none",
-      },
-      "& MuiInputLabel.Mui-focused": {
-        color: palette.text.secondary,
-      },
-    },
-  };
+
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
@@ -198,10 +151,11 @@ const RegisterForm = () => {
   return (
     <Container component="main" maxWidth="md">
       <Paper elevation={3} sx={paperStyle}>
-        <Box sx={registerHeader} width={"100%"}>
+        <Box sx={headerStyle("center")} width={"100%"}>
           <Typography
             component="h1"
             variant="h5"
+            fontWeight={"bold"}
             sx={{ color: palette.primary.main }}
           >
             Create new account
@@ -441,7 +395,7 @@ const RegisterForm = () => {
               </Paper>
             </Grid>
           </Grid>
-          <Button type="submit" fullWidth variant="contained" color="primary" sx={buttonStyle}>
+          <Button type="submit" fullWidth variant="contained" sx={buttonStyle(palette.secondary.main)} endIcon={<AssignmentTurnedInOutlined/>}>
             Sign Up
           </Button>
         </Box>

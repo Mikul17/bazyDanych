@@ -12,7 +12,6 @@ import {
 } from "material-ui-popup-state/hooks";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 
 type UserProps = {
   path: string;
