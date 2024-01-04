@@ -218,7 +218,6 @@ const NewTransactionModal = (props: NewTransactionModalProps) => {
             variant="outlined"
             value={amount}
             onChange={handleAmountChange}
-            defaultValue={0}
             InputProps={{ inputProps: { min: 0} }}
             InputLabelProps={{sx:{"&.Mui-focused": {
               color: palette.text.secondary,
