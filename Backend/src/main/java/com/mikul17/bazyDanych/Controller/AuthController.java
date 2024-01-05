@@ -57,4 +57,13 @@ public class AuthController {
             return ResponseEntity.internalServerError().body(ex.getMessage());
         }
     }
+
+    @GetMapping("/role/{userId}")
+    public ResponseEntity<?> getUserRole(@PathVariable Long userId){
+        try{
+            return ResponseEntity.ok().body(authService.getUserRoleById(userId));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

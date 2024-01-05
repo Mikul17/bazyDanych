@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.*;
 
 @Service
@@ -131,6 +132,7 @@ public class UserService {
                 .phoneNumber(user.getPhoneNumber())
                 .accountNumber(user.getAccountNumber())
                 .balance(user.getBalance())
+                .birthDate(user.getBirthDate())
                 .address(user.getAddress())
                 .build();
     }
