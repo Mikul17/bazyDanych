@@ -25,5 +25,6 @@ export type User = {
     phoneNumber: string;
     accountNumber: string;
     address: Address;
+    isBanned?: boolean;
 }
 

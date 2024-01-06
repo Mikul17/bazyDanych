@@ -1,24 +1,22 @@
 "use client";
-import { buttonStyle, headerStyle, inputStyle } from "@/constants/Styles";
+import { buttonStyle, headerStyle } from "@/constants/Styles";
 import paletteProvider from "@/constants/color-palette";
 import {
   Box,
   Button,
   Card,
-  CardContent,
   Container,
   Grid,
-  IconButton,
   SelectChangeEvent,
-  TextField,
   Typography,
 } from "@mui/material";
 import { ChangeEvent, useEffect, useState } from "react";
-import CountrySelector from "../RegisterPage/CountrySelector";
-import { ClearOutlined, SettingsOutlined } from "@mui/icons-material";
-import { MuiTelInput } from "mui-tel-input";
 import { Address, User } from "@/constants/Types";
 import { jwtDecode } from "jwt-decode";
+import PersonalDetails from "./PersonalDetails";
+import AddressDetails from "./AddressDetails";
+import ChangePasswordModal from "./ChangePasswordModal";
+import UserListModal from "./UserListModal";
 
 const getUser = async (): Promise<User> => {
   const token = sessionStorage.getItem("token");
@@ -43,7 +41,6 @@ const getUser = async (): Promise<User> => {
     }
 
     const data: User = await response.json();
-    console.log(data);
     return data;
   } catch (error) {
     console.error(error);
@@ -55,11 +52,15 @@ const UserSettings = () => {
   const palette = paletteProvider();
 
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState<boolean>(false);
 
   const [editPhoneNumber, setEditPhoneNumber] = useState<boolean>(false);
   const [editAccountNumber, setEditAccountNumber] = useState<boolean>(false);
   const [phoneNumberInput, setPhoneNumberInput] = useState<string>("");
   const [accountNumberInput, setAccountNumberInput] = useState<string>("");
+
+  const [changePasswordModalOpen, setChangePasswordModalOpen] =
+    useState<boolean>(false);
 
   const [hasChanges, setHasChanges] = useState<boolean>(false);
   const [initialAddress, setInitialAddress] = useState<Address | null>(null);
@@ -269,6 +270,14 @@ const UserSettings = () => {
     location.reload();
   };
 
+  const handleOpenPasswordModal = () => {
+    setChangePasswordModalOpen(true);
+  };
+
+  const handleOpenAdminModal = () => {
+    setIsAdminModalOpen(true);
+  };
+
   useEffect(() => {
     if (initialAddress) {
       const isChanged = Object.keys(initialAddress).some(
@@ -323,361 +332,82 @@ const UserSettings = () => {
   }, []);
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4 }}>
-      <Box sx={boxStyle}>
-        <Box sx={headerStyle("center")}>
-          <Typography variant="h4" fontWeight={"bold"}>
-            User settings
-          </Typography>
-        </Box>
-        <Grid container spacing={4}>
-          {/* Personal Details */}
-          <Grid item xs={12} md={6}>
-            <Card raised sx={cardStyle}>
-              <CardContent sx={{ padding: "0 1rem" }}>
-                <Box sx={innerHeaderStyle}>
-                  <Typography variant="h5" fontWeight={"bold"}>
-                    Personal details
-                  </Typography>
-                </Box>
-                <TextField
-                  label="First name"
-                  variant="outlined"
-                  margin="normal"
-                  fullWidth
-                  sx={inputStyle}
-                  value={user.firstName}
-                  InputProps={{ readOnly: true }}
-                  InputLabelProps={{
-                    sx: {
-                      "&.Mui-focused": {
-                        color: palette.text.secondary,
-                      },
-                    },
-                  }}
-                />
-                <TextField
-                  label="Last name"
-                  variant="outlined"
-                  margin="normal"
-                  fullWidth
-                  sx={inputStyle}
-                  value={user.lastName}
-                  InputProps={{ readOnly: true }}
-                  InputLabelProps={{
-                    sx: {
-                      "&.Mui-focused": {
-                        color: palette.text.secondary,
-                      },
-                    },
-                  }}
-                />
-                <TextField
-                  label="Date of birth"
-                  variant="outlined"
-                  margin="normal"
-                  fullWidth
-                  value={user.birthDate}
-                  sx={inputStyle}
-                  InputProps={{ readOnly: true }}
-                  InputLabelProps={{
-                    sx: {
-                      "&.Mui-focused": {
-                        color: palette.text.secondary,
-                      },
-                    },
-                  }}
-                />
-                <TextField
-                  label="E-mail"
-                  variant="outlined"
-                  margin="normal"
-                  fullWidth
-                  value={user.email}
-                  sx={inputStyle}
-                  InputProps={{ readOnly: true }}
-                  InputLabelProps={{
-                    sx: {
-                      "&.Mui-focused": {
-                        color: palette.text.secondary,
-                      },
-                    },
-                  }}
-                />
-                <Grid container spacing={2}>
-                  <Grid item xs={10}>
-                    <MuiTelInput
-                      required
-                      fullWidth
-                      id="phone"
-                      label="Phone Number"
-                      name="phone"
-                      autoComplete="tel"
-                      defaultCountry={"PL"}
-                      value={
-                        editPhoneNumber ? phoneNumberInput : user.phoneNumber
-                      }
-                      InputLabelProps={{
-                        sx: {
-                          "&.Mui-focused": {
-                            color: palette.text.secondary,
-                          },
-                        },
-                      }}
-                      margin="normal"
-                      disabled={!editPhoneNumber}
-                      onChange={handlePhoneChange}
-                      sx={inputStyle}
-                    />
-                  </Grid>
-                  <Grid item xs={2}>
-                    <IconButton
-                      size="large"
-                      sx={{
-                        mt: "1.25rem",
-                        backgroundColor: palette.text.secondary,
-                      }}
-                      onClick={() => togglePhoneNumberEdit()}
-                    >
-                      {!editPhoneNumber ? (
-                        <SettingsOutlined
-                          sx={{ color: palette.text.primary }}
-                        />
-                      ) : (
-                        <ClearOutlined sx={{ color: palette.text.primary }} />
-                      )}
-                    </IconButton>
-                  </Grid>
-                </Grid>
-                <Grid container spacing={2}>
-                  <Grid item xs={10}>
-                    <TextField
-                      label="Account number"
-                      variant="outlined"
-                      margin="normal"
-                      fullWidth
-                      disabled={!editAccountNumber}
-                      value={
-                        editAccountNumber
-                          ? accountNumberInput
-                          : user.accountNumber
-                      }
-                      sx={inputStyle}
-                      inputProps={{
-                        minLength: 26,
-                        maxLength: 26,
-                        pattern: "\\d*",
-                      }}
-                      InputProps={{ readOnly: !editAccountNumber }}
-                      InputLabelProps={{
-                        sx: {
-                          "&.Mui-focused": {
-                            color: palette.text.secondary,
-                          },
-                        },
-                      }}
-                      onChange={handleAccountNumberChange}
-                    />
-                  </Grid>
-                  <Grid item xs={2}>
-                    <IconButton
-                      size="large"
-                      sx={{
-                        mt: "1.25rem",
-                        backgroundColor: palette.text.secondary,
-                      }}
-                      onClick={() => toggleAccountNumberEdit()}
-                    >
-                      {!editAccountNumber ? (
-                        <SettingsOutlined
-                          sx={{ color: palette.text.primary }}
-                        />
-                      ) : (
-                        <ClearOutlined sx={{ color: palette.text.primary }} />
-                      )}
-                    </IconButton>
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
-          </Grid>
+    <>
+      <Container maxWidth="lg" sx={{ mt: 4 }}>
+        <Box sx={boxStyle}>
+          <Box sx={headerStyle("center")}>
+            <Typography variant="h4" fontWeight={"bold"}>
+              {isAdmin ? "Admin settings" : "User settings"}
+            </Typography>
+          </Box>
+          <Grid container spacing={4}>
+            <PersonalDetails
+              user={user}
+              editPhoneNumber={editPhoneNumber}
+              editAccountNumber={editAccountNumber}
+              togglePhoneNumberEdit={togglePhoneNumberEdit}
+              toggleAccountNumberEdit={toggleAccountNumberEdit}
+              handlePhoneChange={handlePhoneChange}
+              handleAccountNumberChange={handleAccountNumberChange}
+              phoneNumberInput={phoneNumberInput}
+              accountNumberInput={accountNumberInput}
+            />
 
-          {/* Address */}
-          <Grid item xs={12} md={6}>
-            <Card raised sx={cardStyle}>
-              <CardContent sx={{ padding: "0 1rem" }}>
-                <Box sx={innerHeaderStyle}>
-                  <Typography variant="h5" fontWeight={"bold"}>
-                    Address
-                  </Typography>
-                </Box>
-                <Grid container spacing={2}>
-                  <Grid item xs={4}>
-                    <CountrySelector
-                      margin="1rem 0"
-                      onChange={handleCountryChange}
-                      value={currentAddress.country}
-                    />
-                  </Grid>
-                  <Grid item xs={8}>
-                    <TextField
-                      label="City"
-                      variant="outlined"
-                      margin="normal"
-                      fullWidth
-                      value={currentAddress.city}
-                      onChange={(e) =>
-                        handleAddressChange("city", e.target.value)
-                      }
-                      sx={inputStyle}
-                      inputProps={{ maxLength: 50, pattern: "[a-zA-Z ]*" }}
-                      InputLabelProps={{
-                        sx: {
-                          "&.Mui-focused": {
-                            color: palette.text.secondary,
-                          },
-                        },
-                      }}
-                    />
-                  </Grid>
-                </Grid>
-                <TextField
-                  label="Street"
-                  variant="outlined"
-                  margin="normal"
-                  fullWidth
-                  value={currentAddress.street}
-                  onChange={(e) =>
-                    handleAddressChange("street", e.target.value)
-                  }
-                  sx={inputStyle}
-                  inputProps={{ maxLength: 50 }}
-                  InputLabelProps={{
-                    sx: {
-                      "&.Mui-focused": {
-                        color: palette.text.secondary,
-                      },
-                    },
-                  }}
+            <Grid item xs={12} md={6}>
+              <Card raised sx={cardStyle}>
+                <AddressDetails
+                  currentAddress={currentAddress}
+                  handleAddressChange={handleAddressChange}
+                  handleCountryChange={handleCountryChange}
+                  handleRestrictedInputChange={handleRestrictedInputChange}
+                  handleSaveChanges={handleSaveChanges}
+                  handleDiscardChanges={handleDiscardChanges}
+                  hasChanges={hasChanges}
                 />
-                <Grid container spacing={2}>
-                  <Grid item xs={4}>
-                    <TextField
-                      label="Street number"
-                      variant="outlined"
-                      margin="normal"
-                      fullWidth
-                      value={currentAddress.streetNumber}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        handleRestrictedInputChange("streetNumber", e)
-                      }
-                      sx={inputStyle}
-                      inputProps={{ maxLength: 5 }}
-                      InputLabelProps={{
-                        sx: {
-                          "&.Mui-focused": {
-                            color: palette.text.secondary,
-                          },
-                        },
-                      }}
-                    />
-                  </Grid>
-                  <Grid item xs={4}>
-                    <TextField
-                      label="House number"
-                      variant="outlined"
-                      margin="normal"
-                      fullWidth
-                      value={currentAddress.houseNumber}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        handleRestrictedInputChange("houseNumber", e)
-                      }
-                      sx={inputStyle}
-                      inputProps={{ maxLength: 5 }}
-                      InputLabelProps={{
-                        sx: {
-                          "&.Mui-focused": {
-                            color: palette.text.secondary,
-                          },
-                        },
-                      }}
-                    />
-                  </Grid>
-                  <Grid item xs={4}>
-                    <TextField
-                      label="Zip-code"
-                      variant="outlined"
-                      margin="normal"
-                      fullWidth
-                      value={currentAddress.zipCode}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        handleRestrictedInputChange("zipCode", e)
-                      }
-                      sx={inputStyle}
-                      inputProps={{ maxLength: 6, pattern: "[0-9a-zA-Z\\-/]*" }}
-                      InputLabelProps={{
-                        sx: {
-                          "&.Mui-focused": {
-                            color: palette.text.secondary,
-                          },
-                        },
-                      }}
-                    />
-                  </Grid>
-                </Grid>
-                <Box
-                  display={"flex"}
-                  justifyContent={"center"}
-                  alignItems={"center"}
-                  marginTop={"1rem"}
-                >
-                  <Button
-                    variant="contained"
-                    disabled={!hasChanges}
-                    onClick={handleSaveChanges}
-                    sx={{
-                      ...buttonStyle(palette.secondary.main, "60%"),
-                      marginRight: "2rem",
-                    }}
-                  >
-                    Update address
-                  </Button>
-                  <Button
-                    onClick={handleDiscardChanges}
-                    disabled={!hasChanges}
-                    variant="contained"
-                    color="secondary"
-                    sx={buttonStyle(palette.error.main, "50%")}
-                  >
-                    Discard
-                  </Button>
-                </Box>
-              </CardContent>
-            </Card>
-            <Box
-              display={"flex"}
-              justifyContent={"center"}
-              alignItems={"center"}
-              flexDirection={"column"}
-              marginTop={"2rem"}
-            >
-              <Button
-                disabled={!editPhoneNumber && !editAccountNumber}
-                onClick={handleUpdatePersonalDetails}
-                sx={buttonStyle(palette.primary.main, "60%")}
+              </Card>
+              <Box
+                display={"flex"}
+                justifyContent={"center"}
+                alignItems={"center"}
+                flexDirection={"column"}
+                marginTop={"0.5rem"}
               >
-                Update personal details
-              </Button>
-              {isAdmin && (
-                <Button sx={buttonStyle(palette.primary.main, "60%")}>
-                  User list
+                <Button
+                  disabled={!editPhoneNumber && !editAccountNumber}
+                  onClick={handleUpdatePersonalDetails}
+                  sx={buttonStyle(palette.primary.main, "60%")}
+                >
+                  Update personal details
                 </Button>
-              )}
-            </Box>
+                <Button
+                  disabled={editPhoneNumber || editAccountNumber}
+                  onClick={handleOpenPasswordModal}
+                  sx={buttonStyle(palette.primary.main, "60%")}
+                >
+                  Change password
+                </Button>
+                {isAdmin && (
+                  <Button
+                    sx={buttonStyle(palette.primary.main, "60%")}
+                    onClick={handleOpenAdminModal}
+                  >
+                    User list
+                  </Button>
+                )}
+              </Box>
+            </Grid>
           </Grid>
-        </Grid>
-      </Box>
-    </Container>
+        </Box>
+        <ChangePasswordModal
+          isPasswordModalOpen={changePasswordModalOpen}
+          setPasswordModalOpen={setChangePasswordModalOpen}
+        />
+        <UserListModal
+          isAdminModalOpen={isAdminModalOpen}
+          setIsAdminModalOpen={setIsAdminModalOpen}
+        />
+      </Container>
+    </>
   );
 };
 
