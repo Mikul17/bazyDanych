@@ -1,13 +1,11 @@
 package com.mikul17.bazyDanych.Service;
 
-import com.mikul17.bazyDanych.Models.Address;
-import com.mikul17.bazyDanych.Models.TokenType;
-import com.mikul17.bazyDanych.Models.User;
-import com.mikul17.bazyDanych.Models.VerificationToken;
+import com.mikul17.bazyDanych.Models.*;
 import com.mikul17.bazyDanych.Repository.UserRepository;
 import com.mikul17.bazyDanych.Request.ChangePasswordRequest;
 import com.mikul17.bazyDanych.Request.MailRequest;
 import com.mikul17.bazyDanych.Response.UserResponse;
+import com.mikul17.bazyDanych.Response.UserWithBanStatusResponse;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
@@ -15,7 +13,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -131,6 +131,7 @@ public class UserService {
                 .phoneNumber(user.getPhoneNumber())
                 .accountNumber(user.getAccountNumber())
                 .balance(user.getBalance())
+                .birthDate(user.getBirthDate())
                 .address(user.getAddress())
                 .build();
     }
@@ -248,5 +249,29 @@ public class UserService {
         }
 
         return shuffledString.toString();
+    }
+
+    public List<UserResponse> getAllUsers () {
+        List<User> users = userRepository.findByRole(Role.ROLE_USER);
+        return users.stream()
+                .map(this::mapUserToUserResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<UserWithBanStatusResponse> getAllUsersWithBanStatus () {
+        List<User> users = userRepository.findByRole(Role.ROLE_USER);
+        return users.stream()
+                .map(this::mapUserToUserWithBanStatusResponse)
+                .collect(Collectors.toList());
+    }
+
+    private UserWithBanStatusResponse mapUserToUserWithBanStatusResponse(User user){
+        return UserWithBanStatusResponse.builder()
+                .id(user.getId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .isBanned(user.getBanned())
+                .build();
     }
 }

@@ -28,6 +28,7 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.YearMonth;
 import java.util.Date;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Service
@@ -184,6 +185,13 @@ public class AuthService {
             throw new IllegalArgumentException("Invalid birthdate in PESEL");
         }
         return LocalDate.of(year,month,day);
+    }
+
+    public String getUserRoleById(Long userId){
+        User user = userRepository.findById(userId).orElseThrow(
+                ()-> new ServiceException("User with given id doesn't exist"));
+
+        return user.getRole().name();
     }
 
     private  boolean isValidDate(int day, int month, int year) {
