@@ -117,4 +117,21 @@ public class UserController {
         }
     }
 
+    @GetMapping("/allUsers")
+    public ResponseEntity<?> getAllUsers(){
+        try{
+            return ResponseEntity.ok().body(userService.getAllUsers());
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body("Error: "+e.getMessage());
+        }
+    }
+
+    @GetMapping("/allUsers/withBlocked")
+    public ResponseEntity<?> getAllUsersWithIsBanned(){
+        try{
+            return ResponseEntity.ok().body(userService.getAllUsersWithBanStatus());
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body("Error: "+e.getMessage());
+        }
+    }
 }
