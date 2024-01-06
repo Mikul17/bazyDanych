@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useAuth } from "@/context/AuthContext";
 import NewTransactionModal from "./NewTransactionModal";
+import { useRouter } from "next/navigation";
 
 async function getBalance(): Promise<number> {
   const token = sessionStorage.getItem("token");
@@ -47,6 +48,7 @@ const BalanceDropdown = () => {
   const palette = paletteProvider();
   const [balance, setBalance] = useState<number>(0.00);
   const {isLogged} = useAuth();
+  const router = useRouter();
   const popupState = usePopupState({
     variant: "popover",
     popupId: "balancePopup",
@@ -72,6 +74,12 @@ const BalanceDropdown = () => {
       popupState.close();
       setOpenModal(true);
     };
+
+    const handleOpenTransactionList = () => {
+      popupState.close();
+      router.push("/transaction");
+    }
+    
   
     const handleCloseModal = () => {
       setOpenModal(false);
@@ -137,7 +145,7 @@ const BalanceDropdown = () => {
         <MenuItem onClick={handleOpenModal} sx={menuItemSx}>
           Deposit/Withdraw
         </MenuItem>
-        <MenuItem onClick={popupState.close} sx={menuItemSx}>
+        <MenuItem onClick={handleOpenTransactionList} sx={menuItemSx}>
           Transaction list
         </MenuItem>
       </Menu>
