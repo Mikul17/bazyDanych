@@ -204,6 +204,7 @@ const RegisterForm = () => {
                 label="Phone Number"
                 name="phone"
                 autoComplete="tel"
+                defaultCountry={"PL"}
                 value={formData.phoneNumber}
                 onChange={handlePhoneChange}
                 InputLabelProps={{sx:{"&.Mui-focused": {
