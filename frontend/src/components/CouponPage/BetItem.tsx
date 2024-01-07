@@ -102,7 +102,7 @@ const BetItem = (props: BetItemProps) => {
             <Typography fontSize={"0.75rem"}>{betCategory.desc}</Typography>
           </Box>
         </Grid>
-        <Grid item xs={2}>
+        <Grid item xs={3}>
           <Typography sx={betOddsStyle}>{props.bet.odds}</Typography>
         </Grid>
       </Grid>

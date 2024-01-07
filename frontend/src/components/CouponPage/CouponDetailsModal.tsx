@@ -31,14 +31,17 @@ const CouponDetailsModal = (props: CouponDetailsModalProps) => {
     left: "50%",
     transform: "translate(-50%, -50%)",
     width: "60%",
-    "@media (min-width:450px)": {
+    "@media (min-width:700px)": {
       width: "50%",
     },
-    "@media (min-width:600px)": {
+    "@media (min-width:870px)": {
       width: "40%",
     },
     "@media (min-width:1050px)": {
       width: "35%",
+    },
+    "@media (min-width:1400px)": {
+      width: "25%",
     },
     bgcolor: palette.primary.light,
     p: "2rem",
