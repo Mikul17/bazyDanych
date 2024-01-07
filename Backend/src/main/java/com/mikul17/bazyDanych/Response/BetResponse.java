@@ -11,6 +11,8 @@ import lombok.*;
 public class BetResponse{
     private Long id;
     private Long matchId;
+    private String homeTeam;
+    private String awayTeam;
     private Double odds;
     private BetType betType;
     private Integer betStatus;

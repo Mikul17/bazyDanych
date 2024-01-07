@@ -147,6 +147,8 @@ public class BetService {
         return BetResponse.builder()
                 .id(bet.getId())
                 .matchId(bet.getMatch().getId())
+                .homeTeam(bet.getMatch().getHomeTeam().getTeamName())
+                .awayTeam(bet.getMatch().getAwayTeam().getTeamName())
                 .odds(bet.getOdds())
                 .betType(bet.getBetType())
                 .betStatus(bet.getBetStatus())
