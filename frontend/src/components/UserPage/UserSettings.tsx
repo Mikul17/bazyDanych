@@ -96,11 +96,6 @@ const UserSettings = () => {
     padding: "1rem ",
   };
 
-  const innerHeaderStyle = {
-    ...headerStyle("center"),
-    margin: 0,
-  };
-
   const togglePhoneNumberEdit = () => {
     if (editPhoneNumber) {
       setPhoneNumberInput(user.phoneNumber);

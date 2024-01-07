@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import MatchContainer from "./MatchContainer";
 import { DeleteOutline } from "@mui/icons-material";
+import BetItem from "../CouponPage/BetItem";
 
 const calculateBets = () => {
   return 0;
@@ -34,6 +35,7 @@ const CouponCreator = () => {
   };
 
   const matchContainerStyle = {
+    marginLeft:"1rem",
     maxHeight: "60vh",
     overflowY: "auto",
     width: "100%",
@@ -51,7 +53,7 @@ const CouponCreator = () => {
     <Box
       sx={{
         borderRadius: "1.25rem",
-        backgroundColor: palette.primary.main,
+        backgroundColor: palette.primary.light,
         padding: "0.1rem",
         margin: "1.5rem 1.5rem",
         maxHeight: "80%",
@@ -69,49 +71,67 @@ const CouponCreator = () => {
           <DeleteOutline />
         </IconButton>
       </Box>
-      <Box sx={matchContainerStyle}>
-        <MatchContainer
-          homeTeam={"Slask"}
-          awayTeam={"Legia"}
-          matchDate={"31 Dec 2023"}
-          matchTime={"13:45"}
-        />
-        <MatchContainer
-          homeTeam={"Slask"}
-          awayTeam={"Legia"}
-          matchDate={"31 Dec 2023"}
-          matchTime={"13:45"}
-        />
-        <MatchContainer
-          homeTeam={"Slask"}
-          awayTeam={"Legia"}
-          matchDate={"31 Dec 2023"}
-          matchTime={"13:45"}
-        />
-        <MatchContainer
-          homeTeam={"Slask"}
-          awayTeam={"Legia"}
-          matchDate={"31 Dec 2023"}
-          matchTime={"13:45"}
-        />
-        <MatchContainer
-          homeTeam={"Slask"}
-          awayTeam={"Legia"}
-          matchDate={"31 Dec 2023"}
-          matchTime={"13:45"}
-        />
-        <MatchContainer
-          homeTeam={"Slask"}
-          awayTeam={"Legia"}
-          matchDate={"31 Dec 2023"}
-          matchTime={"13:45"}
-        />
-        <MatchContainer
-          homeTeam={"Slask"}
-          awayTeam={"Legia"}
-          matchDate={"31 Dec 2023"}
-          matchTime={"13:45"}
-        />
+      <Box display={"flex"} justifyContent={"center"} alignItems={"flex-start"} flexDirection={"column"} sx={matchContainerStyle}>
+        <BetItem bet={{
+          id: 0,
+          matchId: 0,
+          homeTeam: "",
+          awayTeam: "",
+          odds: 0,
+          betStatus: 0,
+          betType: {
+            id: 0,
+            betStat: "",
+            betTypeCode: "",
+            targetValue: 0,
+            team: 0
+          }
+        }} />
+              <BetItem bet={{
+          id: 0,
+          matchId: 0,
+          homeTeam: "",
+          awayTeam: "",
+          odds: 0,
+          betStatus: 0,
+          betType: {
+            id: 0,
+            betStat: "",
+            betTypeCode: "",
+            targetValue: 0,
+            team: 0
+          }
+        }} />
+              <BetItem bet={{
+          id: 0,
+          matchId: 0,
+          homeTeam: "",
+          awayTeam: "",
+          odds: 0,
+          betStatus: 0,
+          betType: {
+            id: 0,
+            betStat: "",
+            betTypeCode: "",
+            targetValue: 0,
+            team: 0
+          }
+        }} />
+              <BetItem bet={{
+          id: 0,
+          matchId: 0,
+          homeTeam: "",
+          awayTeam: "",
+          odds: 0,
+          betStatus: 0,
+          betType: {
+            id: 0,
+            betStat: "",
+            betTypeCode: "",
+            targetValue: 0,
+            team: 0
+          }
+        }} />
       </Box>
       <Box sx={couponFooterStyle} display={"flex"} justifyContent={"center"} alignItems={"center"} gap={"10rem"}>
         <Box display={"flex"} justifyContent={"space-around"} alignItems={"center"} flexDirection={"column"} gap={2}>

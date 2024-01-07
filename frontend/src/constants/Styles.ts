@@ -3,13 +3,13 @@ import paletteProvider from "@/constants/color-palette";
 
 const palette = paletteProvider();
 
-export const headerStyle = (justifyContent: string) => ({
+export const headerStyle = (justifyContent: string , footer?:boolean) => ({
   display: "flex",
   justifyContent: justifyContent,
   alignItems: "center",
   color: palette.primary.main,
   backgroundColor: palette.background.default,
-  borderRadius: "1.25rem 1.25rem 0.25rem 0.25rem",
+  borderRadius: footer?"0.25rem 0.25rem 1.25rem 1.25rem " :"1.25rem 1.25rem 0.25rem 0.25rem",
   padding: "0.5rem",
   margin: "0.5rem 0rem",
 });
@@ -74,5 +74,54 @@ export const inputStyle = {
       color: palette.text.secondary, 
     },
 };
+
+export const coloredInputStyle = (color: string) => ({
+  ".MuiInputLabel-outlined": {
+    color: color,
+  },
+  input: { color: color },
+  border: color,
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": {
+      borderColor: color,
+    },
+    ".MuiInputLabel-outlined.Mui-focused": {
+      color: color,
+    },
+    "&:hover fieldset": {
+      borderColor: color,
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: color,
+    },
+    "&.Mui-active fieldset": {
+      color: color,
+    },
+    "& input[type=number]": {
+      MozAppearance: "textfield",
+    },
+    "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
+      display: "none",
+    },
+    "& MuiInputLabel.Mui-focused": {
+      color: color,
+    },
+  },
+  ".MuiSelect-outlined": {
+    color: palette.text.secondary,
+  },
+  '.MuiOutlinedInput-notchedOutline': {
+      borderColor: palette.text.secondary,
+    },
+    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: palette.text.secondary,
+    },
+    '&:hover .MuiOutlinedInput-notchedOutline': {
+      borderColor: palette.text.secondary,
+    },
+    '.MuiSelect-icon': {
+      color: palette.text.secondary, 
+    },
+});
 
 
