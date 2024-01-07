@@ -1,6 +1,6 @@
 import { Transaction } from "@/constants/Types";
 import paletteProvider from "@/constants/color-palette";
-import { Box, Paper, Stack, Typography } from "@mui/material";
+import { Paper, Stack, Typography } from "@mui/material";
 
 type TransactionItemProps = {
   transaction: Transaction;
