@@ -52,13 +52,24 @@ const BetItem = (props: BetItemProps) => {
       if (props.bet.betType.team === 2) {
         setBetCategory({ selectedBet: "Draw", desc: "score" });
       } else {
-        setBetCategory({
-          selectedBet:
-            props.bet.betType.team === 0
-              ? props.bet.homeTeam
-              : props.bet.awayTeam,
-          desc: "score",
-        });
+        if(props.bet.betType.targetValue === 0){
+          setBetCategory({
+            selectedBet:
+              props.bet.betType.team === 0
+                ? props.bet.homeTeam
+                : props.bet.awayTeam,
+            desc: "score",
+          });
+        }else{
+          setBetCategory({
+            selectedBet:
+              props.bet.betType.team === 0
+                ? `${props.bet.homeTeam} \\ Draw`
+                : `${props.bet.awayTeam} \\ Draw`,
+            desc: "score",
+          });
+
+        }      
       }
     } else {
       if (props.bet.betType.betTypeCode === "direct") {
@@ -83,7 +94,7 @@ const BetItem = (props: BetItemProps) => {
 
   useEffect(() => {
     displayWhatBettedOn();
-  }, []);
+}, [props.bet]);
 
   return (
     <Box sx={betItemContainer}>
