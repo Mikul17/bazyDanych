@@ -56,3 +56,10 @@ export type Coupon = {
     events: Array<any>;
 }
 
+export type Match = {
+    id: number;
+    homeTeam: string;
+    awayTeam: string;
+    leagie: string;
+    matchDate: string | Date;
+}
