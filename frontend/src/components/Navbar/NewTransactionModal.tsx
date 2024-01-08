@@ -211,6 +211,7 @@ const NewTransactionModal = (props: NewTransactionModalProps) => {
           <TextField
             margin="normal"
             fullWidth
+            helperText = "Minimum amount is 1.00zł"
             id="amount"
             label="Amount"
             name="amount"
@@ -222,6 +223,11 @@ const NewTransactionModal = (props: NewTransactionModalProps) => {
             InputLabelProps={{sx:{"&.Mui-focused": {
               color: palette.text.secondary,
             },}}}
+            FormHelperTextProps={{
+              sx: {
+                color: palette.text.secondary,
+              },
+              }}
             sx={inputStyle}
           />
         <Button variant="contained" style={buttonStyle(palette.secondary.main, "50%")}  onClick={handleDeposit}>Deposit</Button>

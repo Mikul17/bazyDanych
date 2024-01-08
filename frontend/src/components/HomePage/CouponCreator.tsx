@@ -1,186 +1,186 @@
+"use client"
 import paletteProvider from "@/constants/color-palette";
 import {
   Box,
   Button,
+  Card,
+  Container,
   Grid,
   IconButton,
   Input,
   InputAdornment,
+  Stack,
   TextField,
   Typography,
 } from "@mui/material";
-import MatchContainer from "./MatchContainer";
 import { DeleteOutline } from "@mui/icons-material";
 import BetItem from "../CouponPage/BetItem";
+import { coloredInputStyle, headerStyle } from "@/constants/Styles";
+import { use, useEffect, useState } from "react";
+import { Bet } from "@/constants/Types";
 
-const calculateBets = () => {
+const calculateBets = ():number => {
   return 0;
 };
 
 const CouponCreator = () => {
   const palette = paletteProvider();
+  const [bets, setBets] = useState<Bet[]>([]);
 
-  const couponHeaderStyle = {
-    margin: "1rem",
-    backgroundColor: palette.text.light,
-    borderRadius: "1.25rem 1.25rem 0.25rem 0.25rem",
-    padding: "0.5rem 1.5rem",
+  const cardStyle = {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    backgroundColor: palette.primary.light,
+    padding: "0.5rem 1rem",
+    borderRadius: "1.25rem",
+    minHeight: "85vh",
+    maxHeight: "85vh",
+    mt: "0.5rem",
   };
 
-  const couponFooterStyle = {
-    margin: "1rem",
-    backgroundColor: palette.text.light,
-    borderRadius: "0.25rem 0.25rem 1.25rem 1.25rem",
-    padding: "0.5rem 1.5rem",
+  const mainContentStyle = {
+    flexGrow: 1,
+    overflow: 'auto',
+    my: '1rem', 
+    px: '1rem',
   };
 
-  const matchContainerStyle = {
-    marginLeft:"1rem",
-    maxHeight: "60vh",
-    overflowY: "auto",
-    width: "100%",
-    '&::-webkit-scrollbar': {display: "none"}
+  const fetchBets = (): Bet[] => {
+    const storedBets = localStorage.getItem("bets");
+    return storedBets ? JSON.parse(storedBets) : [];
   };
+  
+  useEffect(() => {
+    const loadBetsFromLocalStorage = (): void => {
+      const storedBets = localStorage.getItem('bets');
+      const bets = storedBets ? JSON.parse(storedBets) : [];
+    };
 
-  const placeBetButtonStyle = {
-    background: palette.primary.main,
-    "&:hover": {
-      backgroundColor: palette.primary.light,
-    },
-  };
+    loadBetsFromLocalStorage();
+  }, []);
+
 
   return (
-    <Box
-      sx={{
-        borderRadius: "1.25rem",
-        backgroundColor: palette.primary.light,
-        padding: "0.1rem",
-        margin: "1.5rem 1.5rem",
-        maxHeight: "80%",
-      }}
-    >
-      <Box
-        id="cupon-cretor-header"
-        sx={couponHeaderStyle}
-        display={"flex"}
-        justifyContent={"space-between"}
-        alignItems={"center"}
-      >
-        <Typography>{calculateBets()} events</Typography>
-        <IconButton>
-          <DeleteOutline />
-        </IconButton>
-      </Box>
-      <Box display={"flex"} justifyContent={"center"} alignItems={"flex-start"} flexDirection={"column"} sx={matchContainerStyle}>
-        <BetItem bet={{
-          id: 0,
-          matchId: 0,
-          homeTeam: "",
-          awayTeam: "",
-          odds: 0,
-          betStatus: 0,
-          betType: {
-            id: 0,
-            betStat: "",
-            betTypeCode: "",
-            targetValue: 0,
-            team: 0
-          }
-        }} />
-              <BetItem bet={{
-          id: 0,
-          matchId: 0,
-          homeTeam: "",
-          awayTeam: "",
-          odds: 0,
-          betStatus: 0,
-          betType: {
-            id: 0,
-            betStat: "",
-            betTypeCode: "",
-            targetValue: 0,
-            team: 0
-          }
-        }} />
-              <BetItem bet={{
-          id: 0,
-          matchId: 0,
-          homeTeam: "",
-          awayTeam: "",
-          odds: 0,
-          betStatus: 0,
-          betType: {
-            id: 0,
-            betStat: "",
-            betTypeCode: "",
-            targetValue: 0,
-            team: 0
-          }
-        }} />
-              <BetItem bet={{
-          id: 0,
-          matchId: 0,
-          homeTeam: "",
-          awayTeam: "",
-          odds: 0,
-          betStatus: 0,
-          betType: {
-            id: 0,
-            betStat: "",
-            betTypeCode: "",
-            targetValue: 0,
-            team: 0
-          }
-        }} />
-      </Box>
-      <Box sx={couponFooterStyle} display={"flex"} justifyContent={"center"} alignItems={"center"} gap={"10rem"}>
-        <Box display={"flex"} justifyContent={"space-around"} alignItems={"center"} flexDirection={"column"} gap={2}>
-            <TextField
-              id="outlined-adornment" 
-              label="Stake"
-              size="small"
-              fullWidth
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">zł</InputAdornment>
-                ),
-              }}
-            />
+    <Container maxWidth="md">
+      <Card sx={cardStyle}>
+        {/* Header */}
+        <Box sx={headerStyle("space-around")}>
+          <Typography color={palette.primary.main} fontWeight={"bold"}>
+            {calculateBets() > 0
+              ? `Events: ${calculateBets()} `
+              : "Empty coupon"}
+          </Typography>
+          <IconButton>
+            <DeleteOutline htmlColor={palette.primary.main} />
+          </IconButton>
+        </Box>
 
-<TextField
-              id="outlined-read-only-input"
-              label="Possible win"
-              defaultValue="0.00 zł"
-              fullWidth
-              size="small"
-              InputProps={{
-                readOnly: true,
-              }}
-            />
-            
-          </Box>
-          <Box display={"flex"} justifyContent={"space-around"} alignItems={"center"} flexDirection={"column"} gap={2}>
+        {/* Bets */}
+        <Box sx={mainContentStyle}>
+        {bets.map((bet, index) => (
+            <BetItem key={index} bet={bet} />
+          ))}
+        </Box>
 
-          <TextField
-              id="outlined-read-only-input"
-              label="Odds"
-              defaultValue="0.00"
-              size="small"
-              fullWidth 
-              InputProps={{
-                readOnly: true,
-              }}
-              InputLabelProps={{
-                color: "primary",
-              }}  
-            />
-
-            <Button variant="contained"  fullWidth sx={placeBetButtonStyle}>
-              Place bet
-            </Button>
-          </Box>
-      </Box>
-    </Box>
+        {/* Footer */}
+        <Box sx={headerStyle("none", true)}>
+          <Grid container justifyContent="space-around" alignItems="center">
+            <Grid item xs={5}>
+              <TextField
+                label="Stake"
+                value={530}
+                variant="outlined"
+                margin="dense"
+                size="small"
+                sx={coloredInputStyle(palette.primary.main)}
+                InputLabelProps={{
+                  sx: {
+                    fontWeight: "bold",
+                    "&.Mui-focused": {
+                      color: palette.primary.main,
+                    },
+                  },
+                }}
+                inputProps={{ readOnly: true }}
+                InputProps={{
+                  sx: { fontWeight: "bold" },
+                  endAdornment: (
+                    <Typography
+                      color={palette.primary.main}
+                      fontWeight={"bold"}
+                      variant="body2"
+                    >
+                      zł
+                    </Typography>
+                  ),
+                }}
+              />
+            </Grid>
+            <Grid item xs={5}>
+              <TextField
+                label="Odds"
+                value={3.21}
+                variant="outlined"
+                margin="dense"
+                size="small"
+                sx={coloredInputStyle(palette.primary.main)}
+                InputLabelProps={{
+                  sx: {
+                    fontWeight: "bold",
+                    "&.Mui-focused": {
+                      color: palette.primary.main,
+                    },
+                  },
+                }}
+                inputProps={{ readOnly: true }}
+                InputProps={{ sx: { fontWeight: "bold" } }}
+              />
+            </Grid>
+            <Grid item xs={5}>
+              <TextField
+                label="Possible win"
+                variant="outlined"
+                margin="dense"
+                value={5.35}
+                size="small"
+                sx={coloredInputStyle(palette.primary.main)}
+                InputLabelProps={{
+                  sx: {
+                    fontWeight: "bold",
+                    "&.Mui-focused": {
+                      color: palette.primary.main,
+                    },
+                  },
+                }}
+                inputProps={{ readOnly: true }}
+                InputProps={{
+                  sx: { fontWeight: "bold" },
+                  endAdornment: (
+                    <Typography
+                      color={palette.primary.main}
+                      fontWeight={"bold"}
+                      variant="body2"
+                    >
+                      zł
+                    </Typography>
+                  ),
+                }}
+              />
+            </Grid>
+            <Grid item xs={5}>
+              <Button
+                variant="contained"
+                fullWidth
+                sx={{ borderRadius: "0.5rem" }}
+              >
+                Create coupon
+              </Button>
+            </Grid>
+          </Grid>
+        </Box>
+      </Card>
+    </Container>
   );
 };
 

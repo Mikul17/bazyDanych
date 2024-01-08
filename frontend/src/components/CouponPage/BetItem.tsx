@@ -81,7 +81,6 @@ const BetItem = (props: BetItemProps) => {
   };
 
 
-
   useEffect(() => {
     displayWhatBettedOn();
   }, []);
