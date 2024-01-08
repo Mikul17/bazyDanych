@@ -66,10 +66,10 @@ public class BetService {
         }
     }
 
-    public List<Bet> getBetsByMatchId(Long matchId) {
+    public List<BetResponse> getBetsByMatchId(Long matchId) {
         try{
             Match match = matchService.getMatchById(matchId);
-            return betRepository.findByMatch(match);
+            return betRepository.findByMatch(match).stream().map(this::mapBetToBetResponse).collect(Collectors.toList());
         }catch (Exception e) {
             throw new ServiceException("Error: " + e.getMessage());
         }

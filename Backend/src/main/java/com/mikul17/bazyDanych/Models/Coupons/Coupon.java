@@ -23,6 +23,7 @@ public class Coupon {
     private Double totalOdds;
     private String couponStatus;
     private Double possibleWin;
+    @Column(columnDefinition = "DECIMAL(8,2)")
     private Double stake;
 
     @ManyToOne
