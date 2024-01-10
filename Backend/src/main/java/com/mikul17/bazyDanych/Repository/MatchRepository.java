@@ -17,7 +17,7 @@ import java.util.List;
 public interface MatchRepository extends JpaRepository<Match, Long> {
 
     public List<Match> findAllByMatchDateAfter(Timestamp now);
-
+    public List<Match> findAllByMatchDateAfterOrderByMatchDateAsc(Timestamp matchDate);
     List<Match> findAllByHomeTeamIdOrAwayTeamIdOrderByMatchDateDesc(Long homeTeam_id, Long awayTeam_id);
     List<Match> findAllByMatchDateBeforeAndHomeTeamIdOrAwayTeamIdOrderByMatchDateAsc(Timestamp currentDate, Long homeTeamId, Long awayTeamId);
     List<Match> findAllByMatchDateAfterAndHomeTeamIdOrAwayTeamIdOrderByMatchDateAsc(Timestamp now, Long teamId, Long teamId1);

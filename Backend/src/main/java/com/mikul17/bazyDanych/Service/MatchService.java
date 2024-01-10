@@ -56,10 +56,22 @@ public class MatchService {
     public List<Match> getUpcomingMatches(){
         try{
             Timestamp now = new Timestamp(System.currentTimeMillis());
-            return matchRepository.findAllByMatchDateAfter(now);
+            return matchRepository.findAllByMatchDateAfterOrderByMatchDateAsc(now);
         }catch (Exception e){
             throw new ServiceException("Error while getting upcoming matches: "+e.getMessage());
         }
+    }
+    public List<Match> getTodayMatches(){
+        LocalDateTime startOfDay = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
+        Timestamp now = Timestamp.valueOf(startOfDay);
+        return matchRepository.findAllByMatchDateAfterOrderByMatchDateAsc(now);
+    }
+
+    public List<Match> getTomorowMatches(){
+        LocalDateTime startOfDay = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
+        startOfDay = startOfDay.plusDays(1);
+        Timestamp tomorrow = Timestamp.valueOf(startOfDay);
+        return matchRepository.findAllByMatchDateAfterOrderByMatchDateAsc(tomorrow);
     }
     public List<Match> getMatchesByTeam(Long teamId, boolean upcoming){
         try{
