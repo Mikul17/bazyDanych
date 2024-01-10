@@ -60,6 +60,6 @@ export type Match = {
     id: number;
     homeTeam: string;
     awayTeam: string;
-    leagie: string;
+    league: string;
     matchDate: string | Date;
 }

@@ -14,7 +14,7 @@ export default function BetsListPage({ params }: { params: { id: string } }) {
               id: 1,
               homeTeam: "Legia Warszawa",
               awayTeam: "Śląsk Wrocław",
-              leagie: "",
+              league: "",
               matchDate: ""
           }} />
           </Grid>
