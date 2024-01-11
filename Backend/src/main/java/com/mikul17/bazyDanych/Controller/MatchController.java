@@ -42,6 +42,24 @@ public class MatchController {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
+
+    @GetMapping("/todays")
+    public ResponseEntity<?> getToday(){
+        try{
+            return ResponseEntity.ok().body(matchService.getTodayMatches());
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/tomorrows")
+    public ResponseEntity<?> getTomorrow(){
+        try{
+            return ResponseEntity.ok().body(matchService.getTomorowMatches());
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
     @GetMapping("/getByTeamPlayed/{id}")
     public ResponseEntity<?> getPlayedMatchesByTeam(@PathVariable Long id){
         try{
