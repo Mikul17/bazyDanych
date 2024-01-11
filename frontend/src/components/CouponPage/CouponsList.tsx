@@ -26,7 +26,6 @@ const fetchCoupons = async (): Promise<Coupon[]> => {
         try{
             const response = await fetch(url, requestOptions);
             const data:Coupon[] = await response.json();
-            console.log(data);
             if(!response.ok){
                 throw new Error("Error while fetching coupons");
             }else{

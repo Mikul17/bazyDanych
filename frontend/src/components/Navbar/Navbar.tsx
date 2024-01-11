@@ -87,13 +87,6 @@ const Navbar = (props:NavbarProps) => {
             <TableChartOutlined sx={{ fontSize: "2.5rem", color: currPath==="League"?palette.primary.dark:palette.text.secondary }} />
           </IconButton>
         </Link>
-        <Link href={"/matches"}>
-          <IconButton>
-            <CalendarMonthOutlined
-              sx={{ fontSize: "2.5rem", color: currPath==="Matches"?palette.primary.dark:palette.text.secondary }}
-            />
-          </IconButton>
-        </Link>
       </Box>
     </Box>
   );

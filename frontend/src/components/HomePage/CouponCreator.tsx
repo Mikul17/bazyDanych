@@ -18,6 +18,7 @@ import BetItem from "../CouponPage/BetItem";
 import { coloredInputStyle, headerStyle } from "@/constants/Styles";
 import { useBets } from "@/context/CouponBetsContext";
 import { useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
 
 
 
@@ -58,6 +59,51 @@ const CouponCreator = () => {
     stake.replace(",", ".");
   setPossibleWin(Number(stake) * odds);
   };
+
+  const getBetIdsFromLocalStorage = (): number[] => {
+    const betIds = bets.map((bet) => bet.id);
+    return betIds;
+  };
+  
+
+  const handleSubmitCoupon = async () => {
+    const url = `http://localhost:8080/api/coupon/add`;
+    const token = sessionStorage.getItem("token");
+    if (!token) {throw new Error("No token found")}
+    const decoded = jwtDecode<{ userId: number }>(token!);
+    const userId = decoded.userId;
+    const betIds = getBetIdsFromLocalStorage();
+
+    const requestBody = {
+      stake: stake,
+      userId: userId,
+      bets: betIds,
+    }
+
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        "Content-Type":"application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify(requestBody),
+  };
+
+  try{
+    const response = await fetch(url, requestOptions);
+    const message = await response.text();
+    if(response.ok){
+      console.log(message);
+    }else if (response.status === 400){
+      throw new Error(message);
+    }else{
+      console.log(message)
+      throw new Error("Something went wrong");
+    }
+  }catch(error){
+    console.log(error);
+  }
+}
 
   useEffect(() => {
     calculateOdds();
@@ -211,6 +257,8 @@ const CouponCreator = () => {
               <Button
                 variant="contained"
                 fullWidth
+                disabled={bets.length === 0 || stake === ""}
+                onClick={handleSubmitCoupon}
                 sx={{ borderRadius: "0.5rem" }}
               >
                 Create coupon
