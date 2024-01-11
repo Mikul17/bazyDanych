@@ -2,11 +2,14 @@ package com.mikul17.bazyDanych.Repository;
 
 import com.mikul17.bazyDanych.Models.Matches.Match;
 import com.mikul17.bazyDanych.Models.Simulation.League;
+import com.mikul17.bazyDanych.Models.Simulation.Team;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 
+import org.springframework.data.domain.Pageable;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -24,4 +27,10 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
 
     List<Match> findAllByLeagueAndMatchDateAfter(League league, Timestamp matchDate);
     List<Match> findAllByLeagueAndMatchDateBetweenOrderByMatchDateAsc(League league, Timestamp start, Timestamp end);
+
+    List<Match> findFirst5ByHomeTeamOrAwayTeamAndMatchDateBeforeOrderByMatchDateDesc(Team homeTeam, Team awayTeam, Timestamp matchDate);
+
+    @Query("SELECT m FROM matches m WHERE (m.homeTeam = :team OR m.awayTeam = :team) AND m.matchDate < :date AND m.id <> :excludeMatchId ORDER BY m.matchDate DESC")
+    List<Match> findHistoryExcludingCurrentMatch(@Param("team") Team team, @Param("date") Timestamp date, @Param("excludeMatchId") Long excludeMatchId, Pageable pageable);
+
 }

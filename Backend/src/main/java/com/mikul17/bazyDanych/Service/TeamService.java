@@ -4,6 +4,7 @@ import com.mikul17.bazyDanych.Models.Simulation.League;
 import com.mikul17.bazyDanych.Models.Simulation.Team;
 import com.mikul17.bazyDanych.Repository.TeamRepository;
 import com.mikul17.bazyDanych.Request.TeamRequest;
+import com.mikul17.bazyDanych.Response.TeamResponse;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -117,9 +119,12 @@ public class TeamService {
             throw new ServiceException(e.getMessage());
         }
     }
-    public List<Team> getTeamsByLeagueOrderByPoints (Long leagueId) {
+    public List<TeamResponse> getTeamsByLeagueOrderByPoints (Long leagueId) {
         try{
-            return teamRepository.findAllByLeagueIdOrderByPointsAndGoalDifference(leagueId);
+            return teamRepository.findAllByLeagueIdOrderByPointsAndGoalDifference(leagueId)
+                    .stream()
+                    .map(this::mapTeamToTeamResponse)
+                    .collect(Collectors.toList());
         }catch (Exception e){
             throw new ServiceException(e.getMessage());
         }
@@ -128,7 +133,8 @@ public class TeamService {
         if(!Objects.equals(first.getLeague().getId(), second.getLeague().getId())){
             throw new ServiceException("Teams are not from the same league");
         }
-        List<Team> ordered = getTeamsByLeagueOrderByPoints(first.getLeague().getId());
+        List<Team> ordered = teamRepository
+                .findAllByLeagueIdOrderByPointsAndGoalDifference(first.getLeague().getId());
         int firstTeamIndex = ordered.indexOf(first);
         int secondTeamIndex = ordered.indexOf(second);
 
@@ -136,7 +142,21 @@ public class TeamService {
     }
 
     public Integer getRelativePositionInLeagueTable(Team team){
-        List<Team> ordered = getTeamsByLeagueOrderByPoints(team.getLeague().getId());
+        List<Team> ordered = teamRepository
+                .findAllByLeagueIdOrderByPointsAndGoalDifference(team.getLeague().getId());
         return ordered.indexOf(team);
+    }
+
+    private TeamResponse mapTeamToTeamResponse(Team team){
+        return TeamResponse.builder()
+                .id(team.getId())
+                .teamName(team.getTeamName())
+                .wins(team.getWins())
+                .draws(team.getDraws())
+                .loses(team.getLoses())
+                .goalsScored(team.getGoalsScored())
+                .goalsConceded(team.getGoalsConceded())
+                .leaguePoints(team.getLeaguePoints())
+                .build();
     }
 }
