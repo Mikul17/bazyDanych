@@ -63,3 +63,12 @@ export type Match = {
     league: string;
     matchDate: string | Date;
 }
+
+export type MatchHistory = {
+    matchId: number;
+    homeTeam: string;
+    homeTeamScore: number;
+    awayTeam: string;
+    awayTeamScore: number;
+    matchDate: string | Date;
+}

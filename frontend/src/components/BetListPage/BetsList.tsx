@@ -1,10 +1,11 @@
 "use client";
 import { Bet, Match } from "@/constants/Types";
 import paletteProvider from "@/constants/color-palette";
-import { Box, Container, Grid, Typography } from "@mui/material";
+import { Box, Container, Grid, Link, Typography } from "@mui/material";
 import BetTypeItem from "./BetTypeItem";
 import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
+import MatchHistoryModal from "../MatchHistory/MatchHistoryModal";
 
 interface BetsListProps {
   match: Match;
@@ -19,6 +20,9 @@ const BetsList = (props: BetsListProps) => {
   const [groupedBets, setGroupedBets] = useState<GroupedBets>(
     {} as GroupedBets
   );
+  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [isHomeTeam, setIsHomeTeam] = useState<boolean>(false);
+  const [teamName, setTeamName] = useState<string>("");
 
   const getTeamFromBetType = (team: number) => {
     switch (team) {
@@ -33,10 +37,9 @@ const BetsList = (props: BetsListProps) => {
 
   const matchTableKey = (bet: Bet) => {
     const { betType } = bet;
-    if(betType.betStat === "score"){
+    if (betType.betStat === "score") {
       return `Who will win?`;
-    }
-     else if (
+    } else if (
       betType.betTypeCode === "direct" &&
       betType.betStat !== "score"
     ) {
@@ -44,7 +47,9 @@ const BetsList = (props: BetsListProps) => {
         betType.betStat === "penalties" ? "penalty" : "red card"
       }?`;
     } else {
-      return `${getTeamFromBetType(betType.team)} - ${betType.betStat} - ${betType.betTypeCode}`;
+      return `${getTeamFromBetType(betType.team)} - ${betType.betStat} - ${
+        betType.betTypeCode
+      }`;
     }
   };
 
@@ -67,14 +72,14 @@ const BetsList = (props: BetsListProps) => {
           throw new Error("Failed to fetch bets");
         } else {
           const bets = await response.json();
-          const betsGroups:GroupedBets = {};
-            bets.forEach((bet: Bet) => {
-                const key = matchTableKey(bet);
-                if (!betsGroups[key]) {
-                    betsGroups[key] = [];
-                  }
-                    betsGroups[key].push(bet);
-            });
+          const betsGroups: GroupedBets = {};
+          bets.forEach((bet: Bet) => {
+            const key = matchTableKey(bet);
+            if (!betsGroups[key]) {
+              betsGroups[key] = [];
+            }
+            betsGroups[key].push(bet);
+          });
           setGroupedBets(betsGroups);
         }
       } catch (error) {
@@ -93,6 +98,22 @@ const BetsList = (props: BetsListProps) => {
     borderRadius: "1rem",
   };
 
+  const linkStyle = {
+    color: palette.text.secondary,
+    cursor: "pointer",
+    textDecoration: "none",
+    "&:hover": {
+      color: palette.primary.main,
+      textDecoration: "none",
+    },
+  };
+
+    const handleOpenModal = (isHomeTeam: boolean) => {
+      setOpenModal(true);
+      setIsHomeTeam(isHomeTeam);
+      setTeamName(isHomeTeam ? props.match.homeTeam : props.match.awayTeam);
+    };
+
   return (
     <Container>
       <Box display={"flex"} justifyContent={"center"} alignItems={"center"}>
@@ -101,7 +122,21 @@ const BetsList = (props: BetsListProps) => {
           fontSize={"1.5rem"}
           sx={matchHeaderStyle}
         >
-          {props.match.homeTeam} - {props.match.awayTeam}
+          <Link
+            onClick={() => handleOpenModal(true)}
+            sx={linkStyle}
+            mr={"1rem"}
+          >
+            {props.match.homeTeam}
+          </Link>
+          -
+          <Link
+            onClick={() => handleOpenModal(false)}
+            ml={"1rem"}
+            sx={linkStyle}
+          >
+            {props.match.awayTeam}
+          </Link>
         </Typography>
       </Box>
       <Grid
@@ -111,7 +146,10 @@ const BetsList = (props: BetsListProps) => {
         overflow={"scroll"}
         maxHeight={"70vh"}
         marginTop={"1rem"}
-        sx={{ "&::-webkit-scrollbar": { display: "none" }, scrollBehavior: "smooth"}}
+        sx={{
+          "&::-webkit-scrollbar": { display: "none" },
+          scrollBehavior: "smooth",
+        }}
       >
         {Object.keys(groupedBets).map((key, index) => (
           <Grid item xs={6} key={index}>
@@ -119,7 +157,15 @@ const BetsList = (props: BetsListProps) => {
           </Grid>
         ))}
       </Grid>
+      <MatchHistoryModal
+        openModal={openModal}
+        handleCloseModal={() => setOpenModal(false)}
+        matchId={props.match.id}
+        isHomeTeam={isHomeTeam}
+        teamName={teamName}
+      />
     </Container>
+    
   );
 };
 
