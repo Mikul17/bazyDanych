@@ -16,7 +16,7 @@ public enum BetStat {
     YELLOW_CARDS("yellowCards"),
     FOULS("fouls"),
     POSSESSION("possession"),
-    PENALTIES("penalites"),
+    PENALTIES("penalties"),
     RED_CARDS("redCards"),
     SCORE("score");
 
