@@ -9,6 +9,7 @@ import com.mikul17.bazyDanych.Repository.MatchStatsRepository;
 import com.mikul17.bazyDanych.Repository.TeamRepository;
 import com.mikul17.bazyDanych.Request.MatchRequest;
 import com.mikul17.bazyDanych.Response.MatchHistoryResponse;
+import com.mikul17.bazyDanych.Response.MatchResponse;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.data.domain.Pageable;
@@ -60,6 +61,11 @@ public class MatchService {
             throw new ServiceException("Error while saving match: "+e.getMessage());
         }
     }
+
+    public MatchResponse getMatchResponseById(Long matchId){
+        return mapMatchToMatchResponse(matchRepository.findById(matchId).orElseThrow(
+                () -> new ServiceException("Couldn't find match")));
+    }
     public List<Match> getUpcomingMatches(){
         try{
             Timestamp now = new Timestamp(System.currentTimeMillis());
@@ -68,10 +74,20 @@ public class MatchService {
             throw new ServiceException("Error while getting upcoming matches: "+e.getMessage());
         }
     }
-    public List<Match> getTodayMatches(){
+
+    public List<MatchResponse> getUpcomingMatchResponse(){
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        return matchRepository.findAllByMatchDateAfterOrderByMatchDateAsc(now).stream()
+                .map(this::mapMatchToMatchResponse).collect(Collectors.toList());
+    }
+    public List<MatchResponse> getTodayMatches(){
         LocalDateTime startOfDay = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
         Timestamp now = Timestamp.valueOf(startOfDay);
-        return matchRepository.findAllByMatchDateAfterOrderByMatchDateAsc(now);
+        LocalDateTime startOfNextDay = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0)
+                .withNano(0).plusDays(1).minusMinutes(1);
+        Timestamp tomorrow = Timestamp.valueOf(startOfNextDay);
+        return matchRepository.findAllByMatchDateBetweenOrderByMatchDate(now,tomorrow).stream()
+                .map(this::mapMatchToMatchResponse).collect(Collectors.toList());
     }
 
     public List<MatchHistoryResponse> getMatchHistoryByMatch(Optional<Long> id, Optional<Boolean> isHome){
@@ -87,12 +103,15 @@ public class MatchService {
         List<Match> history = matchRepository.findHistoryExcludingCurrentMatch(team,date,matchId,limit);
             return history.stream().map(this::mapMatchToMatchHistory).collect(Collectors.toList());
     }
-
-    public List<Match> getTomorrowMatches(){
-        LocalDateTime startOfDay = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
-        startOfDay = startOfDay.plusDays(1);
+    public List<MatchResponse> getTomorrowMatches(){
+        LocalDateTime startOfDay = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).
+                withNano(0).plusDays(1);
+        LocalDateTime startOfTheDayAfter = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0)
+                .withNano(0).plusDays(2);
         Timestamp tomorrow = Timestamp.valueOf(startOfDay);
-        return matchRepository.findAllByMatchDateAfterOrderByMatchDateAsc(tomorrow);
+        Timestamp theDayAfterTomorrow= Timestamp.valueOf(startOfTheDayAfter);
+        return matchRepository.findAllByMatchDateBetweenOrderByMatchDate(tomorrow,theDayAfterTomorrow).stream()
+                .map(this::mapMatchToMatchResponse).collect(Collectors.toList());
     }
     public List<Match> getMatchesByTeam(Long teamId, boolean upcoming){
         try{
@@ -149,6 +168,16 @@ public class MatchService {
                 .homeTeamGoals(homeStats.getGoalsScored())
                 .awayTeamGoals(awayStats.getGoalsScored())
                 .matchDate(m.getMatchDate().toLocalDateTime().toLocalDate())
+                .build();
+    }
+
+    private MatchResponse mapMatchToMatchResponse(Match match){
+        return MatchResponse.builder()
+                .id(match.getId())
+                .homeTeam(match.getHomeTeam().getTeamName())
+                .awayTeam(match.getAwayTeam().getTeamName())
+                .league(match.getLeague().getLeagueName())
+                .matchDate(match.getMatchDate())
                 .build();
     }
 
