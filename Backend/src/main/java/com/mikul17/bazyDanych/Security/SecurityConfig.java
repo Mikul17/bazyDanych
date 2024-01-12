@@ -35,17 +35,28 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfiguration()))
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/api/auth/**","/api/team/**","/api/league/**",
-                                "/api/player/**","/api/player_skill/**",
-                                "/api/player_stat/**","/api/match/**","/api/user/**",
-                                "/api/mail/**","/api/transactions/**",
-                                "/api/address/**","/api/bet/**","/api/betType/**",
-                                "/api/coupon/**","/api/matchEvent/**","/api/matchStat/**",
-                                "/api/test/all").permitAll()
-                        .requestMatchers("/api/test/userOnly").hasRole("USER")
-                        .requestMatchers("/api/test/admin").hasRole("ADMIN")
-                        .requestMatchers("/api/test/any").hasAnyRole("USER","ADMIN")
-                        .anyRequest().authenticated()
+                                .requestMatchers("/api/auth/signup","/api/auth/login","/api/auth/verify",
+                                        "/api/bet/match/**","/api/league/all","/api/league/{id}",
+                                        "/api/match/todays","/api/match/tomorrows","/api/match/upcoming",
+                                        "/api/match/history/**","/api/match/{id}","/api/matchStat/**",
+                                        "/api/matchEvent/**","/api/player/all","/api/player/all/{teamId}",
+                                        "/api/player/{id}","/api/player_skill/**","/api/player_stat/**",
+                                        "/api/team/all","/api/team/get/{id}","/api/team/getByLeague/{id}",
+                                        "/api/team/all/league/order/{leagueId}","/api/user/resetPassword",
+                                        "/api/user/resetRequest").permitAll()
+                                .requestMatchers("/api/address/add","/api/bet/placeBet","/api/bet/update/{id}",
+                                        "/api/bet/all","/api/bet/{id},","/api/bet/check/{id}","/api/bet/delete/{id}",
+                                        "/api/betType/**","/api/coupon/all","/api/coupon/{couponId}",
+                                        "/api/coupon/delete/{couponId}","/api/league/add","/api/league/addLeagues",
+                                        "/api/match/add","/api/player/add","/api/player/delete/{id}",
+                                        "/api/team/add","/api/team/addTeams","/api/team/reset/{id}",
+                                        "/api/transactions/all","/api/user/fullUserInfo/{id}","/api/user/ban",
+                                        "/api/user/unban","/api/user/allUsers","/api/user/allUsers/withBlocked").hasRole("ADMIN")
+                                .requestMatchers("/api/address/{id}","/api/auth/role/{userId}","/api/coupon/all/{userId}",
+                                        "/api/coupon/add","/api/coupon/won/{userId}"
+                                        ,"/api/coupon/lost/{userId}","/api/coupon/active/{userId}",
+                                        "/api/transactions/**","/api/user/{id}","/api/user/balance/{id}",
+                                        "/api/user/update/**","/api/user/changeAddress","/api/user/changePassword").hasAnyRole("USER", "ADMIN")
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
