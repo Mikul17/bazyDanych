@@ -8,7 +8,7 @@ import { jwtDecode } from "jwt-decode";
 import MatchHistoryModal from "../MatchHistory/MatchHistoryModal";
 
 interface BetsListProps {
-  match: Match;
+  matchId: number;
 }
 
 interface GroupedBets {
@@ -23,6 +23,7 @@ const BetsList = (props: BetsListProps) => {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [isHomeTeam, setIsHomeTeam] = useState<boolean>(false);
   const [teamName, setTeamName] = useState<string>("");
+  const [match, setMatch] = useState<Match>({} as Match);
 
   const getTeamFromBetType = (team: number) => {
     switch (team) {
@@ -53,39 +54,56 @@ const BetsList = (props: BetsListProps) => {
     }
   };
 
-  useEffect(() => {
-    const fetchBets = async () => {
-      try {
-        const token = sessionStorage.getItem("token");
-        if (!token) {
-          throw new Error("Token not found");
-        }
-        const url = `http://localhost:8080/api/bet/match/${props.match.id}`;
-        const response = await fetch(url, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (!response.ok) {
-          throw new Error("Failed to fetch bets");
-        } else {
-          const bets = await response.json();
-          const betsGroups: GroupedBets = {};
-          bets.forEach((bet: Bet) => {
-            const key = matchTableKey(bet);
-            if (!betsGroups[key]) {
-              betsGroups[key] = [];
-            }
-            betsGroups[key].push(bet);
-          });
-          setGroupedBets(betsGroups);
-        }
-      } catch (error) {
-        console.error("Failed to fetch bets:", error);
+  const fetchMatch = async () => {
+    const url = `http://localhost:8080/api/match/${props.matchId}`;
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Failed to fetch match");
+      } else {
+        const match = await response.json();
+        setMatch(match);
       }
-    };
+    } catch (error) {
+      console.error("Failed to fetch match:", error);
+    }
+  };
+
+  const fetchBets = async () => {
+    try {
+      const url = `http://localhost:8080/api/bet/match/${props.matchId}`;
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Failed to fetch bets");
+      } else {
+        const bets = await response.json();
+        const betsGroups: GroupedBets = {};
+        bets.forEach((bet: Bet) => {
+          const key = matchTableKey(bet);
+          if (!betsGroups[key]) {
+            betsGroups[key] = [];
+          }
+          betsGroups[key].push(bet);
+        });
+        setGroupedBets(betsGroups);
+      }
+    } catch (error) {
+      console.error("Failed to fetch bets:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchMatch();
     fetchBets();
   }, []);
 
@@ -108,11 +126,11 @@ const BetsList = (props: BetsListProps) => {
     },
   };
 
-    const handleOpenModal = (isHomeTeam: boolean) => {
-      setOpenModal(true);
-      setIsHomeTeam(isHomeTeam);
-      setTeamName(isHomeTeam ? props.match.homeTeam : props.match.awayTeam);
-    };
+  const handleOpenModal = (isHomeTeam: boolean) => {
+    setOpenModal(true);
+    setIsHomeTeam(isHomeTeam);
+    setTeamName(isHomeTeam ? match.homeTeam : match.awayTeam);
+  };
 
   return (
     <Container>
@@ -127,7 +145,7 @@ const BetsList = (props: BetsListProps) => {
             sx={linkStyle}
             mr={"1rem"}
           >
-            {props.match.homeTeam}
+            {match.homeTeam}
           </Link>
           -
           <Link
@@ -135,7 +153,7 @@ const BetsList = (props: BetsListProps) => {
             ml={"1rem"}
             sx={linkStyle}
           >
-            {props.match.awayTeam}
+            {match.awayTeam}
           </Link>
         </Typography>
       </Box>
@@ -160,12 +178,11 @@ const BetsList = (props: BetsListProps) => {
       <MatchHistoryModal
         openModal={openModal}
         handleCloseModal={() => setOpenModal(false)}
-        matchId={props.match.id}
+        matchId={match.id}
         isHomeTeam={isHomeTeam}
         teamName={teamName}
       />
     </Container>
-    
   );
 };
 

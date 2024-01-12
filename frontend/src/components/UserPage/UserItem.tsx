@@ -57,7 +57,7 @@ const UserItem = (props: UserItemProps) => {
         }
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -81,7 +81,7 @@ const UserItem = (props: UserItemProps) => {
         }
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

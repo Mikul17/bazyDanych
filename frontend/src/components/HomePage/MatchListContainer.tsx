@@ -27,9 +27,8 @@ const MatchListContainer = () => {
     padding: "2rem 1rem 0 1rem",
     borderRadius: "1.25rem",
     marginTop: "1rem",
-    minHeight: "75vh",
-    maxHeight: "75vh",
-    overflow: "scroll",
+    height:"75vh",
+    overflowY: "scroll",
     "&::-webkit-scrollbar": {
       display: "none",
     },
@@ -69,7 +68,7 @@ const MatchListContainer = () => {
         setMatches(data);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return {} as Match[];
     }
   };

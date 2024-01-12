@@ -32,7 +32,7 @@ const fetchCoupons = async (): Promise<Coupon[]> => {
                 return data;
             }
         } catch (error){
-            console.log(error);
+            console.error(error);
             return {} as Coupon[];
         }
 };
@@ -60,7 +60,7 @@ const CouponsList = () => {
                 const couponsData = await fetchCoupons();
                 setCoupons(couponsData);
             }catch(error){
-                console.log(error);
+                console.error(error);
             }      
         };
         getCoupons();

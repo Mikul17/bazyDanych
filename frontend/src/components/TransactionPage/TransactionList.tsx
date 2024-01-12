@@ -41,17 +41,23 @@ const TransactionList = () => {
 
   const fetchTransactions = async () => {
     const userId = getUserId();
+    const token = sessionStorage.getItem("token");
     const url = "http://localhost:8080/api/transactions/all/" + userId;
+    const options = {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+        },
+    };
     try{
-        const response = await fetch(url);
+        const response = await fetch(url, options);
 
         if(!response.ok){
             throw new Error("Error while fetching transactions");
         }
         const data: Transaction[] = await response.json();
         setTransactions(data);
-        let transaction = data[0];
-        console.log(transaction);
     }catch(error){
         console.error(error);
     }
