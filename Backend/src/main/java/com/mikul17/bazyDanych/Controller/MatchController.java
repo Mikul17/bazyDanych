@@ -35,7 +35,7 @@ public class MatchController {
     @GetMapping("/upcoming")
     public ResponseEntity<?> getUpcoming(){
         try{
-            return ResponseEntity.ok().body(matchService.getUpcomingMatches());
+            return ResponseEntity.ok().body(matchService.getUpcomingMatchResponse());
         }catch (ServiceException e){
             logger.error(e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -109,6 +109,14 @@ public class MatchController {
             @RequestParam("isHomeTeam") Optional<Boolean> isHomeTeam){
         try{
             return ResponseEntity.ok().body(matchService.getMatchHistoryByMatch(matchId,isHomeTeam));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @GetMapping("{id}")
+    public ResponseEntity<?> getMatchResponseById(@PathVariable Long id){
+        try{
+            return ResponseEntity.ok().body(matchService.getMatchResponseById(id));
         }catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
