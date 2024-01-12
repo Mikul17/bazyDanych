@@ -100,7 +100,7 @@ const UserListModal = (props: UserListModalProps) => {
     setUsers(updatedUsers);
   };
 
-  const fetchUsers = async (): Promise<User[]> => {
+  const fetchUsers = async () => {
     const token = sessionStorage.getItem("token");
     const url = `http://localhost:8080/api/user/allUsers/withBlocked`;
     const requestOptions = {
@@ -114,26 +114,19 @@ const UserListModal = (props: UserListModalProps) => {
     try {
       const response = await fetch(url, requestOptions);
       if (response.ok) {
-        return response.json();
+        setUsers(await response.json());
       } else {
         throw new Error("Something went wrong");
       }
     } catch (error) {
       console.error(error);
-      return [];
     }
   }
 
   useEffect(() => {
-    const getUsers = async () => {
-      const fetchedUsers = await fetchUsers();
-      setUsers(fetchedUsers);
-    };
+    fetchUsers();
 
-    if(props.isAdminModalOpen){
-      getUsers();
-    }
-  }, [[props.isAdminModalOpen]]);
+  }, [props.isAdminModalOpen]);
 
 
 

@@ -87,13 +87,16 @@ const UserItem = (props: UserItemProps) => {
 
   const handleUserBan = () => {
     banUser();
+    setIsBanned(true);
     props.handleUserStatusChange(props.user.id, isBanned);
   };
 
   const handleUserUnban = () => {
     unbanUser();
+    setIsBanned(false);
     props.handleUserStatusChange(props.user.id, isBanned);
   };
+
 
 
 

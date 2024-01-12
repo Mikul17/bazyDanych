@@ -72,3 +72,23 @@ export type MatchHistory = {
     awayTeamScore: number;
     matchDate: string | Date;
 }
+
+export type League = {
+    id: number;
+    leagueName: string;
+    country: string;
+    remainingMatches: number;
+    season: number;
+}
+
+export type Team = {
+    id: number;
+    teamName: string;
+    league: League;
+    wins: number;
+    draws: number;
+    loses: number;
+    goalsScored: number;
+    goalsConceded: number;
+    leaguePoints: number;
+}

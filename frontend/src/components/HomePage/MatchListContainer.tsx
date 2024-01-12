@@ -1,5 +1,13 @@
 "use client";
-import { Box, Button, ButtonGroup, Card, Container, alpha } from "@mui/material";
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Card,
+  Container,
+  Typography,
+  alpha,
+} from "@mui/material";
 import MatchContainer from "./MatchContainer";
 import paletteProvider from "@/constants/color-palette";
 import { useEffect, useState } from "react";
@@ -7,9 +15,8 @@ import { Match } from "@/constants/Types";
 
 const MatchListContainer = () => {
   const palette = paletteProvider();
-  const [activeKey, setActiveKey] = useState('todays');
+  const [activeKey, setActiveKey] = useState("todays");
   const [matches, setMatches] = useState<Match[]>([]);
-
 
   const cardStyle = {
     display: "flex",
@@ -44,7 +51,7 @@ const MatchListContainer = () => {
     },
   };
 
-  const fetchMatches = async (key:string) => {
+  const fetchMatches = async (key: string) => {
     const url = `http://localhost:8080/api/match/${key}`;
     const requestOptions = {
       method: "GET",
@@ -65,36 +72,38 @@ const MatchListContainer = () => {
       console.log(error);
       return {} as Match[];
     }
-  }
-
+  };
 
   useEffect(() => {
     fetchMatches(activeKey);
-  },[activeKey])
+  }, [activeKey]);
 
-    const handleButtonClick = (key: string) => {
-      setActiveKey(key);
-    };
-  
-    const isActive = (key: string) => activeKey === key;
+  const handleButtonClick = (key: string) => {
+    setActiveKey(key);
+  };
 
-
+  const isActive = (key: string) => activeKey === key;
 
   return (
     <Container maxWidth="md">
       {/*Buttons section*/}
-      <Box display="flex" justifyContent="space-around" alignItems="center" mt={"1rem"}>
-        {['todays', 'tomorrows', 'upcoming'].map((key) => (
+      <Box
+        display="flex"
+        justifyContent="space-around"
+        alignItems="center"
+        mt={"1rem"}
+      >
+        {["todays", "tomorrows", "upcoming"].map((key) => (
           <Button
             key={key}
             variant="contained"
-            color={isActive(key) ? 'secondary' : 'primary'}
+            color={isActive(key) ? "secondary" : "primary"}
             onClick={() => handleButtonClick(key)}
             disabled={isActive(key)}
             sx={{
-             ...buttonStyle,
+              ...buttonStyle,
               mx: 2,
-              ...(isActive(key) && { backgroundColor: palette.error.main })
+              ...(isActive(key) && { backgroundColor: palette.error.main }),
             }}
           >
             {key.charAt(0).toUpperCase() + key.slice(1)}
@@ -103,12 +112,23 @@ const MatchListContainer = () => {
       </Box>
 
       {/*Matches section*/}
-      {/* <Card sx={cardStyle}>
+
+      <Card sx={cardStyle}>
+        {matches.length === 0 && (
+          <Typography
+            fontWeight={"bold"}
+            fontSize={"2rem"}
+            color={palette.text.secondary}
+            sx={{ mt: 2 }}
+          >
+            No matches scheduled for today
+          </Typography>
+        )}
         {matches.map((match) => (
           <MatchContainer key={match.id} match={match} />
         ))}
-      </Card> */}
-      <Card sx={cardStyle}>
+      </Card>
+      {/* <Card sx={cardStyle}>
         <MatchContainer match={{
           id: 1,
           homeTeam: "homeTeam",
@@ -116,7 +136,7 @@ const MatchListContainer = () => {
           league: "league",
           matchDate: new Date("2024-10-10T10:10:10.000Z"),
         }} />
-      </Card>
+      </Card> */}
     </Container>
   );
 };
