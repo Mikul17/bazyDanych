@@ -27,9 +27,8 @@ const MatchListContainer = () => {
     padding: "2rem 1rem 0 1rem",
     borderRadius: "1.25rem",
     marginTop: "1rem",
-    minHeight: "75vh",
-    maxHeight: "75vh",
-    overflow: "scroll",
+    height:"75vh",
+    overflowY: "scroll",
     "&::-webkit-scrollbar": {
       display: "none",
     },
@@ -63,6 +62,7 @@ const MatchListContainer = () => {
     try {
       const response = await fetch(url, requestOptions);
       const data: Match[] = await response.json();
+      console.log(data);
       if (!response.ok) {
         throw new Error("Error while fetching matches");
       } else {

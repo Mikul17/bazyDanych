@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar/Navbar";
 import { Box } from "@mui/material";
-import React, { PropsWithChildren } from "react";
+import React, { PropsWithChildren, useEffect } from "react";
 
 
 type LayoutProps = PropsWithChildren<{
@@ -8,6 +8,7 @@ type LayoutProps = PropsWithChildren<{
   }>;
 
 const Layout = ({ children, path }: LayoutProps) => {
+
   return (
     <Box>
       <Navbar path={path}/>

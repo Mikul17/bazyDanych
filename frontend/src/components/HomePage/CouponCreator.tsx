@@ -114,31 +114,23 @@ const CouponCreator = () => {
   const handleStakeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let value = event.target.value;
   
-    value = value.replace(/\./g, '.');
-  
-    const commaIndex = value.indexOf('.');
 
-    if(value.at(0)==='0'){
-      setIsHelperTextVisible(true);
-    }else{
-      setIsHelperTextVisible(false);
+    value = value.replace(/[^\d.]/g, '');
+  
+    const periodIndex = value.indexOf('.');
+  
+    if (periodIndex > 8) {
+      value = value.slice(0, 8) + '.' + value.slice(periodIndex + 1);
     }
   
-    if (commaIndex === -1) {
-      if (value.length > 8) {
-        value = value.slice(0, 8) + '.' + value.slice(8);
-      }
-    } else {
-      if (commaIndex > 8) {
-        value = value.slice(0, 8) + '.' + value.slice(commaIndex + 1);
-      }
+    if (periodIndex === -1 && value.length > 8) {
+      value = value.slice(0, 8) + '.' + value.slice(8);
     }
   
-    if (/^\d{0,8}(.\d{0,2})?$/.test(value)) {
+    if (/^\d{0,8}(\.\d{0,2})?$/.test(value)) {
       setStake(value);
     }
   };
-
 
 
   return (

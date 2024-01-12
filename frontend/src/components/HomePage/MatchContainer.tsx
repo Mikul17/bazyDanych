@@ -9,10 +9,8 @@ import {
   Typography,
 } from "@mui/material";
 import { CircleRounded } from "@mui/icons-material";
-import { use, useEffect, useState } from "react";
-import BetButton from "./BetButton";
+import {useEffect, useState } from "react";
 import { Match } from "@/constants/Types";
-import { match } from "assert";
 import { useRouter } from "next/navigation";
 
 type MatchContainerProps = {
@@ -34,8 +32,9 @@ const MatchContainer = (props: MatchContainerProps) => {
     backgroundColor: palette.primary.main,
     padding: "1rem 0.5rem",
     borderRadius: "1.25rem",
-    marginTop: "1rem",
+    margin: "1rem 0",
     width: "85%",
+    minHeight: "15%",
   };
 
   const checkIfLive = () => {

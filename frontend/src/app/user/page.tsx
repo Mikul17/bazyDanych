@@ -4,7 +4,7 @@ import Layout from "../navLayout";
 
 
 export default function UserPage(){
-  
+
     return (
       <>
       <Layout path={"/user"}/>
