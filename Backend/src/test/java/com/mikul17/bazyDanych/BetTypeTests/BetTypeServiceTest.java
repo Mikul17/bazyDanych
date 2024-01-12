@@ -2,6 +2,7 @@ package com.mikul17.bazyDanych.BetTypeTests;
 
 import com.mikul17.bazyDanych.Models.Coupons.BetType;
 import com.mikul17.bazyDanych.Repository.BetTypeRepository;
+import com.mikul17.bazyDanych.Repository.CouponRepository;
 import com.mikul17.bazyDanych.Service.BetTypeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,10 +14,11 @@ public class BetTypeServiceTest {
 
     private BetTypeService betTypeService;
     private BetTypeRepository betTypeRepository;
+    private CouponRepository couponRepository;
 
     @BeforeEach
     public void setUp() {
-        betTypeService = new BetTypeService(betTypeRepository);
+        betTypeService = new BetTypeService(betTypeRepository,couponRepository);
     }
 
     // Adjusted test cases according to the new decodeBetFromBetType method

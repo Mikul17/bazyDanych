@@ -1,13 +1,18 @@
 package com.mikul17.bazyDanych.Service;
 
 import com.mikul17.bazyDanych.Models.Matches.Match;
+import com.mikul17.bazyDanych.Models.Matches.MatchStats;
 import com.mikul17.bazyDanych.Models.Simulation.League;
 import com.mikul17.bazyDanych.Models.Simulation.Team;
 import com.mikul17.bazyDanych.Repository.MatchRepository;
+import com.mikul17.bazyDanych.Repository.MatchStatsRepository;
 import com.mikul17.bazyDanych.Repository.TeamRepository;
 import com.mikul17.bazyDanych.Request.MatchRequest;
+import com.mikul17.bazyDanych.Response.MatchHistoryResponse;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.service.spi.ServiceException;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -15,6 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,6 +30,7 @@ public class MatchService {
     private final MatchRepository matchRepository;
     private final TeamRepository teamRepository;
     private final LeagueService leagueService;
+    private final MatchStatsRepository matchStatsRepository;
 
     public Match addMatch(MatchRequest request){
         try{
@@ -67,7 +74,21 @@ public class MatchService {
         return matchRepository.findAllByMatchDateAfterOrderByMatchDateAsc(now);
     }
 
-    public List<Match> getTomorowMatches(){
+    public List<MatchHistoryResponse> getMatchHistoryByMatch(Optional<Long> id, Optional<Boolean> isHome){
+        Long matchId = id.orElseThrow(() -> new ServiceException("Missing match id"));
+        Boolean isHomeTeam = isHome.orElseThrow(() -> new ServiceException("Missing is home team boolean"));
+            Match match = matchRepository.findById(matchId).orElseThrow(
+                    () -> new ServiceException("Match with given id doesn't exist"));
+
+            Team team = isHomeTeam?match.getHomeTeam() : match.getAwayTeam();
+            Timestamp date = match.getMatchDate();
+
+        Pageable limit = PageRequest.of(0, 5);
+        List<Match> history = matchRepository.findHistoryExcludingCurrentMatch(team,date,matchId,limit);
+            return history.stream().map(this::mapMatchToMatchHistory).collect(Collectors.toList());
+    }
+
+    public List<Match> getTomorrowMatches(){
         LocalDateTime startOfDay = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
         startOfDay = startOfDay.plusDays(1);
         Timestamp tomorrow = Timestamp.valueOf(startOfDay);
@@ -114,6 +135,21 @@ public class MatchService {
     }
     public List<Match> getAllMatches(){
         return matchRepository.findAll();
+    }
+
+    private MatchHistoryResponse mapMatchToMatchHistory(Match m){
+        MatchStats homeStats = matchStatsRepository.findByMatchAndTeam(m,m.getHomeTeam().getId())
+                .orElseThrow(()-> new ServiceException("Couldn't load stats for this match"));
+        MatchStats awayStats = matchStatsRepository.findByMatchAndTeam(m,m.getAwayTeam().getId())
+                .orElseThrow(()-> new ServiceException("Couldn't load stats for this match"));
+
+        return MatchHistoryResponse.builder()
+                .matchId(m.getId())
+                .homeTeamName(m.getHomeTeam().getTeamName())
+                .homeTeamGoals(homeStats.getGoalsScored())
+                .awayTeamGoals(awayStats.getGoalsScored())
+                .matchDate(m.getMatchDate().toLocalDateTime().toLocalDate())
+                .build();
     }
 
  }

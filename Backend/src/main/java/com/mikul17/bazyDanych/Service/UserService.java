@@ -88,6 +88,7 @@ public class UserService {
             User user = getUserById(userId);
             user.setBanned(ban);
             userRepository.save(user);
+            log.info(user.getBanned()?"Banned user" : "Unbanned user");
             return "User with id: "+userId+" got"+(user.getBanned()?" banned" : " unbanned");
         }catch (Exception e){
             throw new ServiceException("Error while banning user: "+e.getMessage());

@@ -3,12 +3,14 @@ package com.mikul17.bazyDanych.Controller;
 import com.mikul17.bazyDanych.Request.MatchRequest;
 import com.mikul17.bazyDanych.Service.MatchService;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.sql.Timestamp;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -55,7 +57,7 @@ public class MatchController {
     @GetMapping("/tomorrows")
     public ResponseEntity<?> getTomorrow(){
         try{
-            return ResponseEntity.ok().body(matchService.getTomorowMatches());
+            return ResponseEntity.ok().body(matchService.getTomorrowMatches());
         }catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -96,6 +98,17 @@ public class MatchController {
     public ResponseEntity<?> upcomingMatchesByLeague(@PathVariable Long leagueId){
         try{
             return ResponseEntity.ok().body(matchService.getUpcomingMatchesByLeague(leagueId));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/history/")
+    public ResponseEntity<?> getTeamHistoryById(
+            @RequestParam("matchId")Optional<Long> matchId,
+            @RequestParam("isHomeTeam") Optional<Boolean> isHomeTeam){
+        try{
+            return ResponseEntity.ok().body(matchService.getMatchHistoryByMatch(matchId,isHomeTeam));
         }catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
