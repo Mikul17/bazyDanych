@@ -62,14 +62,13 @@ const MatchListContainer = () => {
     try {
       const response = await fetch(url, requestOptions);
       const data: Match[] = await response.json();
-      console.log(data);
       if (!response.ok) {
         throw new Error("Error while fetching matches");
       } else {
         setMatches(data);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return {} as Match[];
     }
   };

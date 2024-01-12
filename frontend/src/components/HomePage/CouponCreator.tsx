@@ -94,6 +94,7 @@ const CouponCreator = () => {
     const message = await response.text();
     if(response.ok){
       console.log(message);
+      clearBets();
     }else if (response.status === 400){
       throw new Error(message);
     }else{
@@ -101,7 +102,7 @@ const CouponCreator = () => {
       throw new Error("Something went wrong");
     }
   }catch(error){
-    console.log(error);
+    console.error(error);
   }
 }
 

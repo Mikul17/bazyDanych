@@ -76,17 +76,18 @@ const NewTransactionModal = (props: NewTransactionModalProps) => {
   const handleDeposit = async () => {
     const userId = getUserId();
     const type = "DEPOSIT"
+    const token = sessionStorage.getItem("token");
     const parsedAmount = parseFloat(amount);
     if (isNaN(parsedAmount) || parsedAmount <= 0) {
       setAlertState({message:"Invalid amount", type:"error"});
       return;
     }
-    console.log(userId, type, parsedAmount)
     try{
       const response = await fetch('http://localhost:8080/api/transactions/add',{
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           type: type,
@@ -118,6 +119,7 @@ const NewTransactionModal = (props: NewTransactionModalProps) => {
   const handleWithdraw = async () => {
     const userId = getUserId();
     const type = "WITHDRAW"
+    const token = sessionStorage.getItem("token");
     const parsedAmount = parseFloat(amount);
     if (isNaN(parsedAmount) || parsedAmount <= 0) {
       setAlertState({message:"Invalid amount", type:"error"});
@@ -127,7 +129,8 @@ const NewTransactionModal = (props: NewTransactionModalProps) => {
       const response = await fetch('http://localhost:8080/api/transactions/add',{
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           userId: userId,

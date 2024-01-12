@@ -26,11 +26,10 @@ const MatchHistoryModal = (props: MatchHistoryModalProps) => {
             throw new Error("Error fetching match history");
         }else{
             const data = await response.json();
-            console.log(data);
             setMatchHistory(data);
         }
     }catch(error){
-        console.log(error);
+        console.error(error);
         return null;
     }
   };

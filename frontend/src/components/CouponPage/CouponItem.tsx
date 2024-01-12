@@ -31,7 +31,6 @@ const CouponItem = (props: CouponItemProps) => {
   });
   const [isCouponModalOpen, setIsCouponModalOpen] = useState<boolean>(false);
 
-  console.log(props);
 
   const calculateEventsAmount = () => {
     return 3;

@@ -49,7 +49,6 @@ const LeagueTableContainer = () => {
             const response = await fetch(url, requestOptions);
             if(response.ok){
                 setLeagueTable(await response.json());
-                console.log(leagueTable)
             } else {
                 throw new Error("Something went wrong");
             }
@@ -98,7 +97,6 @@ const LeagueTableContainer = () => {
 
     const handleButtonClick = (id: number): void => {
        setActiveKey(id);
-       console.log("Fetching wtih id: " + id)
        fetchLeagueTable(id);
        
     }
