@@ -92,3 +92,34 @@ export type Team = {
     goalsConceded: number;
     leaguePoints: number;
 }
+
+export type MatchStats = {
+    id: number;
+    matchId: number;
+    teamName: string;
+    goalsScored: number;
+    possession: number;
+    shots: number;
+    shotsOnTarget: number;
+    passes: number;
+    corners: number;
+    throwIns: number;
+    freeKicks: number;
+    penalties: number;
+    yellowCards: number;
+    redCards: number;
+    fauls: number;
+}
+
+export type Player = {
+    id: number;
+    firstName: string;
+    lastName: string;
+    position: string;
+    age: number;
+    nationality: string;
+    isBenched: boolean;
+    isRedCarded: boolean;
+    isInjured: boolean;
+    injuredUntil: string | Date;
+}
