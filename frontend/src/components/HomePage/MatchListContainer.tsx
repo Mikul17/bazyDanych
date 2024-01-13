@@ -127,15 +127,6 @@ const MatchListContainer = () => {
           <MatchContainer key={match.id} match={match} />
         ))}
       </Card>
-      {/* <Card sx={cardStyle}>
-        <MatchContainer match={{
-          id: 1,
-          homeTeam: "homeTeam",
-          awayTeam: "awayTeam",
-          league: "league",
-          matchDate: new Date("2024-10-10T10:10:10.000Z"),
-        }} />
-      </Card> */}
     </Container>
   );
 };

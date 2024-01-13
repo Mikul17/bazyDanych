@@ -61,7 +61,7 @@ const MatchContainer = (props: MatchContainerProps) => {
   };
 
   const handleCardClick = () => {
-    isLive ? router.push(`/match/${props.match.id}`) : router.push(`/bets/${props.match.id}`)
+    isLive ? router.push(`/match_stats/${props.match.id}`) : router.push(`/bets/${props.match.id}`)
   };
 
   useEffect(() => {
