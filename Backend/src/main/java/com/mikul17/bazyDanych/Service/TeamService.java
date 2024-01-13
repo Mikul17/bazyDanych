@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -83,6 +84,9 @@ public class TeamService {
         }catch (Exception e){
             throw new ServiceException("Error while getting teams", e);
         }
+    }
+    public Optional<Team> getTeamByTeamName(String teamName){
+        return teamRepository.findByTeamName(teamName);
     }
     public Team resetTeamStats(Long id) {
         try{

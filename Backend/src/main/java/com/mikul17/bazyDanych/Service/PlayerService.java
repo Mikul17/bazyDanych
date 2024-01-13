@@ -12,6 +12,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -91,5 +93,14 @@ public class PlayerService {
         }catch (Exception e){
             throw new ServiceException(e.getMessage());
         }
+    }
+
+    public List<Player> getAllPlayersByTeamName(String teamName){
+        if(teamName.equals("undefined")){
+            return new ArrayList<>();
+        }
+            Team team = teamService.getTeamByTeamName(teamName).orElseThrow(
+                    ()-> new ServiceException("Team with given name doesn't exist"));
+            return playerRepository.findAllByTeam(team);
     }
 }

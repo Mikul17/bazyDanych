@@ -42,6 +42,15 @@ public class PlayerController {
         }
     }
 
+    @GetMapping("/all/name/{teamName}")
+    public ResponseEntity<?> getAllPlayersByTeamName(@PathVariable String teamName){
+        try{
+            return ResponseEntity.ok().body(playerService.getAllPlayersByTeamName(teamName));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getPlayerById(@PathVariable Long id) {
         try {
