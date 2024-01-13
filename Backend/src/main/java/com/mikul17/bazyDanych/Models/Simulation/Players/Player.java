@@ -1,5 +1,6 @@
 package com.mikul17.bazyDanych.Models.Simulation.Players;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mikul17.bazyDanych.Models.Simulation.Team;
 import jakarta.persistence.*;
 import lombok.*;
@@ -34,5 +35,6 @@ public class Player {
 
     @ManyToOne
     @JoinColumn(name = "team_id")
+    @JsonIgnore
     private Team team;
 }

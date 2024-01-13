@@ -43,7 +43,7 @@ public class SecurityConfig {
                                         "/api/player/{id}","/api/player_skill/**","/api/player_stat/**",
                                         "/api/team/all","/api/team/get/{id}","/api/team/getByLeague/{id}",
                                         "/api/team/all/league/order/{leagueId}","/api/user/resetPassword",
-                                        "/api/user/resetRequest").permitAll()
+                                        "/api/user/resetRequest","/api/player/all/name/{teamName}").permitAll()
                                 .requestMatchers("/api/address/add","/api/bet/placeBet","/api/bet/update/{id}",
                                         "/api/bet/all","/api/bet/{id},","/api/bet/check/{id}","/api/bet/delete/{id}",
                                         "/api/betType/**","/api/coupon/all","/api/coupon/{couponId}",

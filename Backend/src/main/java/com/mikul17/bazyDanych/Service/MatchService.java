@@ -176,6 +176,8 @@ public class MatchService {
                 .id(match.getId())
                 .homeTeam(match.getHomeTeam().getTeamName())
                 .awayTeam(match.getAwayTeam().getTeamName())
+                .homeTeamId(match.getHomeTeam().getId())
+                .awayTeamId(match.getAwayTeam().getId())
                 .league(match.getLeague().getLeagueName())
                 .matchDate(match.getMatchDate())
                 .build();
