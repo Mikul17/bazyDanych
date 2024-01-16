@@ -64,7 +64,7 @@ const MatchHistoryModal = (props: MatchHistoryModalProps) => {
 
   useEffect(() => {
     fetchMatchHistory();
-  }, []);
+  }, [props.openModal]);
 
   return (
     <Modal

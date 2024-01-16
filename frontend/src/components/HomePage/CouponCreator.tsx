@@ -1,6 +1,7 @@
 "use client"
 import paletteProvider from "@/constants/color-palette";
 import {
+  Alert,
   Box,
   Button,
   Card,
@@ -19,7 +20,12 @@ import { coloredInputStyle, headerStyle } from "@/constants/Styles";
 import { useBets } from "@/context/CouponBetsContext";
 import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
+import { useBalance } from "@/context/BalanceContext";
 
+interface AlertState {
+  open: boolean;
+  message: string;
+}
 
 
 const CouponCreator = () => {
@@ -29,6 +35,8 @@ const CouponCreator = () => {
   const [odds, setOdds] = useState<number>(0);
   const [possibleWin, setPossibleWin] = useState<number>(0);
   const [isHelperTextVisible, setIsHelperTextVisible] = useState<boolean>(false);
+  const {fetchBalance} = useBalance();
+  const [alertState, setAlertState] = useState<AlertState>({open:false, message:""});
 
   const cardStyle = {
     display: "flex",
@@ -95,16 +103,16 @@ const CouponCreator = () => {
     if(response.ok){
       console.log(message);
       clearBets();
+      fetchBalance();
     }else if (response.status === 400){
-      throw new Error(message);
-    }else{
-      console.log(message)
-      throw new Error("Something went wrong");
+      setAlertState({open:true, message:message});
     }
   }catch(error){
+    setAlertState({open:true, message:"Internal server error"});
     console.error(error);
   }
 }
+
 
   useEffect(() => {
     calculateOdds();
@@ -152,10 +160,11 @@ const CouponCreator = () => {
         {/* Bets */}
         <Box sx={mainContentStyle}>
         {bets.map((bet, index) => (
-            <BetItem key={index} bet={bet} />
+            <BetItem key={index} bet={bet} isDeleteable={true}/>
           ))}
         </Box>
 
+        {alertState.open && <Alert severity="error" variant="filled" onClose={() => setAlertState({open:false, message:""})}>{alertState.message}</Alert>}
         {/* Footer */}
         <Box sx={headerStyle("none", true)}>
           <Grid container justifyContent="space-around" alignItems="center">

@@ -53,7 +53,7 @@ export type Coupon = {
     stake: number;
     possibleWin: number;
     totalOdds: number;
-    events: Array<any>;
+    bets: Array<Bet>;
 }
 
 export type Match = {
@@ -122,4 +122,16 @@ export type Player = {
     isRedCarded: boolean;
     isInjured: boolean;
     injuredUntil: string | Date;
+}
+
+export type MatchScore = {
+    homeTeamGoals: number;
+    awayTeamGoals: number;
+}
+
+export type MatchEvent = {
+    id: number;
+    homeTeam: boolean;
+    actionType: string;
+    desc: string;
 }

@@ -21,14 +21,14 @@ const MatchListContainer = () => {
   const cardStyle = {
     display: "flex",
     flexDirection: "column",
-    justifyContent: "space-between",
     alignItems: "center",
     backgroundColor: palette.primary.light,
     padding: "2rem 1rem 0 1rem",
     borderRadius: "1.25rem",
     marginTop: "1rem",
-    height:"75vh",
-    overflowY: "scroll",
+    height: '75vh',
+    justifyContent: matches.length < 4 ? 'flex-start' : 'space-between',
+    overflowY: matches.length >= 4 ? 'scroll' : 'hidden',
     "&::-webkit-scrollbar": {
       display: "none",
     },

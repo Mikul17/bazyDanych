@@ -19,7 +19,7 @@ export default function MatchStatsPage({ params }: { params: { id: string } }) {
           alignItems={"center"}
           flexDirection={"column"}
         >
-          <MatchEventsContainer />
+          <MatchEventsContainer matchId={Number(params.id)}/>
           <MatchStatsContainer matchId={Number(params.id)} />
         </Grid>
         <Grid

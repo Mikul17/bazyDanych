@@ -16,6 +16,7 @@ const BetItemWithIcon = ({bet}: BetItemWithIconProps) => {
         marginLeft: "2rem",
       };
 
+
       const displayBetStatusIcon = () => {
         switch (bet.betStatus) {
           case 0:
@@ -31,8 +32,8 @@ const BetItemWithIcon = ({bet}: BetItemWithIconProps) => {
 
 
       return ( 
-        <Box display={"flex"} justifyContent={"center"} alignItems={"center"}>
-            <BetItem bet={bet}/>
+        <Box display={"flex"} justifyContent={"center"} alignItems={"center"} width={"100%"}>
+            <BetItem bet={bet} isDeleteable={false}/>
             {displayBetStatusIcon()}
         </Box>
       )

@@ -8,46 +8,17 @@ import {
   usePopupState,
 } from "material-ui-popup-state/hooks";
 import { useEffect, useState } from "react";
-import { jwtDecode } from "jwt-decode";
 import { useAuth } from "@/context/AuthContext";
 import NewTransactionModal from "./NewTransactionModal";
 import { useRouter } from "next/navigation";
+import { useBalance } from "@/context/BalanceContext";
 
-async function getBalance(): Promise<number> {
-  const token = sessionStorage.getItem("token");
-  if (!token) {
-    throw new Error("Token not found");
-  }
-  try {
-    const decoded = jwtDecode<{ userId: number }>(token!);
-    const userId = decoded.userId;
 
-    if (!userId) {
-      throw new Error("User id not found");
-    }
-
-    const url = "http://localhost:8080/api/user/balance/" + userId;
-    const response = await fetch(url, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      }, });
-
-    if (!response.ok) {
-      throw new Error("Error while fetching balance");
-    }
-
-    const balance = await response.json();
-    return balance;
-  } catch (error) {
-    console.error(error);
-    return -1.00;
-  }
-}
 
 const BalanceDropdown = () => {
   const palette = paletteProvider();
-  const [balance, setBalance] = useState<number>(0.00);
   const {isLogged} = useAuth();
+  const { balance, fetchBalance } = useBalance();
   const router = useRouter();
   const popupState = usePopupState({
     variant: "popover",
@@ -85,22 +56,12 @@ const BalanceDropdown = () => {
       setOpenModal(false);
     };
 
-    const fetchBalance = async () => {
-      try {
-        const newBalance = await getBalance();
-        setBalance(newBalance);
-      } catch (error) {
-        console.error('Failed to fetch balance:', error);
-      }
-    };
-
   useEffect(() => {
     let interval: NodeJS.Timeout;
-
     if (isLogged) {
       fetchBalance();
-      //Update balance every 5 minutes
-      interval = setInterval(fetchBalance,  5*60 * 1000);
+      //Update balance every 3 minutes
+      interval = setInterval(fetchBalance,  3*60 * 1000);
     }
 
     return () => {

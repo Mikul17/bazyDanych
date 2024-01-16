@@ -12,20 +12,21 @@ import BalanceDropdown from "./BalanceDropdown";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import UserDropdown from "./UserDropdown";
+import { useAuth } from "@/context/AuthContext";
 
 type NavbarProps = {
-  path:string;
-}
+  path: string;
+};
 
-
-const Navbar = (props:NavbarProps) => {
+const Navbar = (props: NavbarProps) => {
   const palette = paletteProvider();
-  const [currPath , setCurrPath] = useState<string>();
+  const [currPath, setCurrPath] = useState<string>();
+  const { isLogged } = useAuth();
 
   useEffect(() => {
-    const url = props.path==="/"?"home":props.path.slice(1);
-    setCurrPath(url.charAt(0).toUpperCase() + url.slice(1)); 
-  },[props.path])
+    const url = props.path === "/" ? "home" : props.path.slice(1);
+    setCurrPath(url.charAt(0).toUpperCase() + url.slice(1));
+  }, [props.path]);
 
   return (
     <Box
@@ -46,28 +47,46 @@ const Navbar = (props:NavbarProps) => {
           alignItems: "center",
         }}
       >
-        <UserDropdown path={currPath?currPath:""}/>
+        <UserDropdown path={currPath ? currPath : ""} />
 
-        <Link href={"/coupons"}>
-          <IconButton>
-            <ArticleOutlined sx={{ fontSize: "2.5rem", color: currPath==="Coupons"?palette.primary.dark:palette.text.secondary }} />
-          </IconButton>
-        </Link>
+        {isLogged && (
+          <Link href={"/coupons"}>
+            <IconButton>
+              <ArticleOutlined
+                sx={{
+                  fontSize: "2.5rem",
+                  color:
+                    currPath === "Coupons"
+                      ? palette.primary.dark
+                      : palette.text.secondary,
+                }}
+              />
+            </IconButton>
+          </Link>
+        )}
 
-        <BalanceDropdown/>
-      </Box>  
-      
-      <Box sx={{display: "flex",
-        justifyContent: "center",
-        alignItmes: "center",
-        background:palette.primary.main,
-        padding:"0rem 4rem",
-        borderRadius:"1rem"}}>
-        <Typography sx={{
-          fontSize:"2rem",
-          fontWeight:"bold",
-          color:palette.text.secondary
-        }}>{currPath}</Typography>
+        <BalanceDropdown />
+      </Box>
+
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItmes: "center",
+          background: palette.primary.main,
+          padding: "0rem 4rem",
+          borderRadius: "1rem",
+        }}
+      >
+        <Typography
+          sx={{
+            fontSize: "2rem",
+            fontWeight: "bold",
+            color: palette.text.secondary,
+          }}
+        >
+          {currPath}
+        </Typography>
       </Box>
 
       <Box
@@ -79,12 +98,28 @@ const Navbar = (props:NavbarProps) => {
       >
         <Link href={"/"}>
           <IconButton>
-            <HomeRounded sx={{ fontSize: "2.5rem", color: currPath==="Home"?palette.primary.dark:palette.text.secondary }} />
+            <HomeRounded
+              sx={{
+                fontSize: "2.5rem",
+                color:
+                  currPath === "Home"
+                    ? palette.primary.dark
+                    : palette.text.secondary,
+              }}
+            />
           </IconButton>
         </Link>
         <Link href={"/leagues"}>
           <IconButton>
-            <TableChartOutlined sx={{ fontSize: "2.5rem", color: currPath==="League"?palette.primary.dark:palette.text.secondary }} />
+            <TableChartOutlined
+              sx={{
+                fontSize: "2.5rem",
+                color:
+                  currPath === "League"
+                    ? palette.primary.dark
+                    : palette.text.secondary,
+              }}
+            />
           </IconButton>
         </Link>
       </Box>
