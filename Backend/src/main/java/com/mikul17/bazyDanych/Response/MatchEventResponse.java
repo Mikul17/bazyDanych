@@ -10,9 +10,8 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class MatchEventResponse {
-    private Long matchId;
-    private Integer minute;
+    private Long id;
+    private boolean isHomeTeam;
     private String actionType;
-    private String actionDescription;
-    private Long playerId;
+    private String desc;
 }

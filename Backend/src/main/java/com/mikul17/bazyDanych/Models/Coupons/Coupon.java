@@ -30,7 +30,7 @@ public class Coupon {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "coupon_bet",
             joinColumns = @JoinColumn(name = "coupon_id"),

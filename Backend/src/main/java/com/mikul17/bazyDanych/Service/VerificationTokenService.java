@@ -1,6 +1,6 @@
 package com.mikul17.bazyDanych.Service;
 
-import com.mikul17.bazyDanych.Models.TokenType;
+import com.mikul17.bazyDanych.Enums.TokenType;
 import com.mikul17.bazyDanych.Models.VerificationToken;
 import com.mikul17.bazyDanych.Models.User;
 import com.mikul17.bazyDanych.Repository.VerificationTokenRepository;

@@ -33,6 +33,7 @@ public class PlayerSkill {
     private Integer longPass;
     private Integer crossing;
     private Integer vision;
+    //goalkeeper stats
     private Integer closeRangeDefending;
     private Integer longRangeDefending;
     private Integer reflex;

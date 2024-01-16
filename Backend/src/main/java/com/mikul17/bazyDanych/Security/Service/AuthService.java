@@ -1,5 +1,7 @@
 package com.mikul17.bazyDanych.Security.Service;
 
+import com.mikul17.bazyDanych.Enums.Role;
+import com.mikul17.bazyDanych.Enums.TokenType;
 import com.mikul17.bazyDanych.Models.*;
 import com.mikul17.bazyDanych.Repository.AddressRepository;
 import com.mikul17.bazyDanych.Repository.UserRepository;
@@ -28,7 +30,6 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.YearMonth;
 import java.util.Date;
-import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Service

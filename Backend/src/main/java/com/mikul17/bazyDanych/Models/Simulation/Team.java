@@ -7,6 +7,7 @@ import com.mikul17.bazyDanych.Models.Simulation.Players.Player;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchProfile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,7 @@ public class Team {
     @JoinColumn(name = "league_id")
     private League league;
 
-    @OneToMany(mappedBy = "team")
+    @OneToMany(mappedBy = "team", fetch = FetchType.EAGER)
     @JsonIgnore
     private List<Player> players = new ArrayList<>();
 

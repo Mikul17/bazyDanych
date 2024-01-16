@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface MatchEventRepository extends JpaRepository<MatchEvents, Long> {
 
-    public List<MatchEvents> findMatchEventsByMatch(Match match);
+    public List<MatchEvents> findMatchEventsByMatchOrderByMinuteAsc(Match match);
 }

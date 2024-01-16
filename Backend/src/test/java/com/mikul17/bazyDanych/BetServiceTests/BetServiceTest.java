@@ -3,8 +3,8 @@ package com.mikul17.bazyDanych.BetServiceTests;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
-import com.mikul17.bazyDanych.Models.BetStat;
-import com.mikul17.bazyDanych.Models.BetTypeCode;
+import com.mikul17.bazyDanych.Enums.BetStat;
+import com.mikul17.bazyDanych.Enums.BetTypeCode;
 import com.mikul17.bazyDanych.Models.Coupons.Bet;
 import com.mikul17.bazyDanych.Models.Coupons.BetType;
 import com.mikul17.bazyDanych.Repository.*;
@@ -16,11 +16,6 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 
 public class BetServiceTest {
 

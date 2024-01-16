@@ -21,7 +21,7 @@ public class MatchEvents {
     private Match match;
 
     private Integer minute;
-    @Column(columnDefinition = "VARCHAR(20)")
+
     private String actionType;
     @Column(columnDefinition = "TEXT")
     private String actionDescription;

@@ -189,7 +189,7 @@ insert into bet_type (bet_stat, bet_type_code, team, target_value) values ('corn
 insert into bet_type (bet_stat, bet_type_code, team, target_value) values ('corners', 'under', 0, 4.5);
 insert into bet_type (bet_stat, bet_type_code, team, target_value) values ('corners', 'under', 0, 5.5);
 
-insert into bet_type (bet_stat, bet_type_code, team, target_value) values ('penalties', 'direct', 2, 2);
+insert into bet_type (bet_stat, bet_type_code, team, target_value) values ('penalties', 'direct', 2, 0);
 insert into bet_type (bet_stat, bet_type_code, team, target_value) values ('penalties', 'direct', 2, 1);
 
 insert into bet_type (bet_stat, bet_type_code, team, target_value) values ('yellowCards', 'over', 2, 0.5);
@@ -201,5 +201,5 @@ insert into bet_type (bet_stat, bet_type_code, team, target_value) values ('yell
 insert into bet_type (bet_stat, bet_type_code, team, target_value) values ('yellowCards', 'over', 2, 6.5);
 
 
-insert into bet_type (bet_stat, bet_type_code, team, target_value) values ('redCards', 'direct', 2, 2);
+insert into bet_type (bet_stat, bet_type_code, team, target_value) values ('redCards', 'direct', 2, 0);
 insert into bet_type (bet_stat, bet_type_code, team, target_value) values ('redCards', 'direct', 2, 1);

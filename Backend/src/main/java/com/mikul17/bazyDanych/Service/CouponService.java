@@ -5,9 +5,9 @@ import com.mikul17.bazyDanych.Models.Coupons.Coupon;
 import com.mikul17.bazyDanych.Models.Matches.Match;
 import com.mikul17.bazyDanych.Models.User;
 import com.mikul17.bazyDanych.Repository.CouponRepository;
-import com.mikul17.bazyDanych.Repository.MatchRepository;
 import com.mikul17.bazyDanych.Request.CouponRequest;
 import com.mikul17.bazyDanych.Request.TransactionRequest;
+import com.mikul17.bazyDanych.Response.BetResponse;
 import com.mikul17.bazyDanych.Response.CouponResponse;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.service.spi.ServiceException;
@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -75,8 +76,13 @@ public class CouponService {
         }
     }
 
-    public CouponResponse addCoupon (CouponRequest couponRequest) {
+    public void addCoupon (CouponRequest couponRequest) {
         try {
+            User user = userService.getUserById(couponRequest.getUserId());
+            if(user.getBalance() < couponRequest.getStake()){
+                throw new ServiceException("Insufficient balance");
+            }
+            user.setBalance(user.getBalance()-couponRequest.getStake());
             List<Bet> bets = betService.getByListId(couponRequest.getBets());
             Double stake = couponRequest.getStake();
             Double totalOdds = calculateTotalOdds(bets);
@@ -108,7 +114,7 @@ public class CouponService {
                 betService.updateOdds(bet);
             }
 
-            return mapCouponToCouponResponse(coupon);
+            mapCouponToCouponResponse(coupon);
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new ServiceException(e.getMessage());
@@ -161,6 +167,7 @@ public class CouponService {
                 for (Bet bet : coupon.getBets()) {
                     if (bet.getBetStatus() == 2) {
                         coupon.setCouponStatus("LOST");
+                        couponRepository.save(coupon);
                         break;
                     }
                     if (bet.getBetStatus() == 1) {
@@ -174,6 +181,7 @@ public class CouponService {
                             .amount(coupon.getPossibleWin())
                             .userId(coupon.getUser().getId())
                             .build();
+                    couponRepository.save(coupon);
                     transactionService.performTransaction(trans);
                 }
             }
@@ -184,6 +192,9 @@ public class CouponService {
     }
 
     private CouponResponse mapCouponToCouponResponse (Coupon coupon) {
+        List<BetResponse> betResponses = coupon.getBets().stream()
+                .map(betService::mapBetToBetResponse)
+                .toList();
         return CouponResponse.builder()
                 .id(coupon.getId())
                 .creationDate(coupon.getCreationDate().toString())
@@ -192,7 +203,7 @@ public class CouponService {
                 .possibleWin(coupon.getPossibleWin())
                 .stake(coupon.getStake())
                 .userId(coupon.getUser().getId())
-                .bets(coupon.getBets())
+                .bets(betResponses)
                 .build();
     }
 }

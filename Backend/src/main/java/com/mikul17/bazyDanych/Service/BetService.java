@@ -1,7 +1,7 @@
 package com.mikul17.bazyDanych.Service;
 
-import com.mikul17.bazyDanych.Models.BetStat;
-import com.mikul17.bazyDanych.Models.BetTypeCode;
+import com.mikul17.bazyDanych.Enums.BetStat;
+import com.mikul17.bazyDanych.Enums.BetTypeCode;
 import com.mikul17.bazyDanych.Models.Coupons.Bet;
 import com.mikul17.bazyDanych.Models.Coupons.BetType;
 import com.mikul17.bazyDanych.Models.Matches.Match;
@@ -443,7 +443,7 @@ public class BetService {
         }
     }
 
-    private BetResponse mapBetToBetResponse(Bet bet) {
+    public BetResponse mapBetToBetResponse(Bet bet) {
         return BetResponse.builder()
                 .id(bet.getId())
                 .matchId(bet.getMatch().getId())

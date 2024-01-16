@@ -22,7 +22,7 @@ public class MatchEventService {
     private final MatchService matchService;
 
 
-    public MatchEventResponse addEvent(MatchEventRequest request){
+    public String addEvent(MatchEventRequest request){
         try{
             Player player = playerService.getPlayerById(request.getPlayerId());
             Match match = matchService.getMatchById(request.getMatchId());
@@ -35,40 +35,36 @@ public class MatchEventService {
                     .actionDescription(request.getActionDescription())
                     .build();
             matchEventRepository.save(event);
-            return mapMatchEventToMatchEventResponse(event);
+            return event.getActionDescription();
 
         }catch (Exception e){
             throw new ServiceException("Error: "+e.getMessage());
         }
     }
 
-    public List<String> getAllEventsAsString(Long matchId){
+    public List<MatchEventResponse> getAllEventsAsString(Long matchId){
         try{
             Match match = matchService.getMatchById(matchId);
-            List<MatchEvents> events = matchEventRepository.findMatchEventsByMatch(match);
-            List<String> eventString = new ArrayList<>();
+            List<MatchEvents> events = matchEventRepository.findMatchEventsByMatchOrderByMinuteAsc(match);
+            List<MatchEventResponse> eventString = new ArrayList<>();
+            boolean isHomeTeam=true;
             for(MatchEvents event : events){
+                if(event.getPlayer()!=null){
+                    isHomeTeam = event.getPlayer().getTeam().getId().equals(match.getHomeTeam().getId());
+                }
                 String s = "[" +
                         event.getMinute() +
-                        "] :" +
+                        "] : " +
                         event.getActionDescription();
-                eventString.add(s);
+
+                eventString.add(MatchEventResponse.builder()
+                                .id(event.getId())
+                                .actionType(event.getActionType())
+                                .desc(s)
+                                .isHomeTeam(isHomeTeam)
+                                .build());
             }
             return eventString;
-        }catch (Exception e){
-            throw new ServiceException("Error: "+e.getMessage());
-        }
-    }
-
-    private MatchEventResponse mapMatchEventToMatchEventResponse(MatchEvents event){
-        try{
-            return MatchEventResponse.builder()
-                    .matchId(event.getMatch().getId())
-                    .playerId(event.getPlayer().getId())
-                    .minute(event.getMinute())
-                    .actionDescription(event.getActionDescription())
-                    .actionType(event.getActionType())
-                    .build();
         }catch (Exception e){
             throw new ServiceException("Error: "+e.getMessage());
         }

@@ -33,8 +33,15 @@ public class Player {
     private Boolean isInjured;
     private LocalDate injuredUntil;
 
+    @Transient
+    private Boolean isYellowCarded = false;
+
     @ManyToOne
     @JoinColumn(name = "team_id")
     @JsonIgnore
     private Team team;
+
+    public boolean isAbleToPlay(){
+        return !this.isInjured && !this.isRedCarded;
+    }
 }
