@@ -1,6 +1,7 @@
 package com.mikul17.bazyDanych.Models;
 
 
+import com.mikul17.bazyDanych.Enums.TokenType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,7 +17,7 @@ public class VerificationToken {
     private static final int EXPIRATION = 60 * 24;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "token_id")
     private Long id;
 

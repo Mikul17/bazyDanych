@@ -1,5 +1,7 @@
 package com.mikul17.bazyDanych.Service;
 
+import com.mikul17.bazyDanych.Enums.Role;
+import com.mikul17.bazyDanych.Enums.TokenType;
 import com.mikul17.bazyDanych.Models.*;
 import com.mikul17.bazyDanych.Repository.UserRepository;
 import com.mikul17.bazyDanych.Request.ChangePasswordRequest;
@@ -13,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 

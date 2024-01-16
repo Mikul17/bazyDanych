@@ -18,5 +18,5 @@ public class CouponResponse {
     private Double possibleWin;
     private Double stake;
     private Long userId;
-    private List<Bet> bets;
+    private List<BetResponse> bets;
 }

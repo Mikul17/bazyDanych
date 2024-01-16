@@ -69,6 +69,7 @@ public class MatchService {
     public List<Match> getUpcomingMatches(){
         try{
             Timestamp now = new Timestamp(System.currentTimeMillis());
+            now = Timestamp.valueOf(now.toLocalDateTime().withHour(0).withMinute(0).withSecond(0).withNano(0).minusMinutes(1));
             return matchRepository.findAllByMatchDateAfterOrderByMatchDateAsc(now);
         }catch (Exception e){
             throw new ServiceException("Error while getting upcoming matches: "+e.getMessage());
@@ -80,7 +81,7 @@ public class MatchService {
         return matchRepository.findAllByMatchDateAfterOrderByMatchDateAsc(now).stream()
                 .map(this::mapMatchToMatchResponse).collect(Collectors.toList());
     }
-    public List<MatchResponse> getTodayMatches(){
+    public List<MatchResponse> getTodayMatchResponses (){
         LocalDateTime startOfDay = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
         Timestamp now = Timestamp.valueOf(startOfDay);
         LocalDateTime startOfNextDay = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0)
@@ -88,6 +89,15 @@ public class MatchService {
         Timestamp tomorrow = Timestamp.valueOf(startOfNextDay);
         return matchRepository.findAllByMatchDateBetweenOrderByMatchDate(now,tomorrow).stream()
                 .map(this::mapMatchToMatchResponse).collect(Collectors.toList());
+    }
+
+    public List<Match> getTodayMatches(){
+        LocalDateTime startOfDay = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
+        Timestamp now = Timestamp.valueOf(startOfDay);
+        LocalDateTime startOfNextDay = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0)
+                .withNano(0).plusDays(1).minusMinutes(1);
+        Timestamp tomorrow = Timestamp.valueOf(startOfNextDay);
+        return matchRepository.findAllByMatchDateBetweenOrderByMatchDate(now,tomorrow);
     }
 
     public List<MatchHistoryResponse> getMatchHistoryByMatch(Optional<Long> id, Optional<Boolean> isHome){

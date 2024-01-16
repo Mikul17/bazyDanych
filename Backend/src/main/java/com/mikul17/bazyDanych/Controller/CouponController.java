@@ -44,7 +44,8 @@ public class CouponController {
     @PostMapping("/add")
     public ResponseEntity<?> addCoupon(@RequestBody CouponRequest couponRequest) {
         try{
-            return ResponseEntity.ok(couponService.addCoupon(couponRequest));
+            couponService.addCoupon(couponRequest);
+            return ResponseEntity.ok("Coupon created successfully");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

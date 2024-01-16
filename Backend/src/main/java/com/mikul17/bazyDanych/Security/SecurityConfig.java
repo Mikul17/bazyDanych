@@ -1,16 +1,13 @@
 package com.mikul17.bazyDanych.Security;
 
-import com.mikul17.bazyDanych.Models.Role;
 import com.mikul17.bazyDanych.Security.Config.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -44,6 +41,11 @@ public class SecurityConfig {
                                         "/api/team/all","/api/team/get/{id}","/api/team/getByLeague/{id}",
                                         "/api/team/all/league/order/{leagueId}","/api/user/resetPassword",
                                         "/api/user/resetRequest","/api/player/all/name/{teamName}").permitAll()
+                        .requestMatchers("/api/address/{id}","/api/auth/role/{userId}","/api/coupon/all/{userId}",
+                                "/api/coupon/add","/api/coupon/won/{userId}"
+                                ,"/api/coupon/lost/{userId}","/api/coupon/active/{userId}",
+                                "/api/transactions/**","/api/user/{id}","/api/user/balance/{id}",
+                                "/api/user/update/**","/api/user/changeAddress","/api/user/changePassword").hasAnyRole("USER", "ADMIN")
                                 .requestMatchers("/api/address/add","/api/bet/placeBet","/api/bet/update/{id}",
                                         "/api/bet/all","/api/bet/{id},","/api/bet/check/{id}","/api/bet/delete/{id}",
                                         "/api/betType/**","/api/coupon/all","/api/coupon/{couponId}",
@@ -52,11 +54,7 @@ public class SecurityConfig {
                                         "/api/team/add","/api/team/addTeams","/api/team/reset/{id}",
                                         "/api/transactions/all","/api/user/fullUserInfo/{id}","/api/user/ban",
                                         "/api/user/unban","/api/user/allUsers","/api/user/allUsers/withBlocked").hasRole("ADMIN")
-                                .requestMatchers("/api/address/{id}","/api/auth/role/{userId}","/api/coupon/all/{userId}",
-                                        "/api/coupon/add","/api/coupon/won/{userId}"
-                                        ,"/api/coupon/lost/{userId}","/api/coupon/active/{userId}",
-                                        "/api/transactions/**","/api/user/{id}","/api/user/balance/{id}",
-                                        "/api/user/update/**","/api/user/changeAddress","/api/user/changePassword").hasAnyRole("USER", "ADMIN")
+
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

@@ -6,6 +6,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class MatchEventRequest {
     private Long matchId;
     private Long playerId;
