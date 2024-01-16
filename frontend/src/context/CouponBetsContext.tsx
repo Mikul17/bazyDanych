@@ -61,7 +61,6 @@ export const BetsProvider = ({ children }: { children: ReactNode }) => {
 
     setBets(updatedBets);
     localStorage.setItem('bets', JSON.stringify(updatedBets));
-    console.log(updatedBets);
 };
 
   const removeBet = (betId: number) => {

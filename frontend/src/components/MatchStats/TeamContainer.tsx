@@ -35,7 +35,6 @@ const TeamContainer = (props: TeamContainerProps) => {
   };
 
   const getPlayerPositionShort = (position: string) => {
-    console.log(position);
     switch (position) {
       case "goalkeeper":
         return "GK";

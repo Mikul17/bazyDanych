@@ -76,6 +76,24 @@ const RegisterForm = () => {
     margin: "0 1rem",
   };
 
+  function clearAllFields() {
+    setFormData({
+      firstName: "",
+      lastName: "",
+      email: "",
+      phoneNumber: "",
+      country: "",
+      city: "",
+      street: "",
+      streetNumber: "",
+      houseNumber: "",
+      zipCode: "",
+      accountNumber: "",
+      ssn: "",
+      password: "",
+    });
+  }
+
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
@@ -92,8 +110,9 @@ const RegisterForm = () => {
         if(response.ok){
             const message = await response.text();
             setAlertType("success");
-            setAlertMessage(message || "success");
+            setAlertMessage(message + ". Check your email for verification link !" || "success");
             setFormSubmitted(true);
+            clearAllFields();
         }else{
             const message = await response.text();
             setAlertType("error");
@@ -111,6 +130,7 @@ const RegisterForm = () => {
                 setAlertMessage("Error while connecting to server");
                 setFormSubmitted(true);
             }
+            clearAllFields();
         }
   }
 

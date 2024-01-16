@@ -1,5 +1,6 @@
+"use client";
 import { coloredInputStyle, headerStyle, inputStyle } from "@/constants/Styles";
-import { Coupon } from "@/constants/Types";
+import { Bet, Coupon } from "@/constants/Types";
 import paletteProvider from "@/constants/color-palette";
 import { HighlightOffOutlined } from "@mui/icons-material";
 import {
@@ -13,7 +14,6 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import BetItem from "./BetItem";
 import BetItemWithIcon from "./BetItemWithIcon";
 
 interface CouponDetailsModalProps {
@@ -25,12 +25,16 @@ interface CouponDetailsModalProps {
 const CouponDetailsModal = (props: CouponDetailsModalProps) => {
   const palette = paletteProvider();
 
+
   const modalStyle = {
     position: "absolute",
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
     width: "60%",
+    display: "flex",
+    flexDirection: "column",
+    maxHeight: "80vh",
     "@media (min-width:700px)": {
       width: "50%",
     },
@@ -52,11 +56,23 @@ const CouponDetailsModal = (props: CouponDetailsModalProps) => {
     props.setIsCouponModalOpen(false);
   };
 
+  const stackStyle = {
+    flexGrow: 1,
+    overflowY: "auto",
+    width: "100%",
+    p:"0",
+    "&::-webkit-scrollbar": {
+      display: "none",
+    },
+  };
+
+
+
   return (
     <Modal open={props.isCouponModalOpen} onClose={handleCloseCouponModal}>
       <Card sx={modalStyle}>
         {/** Header */}
-        <Box sx={headerStyle("space-between")}>
+        <Box sx={{...headerStyle("space-between"), m:"0"}}>
           <Typography fontWeight={"bold"} fontSize={"1.25rem"} ml={"35%"}>
             Coupon Details
           </Typography>
@@ -71,24 +87,14 @@ const CouponDetailsModal = (props: CouponDetailsModalProps) => {
           </IconButton>
         </Box>
           
-        <BetItemWithIcon
-          key={1}
-          bet={{
-            id: 0,
-            matchId: 0,
-            homeTeam: "Test team 1",
-            awayTeam: "Test team 2",
-            odds: 3.25,
-            betStatus: 2,
-            betType: {
-              id: 0,
-              betStat: "fouls",
-              betTypeCode: "over",
-              targetValue: 5.5,
-              team: 2,
-            },
-          }}
-        />
+
+        {/** Bets */}
+        <Box justifyContent={"center"} alignItems={"center"} sx={stackStyle}>
+          {props.coupon.bets.map((bet) => (
+            <BetItemWithIcon key={bet.id} bet={bet} />
+          ))}
+        </Box>
+
 
         {/** Footer */}
         <Box sx={headerStyle("none", true)}>

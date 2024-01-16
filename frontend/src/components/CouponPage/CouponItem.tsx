@@ -31,10 +31,10 @@ const CouponItem = (props: CouponItemProps) => {
   });
   const [isCouponModalOpen, setIsCouponModalOpen] = useState<boolean>(false);
 
-
   const calculateEventsAmount = () => {
-    return 3;
+    return props.coupon.bets.length;
   };
+
 
   const betStatusColor = () => {
     if (props.coupon.couponStatus === "ACTIVE") {
@@ -79,7 +79,7 @@ const CouponItem = (props: CouponItemProps) => {
       <CardActionArea onClick={handleCouponClick}>
         <Box sx={headerStyle("center")}>
           <Typography fontWeight={"bold"} fontSize={"1rem"}>
-            {calculateEventsAmount()} Events
+            {calculateEventsAmount()} {calculateEventsAmount() === 1 ? "Event" : "Events"}
           </Typography>
         </Box>
         <Grid

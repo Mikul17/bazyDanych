@@ -3,6 +3,7 @@
 import React from "react"
 import { BetsProvider } from "./CouponBetsContext"
 import { AuthProvider } from "./AuthContext"
+import { BalanceProvider } from "./BalanceContext"
 
 
 export default function Providers({children,}: {children: React.ReactNode}) {
@@ -10,7 +11,9 @@ export default function Providers({children,}: {children: React.ReactNode}) {
         <>
         <BetsProvider>
         <AuthProvider>
+        <BalanceProvider>
         {children}
+        </BalanceProvider>
          </AuthProvider>
         </BetsProvider>
         </>
