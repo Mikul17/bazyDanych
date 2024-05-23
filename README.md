@@ -47,7 +47,7 @@ Our Fullstack Betting Application allows users to place bets on various match st
 
 * [![Next][Next.js]][Next-url]
 * [![React][React.js]][React-url]
-* [![Spring-boot][Spring-boot]][React-url]
+* [![Spring-boot][Spring-boot]][Spring-url]
 * [![Material-ui][Material-ui]][Material-url]
 
 
